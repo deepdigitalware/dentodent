@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=4444
+      - PGHOST=${PGHOST:-postgresql}
+      - PGPORT=${PGPORT:-5432}
+      - PGUSER=${PGUSER:-dentodent}
+      - PGPASSWORD=${PGPASSWORD:-Deep@DOD}
+      - PGDATABASE=${PGDATABASE:-dentodent}
+    labels:
+      - "coolify.managed=true"
+    networks:
+      - coolify
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    labels:
+      - "coolify.managed=true"
+    networks:
+      - coolify
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    labels:
+      - "coolify.managed=true"
+    networks:
+      - coolify
+
+networks:
+  coolify:
+    external: true
