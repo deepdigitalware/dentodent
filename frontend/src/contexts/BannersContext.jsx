@@ -1,0 +1,101 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const BannersContext = createContext();
+
+const getApiUrl = () => {
+  // Check environment variable first
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  // Allow a local override for testing: set localStorage['dod-api-url']
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const forced = window.localStorage.getItem('dod-api-url');
+      if (forced && /^https:\/\//.test(forced)) {
+        console.log('[DOD] Using forced API URL from localStorage:', forced);
+        return forced;
+      }
+    }
+  } catch {}
+  // In production, use the current domain with /api path
+  if (typeof window !== 'undefined') {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    // For dentodent domain, use api subdomain
+    if (hostname.includes('dentodent')) {
+      // For admin panel, use the main api domain
+      if (hostname.includes('admin')) {
+        return `${protocol}//api.dentodentdentalclinic.com`;
+      }
+      return `${protocol}//api.${hostname.replace('www.', '')}`;
+    }
+    // For localhost, use same-origin base to leverage local proxy (/api -> VPS)
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `${protocol}//${hostname}${window.location.port ? `:${window.location.port}` : ''}`;
+    }
+    // Default fallback to VPS API
+    return 'https://api.dentodentdentalclinic.com';
+  }
+  // Server-side fallback
+  return 'https://api.dentodentdentalclinic.com';
+};
+
+export const useBanners = () => {
+  const context = useContext(BannersContext);
+  if (!context) {
+    throw new Error('useBanners must be used within a BannersProvider');
+  }
+  return context;
+};
+
+export const BannersProvider = ({ children }) => {
+  const [banners, setBanners] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [apiUrl, setApiUrl] = useState(getApiUrl());
+
+  // Load banners from API
+  useEffect(() => {
+    const loadBanners = async () => {
+      try {
+        setLoading(true);
+        console.log('Fetching banners from:', `${apiUrl}/api/banners`);
+        const response = await fetch(`${apiUrl}/api/banners`);
+        console.log('Banners API response status:', response.status);
+        if (response.ok) {
+          const apiBanners = await response.json();
+          console.log('Banners loaded successfully:', apiBanners);
+          // Filter active banners and sort by display order
+          const activeBanners = apiBanners
+            .filter(banner => banner.is_active)
+            .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+          setBanners(activeBanners);
+        } else {
+          console.warn('Failed to load banners from API, status:', response.status);
+          setError(`Failed to load banners: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Error loading banners from API:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBanners();
+  }, [apiUrl]);
+
+  const value = {
+    banners,
+    loading,
+    error,
+    apiUrl
+  };
+
+  return (
+    <BannersContext.Provider value={value}>
+      {children}
+    </BannersContext.Provider>
+  );
+};
