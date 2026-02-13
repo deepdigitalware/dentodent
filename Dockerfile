@@ -4,23 +4,29 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files for better caching
+# Copy package files for root and sub-projects
 COPY package*.json ./
 COPY admin/package*.json ./admin/
 COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
-# Install ALL dependencies (including devDependencies for build)
-# Using --legacy-peer-deps to avoid potential dependency conflicts in some environments
+# Install dependencies for root
 RUN npm install --legacy-peer-deps
 
-# Copy the rest of the source code
+# Install dependencies for admin
+WORKDIR /app/admin
+RUN npm install --legacy-peer-deps
+
+# Install dependencies for frontend
+WORKDIR /app/frontend
+RUN npm install --legacy-peer-deps
+
+# Go back to root and copy the rest of the source code
+WORKDIR /app
 COPY . .
 
 # Build the applications
-# We use --production=false to ensure all build tools are available
-# And we use CI=false to prevent warnings from being treated as errors
-# Added more verbose logging to see exactly where it fails if it does
+# We use CI=false to prevent warnings from being treated as errors
 RUN CI=false npm run build:all
 
 # Final stage
