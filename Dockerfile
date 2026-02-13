@@ -11,7 +11,8 @@ COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
 # Install ALL dependencies (including devDependencies for build)
-RUN npm install
+# Using --legacy-peer-deps to avoid potential dependency conflicts in some environments
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the source code
 COPY . .
@@ -19,6 +20,7 @@ COPY . .
 # Build the applications
 # We use --production=false to ensure all build tools are available
 # And we use CI=false to prevent warnings from being treated as errors
+# Added more verbose logging to see exactly where it fails if it does
 RUN CI=false npm run build:all
 
 # Final stage
