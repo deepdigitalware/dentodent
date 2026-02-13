@@ -3,8 +3,9 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
+    command: node backend/content-management-db.js
     environment:
       - NODE_ENV=production
       - PORT=4444
@@ -20,8 +21,9 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: .
       dockerfile: Dockerfile
+    command: node backend/frontend-server.js
     labels:
       - "coolify.managed=true"
     networks:
@@ -29,8 +31,9 @@ services:
 
   admin:
     build:
-      context: ./admin
+      context: .
       dockerfile: Dockerfile
+    command: node backend/admin-server.js
     labels:
       - "coolify.managed=true"
     networks:
