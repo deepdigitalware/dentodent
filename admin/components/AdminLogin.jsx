@@ -64,8 +64,7 @@ const AdminLogin = ({ onLogin }) => {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">DeepDesk</h1>
-          <p className="text-gray-600">Dent 'O' Dent Dental Clinic</p>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Dent 'O' Dent Dental Clinic</h1>
         </div>
 
         {/* Login Form */}

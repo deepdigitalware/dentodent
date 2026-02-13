@@ -177,9 +177,9 @@ const Header = ({ onNavigate }) => {
             <div className="hidden md:flex items-center">
               <button
                 onClick={() => window.open('https://wa.me/916290093271', '_blank')}
-                className="flex items-center gap-2 bg-transparent hover:bg-gray-50 text-gray-800 font-bold py-2 px-4 rounded-full transition-all duration-300"
+                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
               >
-                <WhatsAppIcon className="w-8 h-8 text-[#25D366]" />
+                <WhatsAppIcon className="w-6 h-6" />
                 <span className="text-sm md:text-base">Schedule a Free Consultation</span>
               </button>
             </div>
