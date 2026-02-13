@@ -1,24 +1,38 @@
-FROM node:20-alpine
+# Multi-stage build for DOD project
+# Build stage
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files for better caching
 COPY package*.json ./
 COPY admin/package*.json ./admin/
 COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
-# Install dependencies
+# Install ALL dependencies (including devDependencies for build)
 RUN npm install
 
-# Copy everything
+# Copy the rest of the source code
 COPY . .
 
-# Build frontend and admin
+# Build the applications
 RUN npm run build:all
 
-# Default port (can be overridden)
+# Final stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy ONLY necessary files from builder
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend ./backend
+COPY --from=builder /app/dist-frontend ./dist-frontend
+COPY --from=builder /app/admin/dist ./admin/dist
+
+# Expose ports
 EXPOSE 4444 3000 6001
 
-# Command is set in docker-compose.yaml
+# Command is handled by docker-compose.yaml
 CMD ["npm", "start"]
