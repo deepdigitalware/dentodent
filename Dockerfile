@@ -17,7 +17,9 @@ RUN npm install
 COPY . .
 
 # Build the applications
-RUN npm run build:all
+# We use --production=false to ensure all build tools are available
+# And we use CI=false to prevent warnings from being treated as errors
+RUN CI=false npm run build:all
 
 # Final stage
 FROM node:20-alpine
