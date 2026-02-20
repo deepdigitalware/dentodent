@@ -19,7 +19,7 @@ const getApiUrl = () => {
       }
       if (hostname.includes('admin')) {
         // If we're on admin port, API is on the same port
-        if (port === '6001') {
+        if (port === '4001' || port === '6001') {
           return `http://${hostname}:${port}`;
         }
         return `${window.location.protocol}//${hostname}`;
@@ -39,17 +39,17 @@ const getApiUrl = () => {
       return `${protocol}//api.${hostname.replace('www.', '')}`;
     }
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      // On localhost, if we're on port 6001 (admin), API is on port 6666 (backend)
-      if (port === '6001') {
-        return `http://${hostname}:6666`;
+      // On localhost, if we're on admin port, API is on backend port 4444
+      if (port === '4001' || port === '6001') {
+        return `http://${hostname}:4444`;
       }
-      // Otherwise, default to 6666 for backend
-      return `http://${hostname}:6666`;
+      // Otherwise, default to 4444 for backend
+      return `http://${hostname}:4444`;
     }
     
-    // For IP address or other domains running on port 6001
-    if (port === '6001') {
-      return `${protocol}//${hostname}:6666`;
+    // For IP address or other domains running on admin port
+    if (port === '4001' || port === '6001') {
+      return `${protocol}//${hostname}:4444`;
     }
 
     // Default fallback: VPS API

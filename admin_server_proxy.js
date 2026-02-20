@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 6001;
+const PORT = process.env.PORT || 4001;
 
 // Determine dist path: prefer admin/dist, fallback to root/dist-admin
 const primaryDist = path.join(__dirname, 'dist');
@@ -33,7 +33,7 @@ app.get('/health', (req, res) => {
 
 // API proxy to backend
 app.use('/api', (req, res) => {
-  const backendUrl = 'http://localhost:6666';
+  const backendUrl = 'http://localhost:4444';
   const target = `${backendUrl}/api${req.url}`;
 
   console.log(`Proxying ${req.method} ${req.url} to ${target}`);

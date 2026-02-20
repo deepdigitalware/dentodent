@@ -59,7 +59,7 @@ const upload = multer({
 });
 
 const app = express();
-const PORT = process.env.API_PORT || 6666;
+const PORT = process.env.PORT || process.env.API_PORT || 4444;
 
 // Database configuration
 const pool = new Pool({

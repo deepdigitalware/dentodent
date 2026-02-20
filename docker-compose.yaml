@@ -16,6 +16,8 @@ services:
       - PGDATABASE=${PGDATABASE:-dentodent}
     labels:
       - "coolify.managed=true"
+    ports:
+      - "4444:4444"
     networks:
       - coolify
 
@@ -26,6 +28,8 @@ services:
     command: node backend/frontend-server.js
     labels:
       - "coolify.managed=true"
+    ports:
+      - "4000:4000"
     networks:
       - coolify
 
@@ -36,6 +40,8 @@ services:
     command: node backend/admin-server.js
     labels:
       - "coolify.managed=true"
+    ports:
+      - "4001:4001"
     networks:
       - coolify
 

@@ -9,11 +9,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = 6001;
+const PORT = 4001;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:6001', 'https://admin.dentodentdentalclinic.com', 'https://dentodentdentalclinic.com'],
+  origin: [
+    'http://localhost:4001',
+    'http://localhost:6001',
+    'https://admin.dentodentdentalclinic.com',
+    'https://dentodentdentalclinic.com'
+  ],
   credentials: true
 }));
 app.use(express.json());

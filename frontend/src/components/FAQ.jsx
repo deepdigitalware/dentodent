@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, Phone, Mail, MessageCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 import { useContent } from '@/contexts/ContentContext';
-
+ 
 const FAQ = () => {
   const { content } = useContent();
   const [openItems, setOpenItems] = useState(new Set());
-
-  // Use only API data, no fallbacks
+ 
   const faqData = content.faq?.items || [];
-
+ 
   const toggleItem = (id) => {
     const newOpenItems = new Set(openItems);
     if (newOpenItems.has(id)) {
@@ -21,20 +19,6 @@ const FAQ = () => {
       newOpenItems.add(id);
     }
     setOpenItems(newOpenItems);
-  };
-
-  const handleContactSupport = () => {
-    toast({
-      title: "📞 Contact Support",
-      description: "Our support team will get back to you within 24 hours!"
-    });
-  };
-
-  const handleLiveChat = () => {
-    toast({
-      title: "💬 Live Chat",
-      description: "Connecting you with our support team..."
-    });
   };
 
   return (
@@ -107,7 +91,6 @@ const FAQ = () => {
           ))}
         </motion.div>
 
-        {/* Contact Support */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -127,20 +110,6 @@ const FAQ = () => {
             >
               <WhatsAppIcon className="w-5 h-5 mr-2" />
               Chat on WhatsApp
-            </Button>
-            <Button
-              onClick={handleContactSupport}
-              className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center"
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Email Support
-            </Button>
-            <Button
-              onClick={handleLiveChat}
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Live Chat
             </Button>
           </div>
         </motion.div>

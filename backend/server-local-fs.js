@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.API_PORT || 6666;
+const PORT = process.env.PORT || process.env.API_PORT || 4444;
 
 // Ensure directories exist
 const dataDir = path.join(__dirname, 'data');

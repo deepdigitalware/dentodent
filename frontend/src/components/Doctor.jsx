@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { GraduationCap, Award, Users, Clock, Star, Heart, Calendar, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
 import { useContent } from '@/contexts/ContentContext';
 
 const Doctor = () => {
@@ -34,19 +33,9 @@ const Doctor = () => {
     { icon: Award, title: 'Certifications', details: certifications },
     { icon: Users, title: 'Experience', details: experience }
   ].filter(item => item.details.length > 0);
-
+  
   const handleConsultation = () => {
-    // Scroll to appointment section or show appointment modal
-    const appointmentSection = document.getElementById('appointment');
-    if (appointmentSection) {
-      appointmentSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // If no appointment section on page, show toast with contact info
-      toast({
-        title: "📅 Book Consultation",
-        description: "Please call us at +91 6290093271 or WhatsApp us to book your consultation."
-      });
-    }
+    window.open('https://wa.me/916290093271', '_blank');
   };
 
   const handleCall = () => {
@@ -160,14 +149,13 @@ const Doctor = () => {
               </div>
             </div>
 
-            {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleConsultation}
                 className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-1 flex items-center justify-center"
               >
                 <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                Book a Free Appointment
+                <span className="whitespace-nowrap">Book a Free Appointment</span>
               </Button>
               <Button
                 onClick={handleCall}
