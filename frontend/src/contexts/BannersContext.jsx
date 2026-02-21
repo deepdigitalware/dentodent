@@ -64,12 +64,28 @@ export const BannersProvider = ({ children }) => {
         const response = await fetch(`${apiUrl}/api/banners`);
         console.log('Banners API response status:', response.status);
         if (response.ok) {
-          const apiBanners = await response.json();
-          console.log('Banners loaded successfully:', apiBanners);
-          // Filter active banners and sort by display order
-          const activeBanners = apiBanners
-            .filter(banner => banner.is_active)
+          const raw = await response.json();
+          console.log('Banners loaded successfully:', raw);
+          // Normalize shape to tolerate different keys
+          const normalized = (Array.isArray(raw) ? raw : [])
+            .map((b, i) => ({
+              id: b.id ?? i + 1,
+              title: b.title ?? b.name ?? '',
+              subtitle: b.subtitle ?? '',
+              image_url: b.image_url ?? b.imageUrl ?? b.image ?? b.url ?? '',
+              mobile_image_url: b.mobile_image_url ?? b.mobileImageUrl ?? '',
+              link_url: b.link_url ?? b.linkUrl ?? '',
+              link_label: b.link_label ?? b.linkLabel ?? b.cta ?? '',
+              alt_text: b.alt_text ?? b.alt ?? 'Banner',
+              display_order: (b.display_order ?? b.order ?? i),
+              is_active: b.is_active !== undefined ? b.is_active : true,
+            }))
+            .filter(b => !!b.image_url);
+          // Filter active and sort
+          const activeBanners = normalized
+            .filter(b => b.is_active)
             .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+          setError(null);
           setBanners(activeBanners);
         } else {
           console.warn('Failed to load banners from API, status:', response.status);

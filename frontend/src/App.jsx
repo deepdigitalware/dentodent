@@ -32,6 +32,7 @@ import Error404 from '@/components/Error404';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PrivacyPolicy from '@/components/PrivacyPolicy';
 import TermsOfService from '@/components/TermsOfService';
+import CookiePolicy from '@/components/CookiePolicy';
 import AdminRoute from '@/components/admin/AdminRoute';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import { useContent } from '@/contexts/ContentContext';
@@ -129,7 +130,7 @@ function App() {
     }
 
     const known = new Set([
-      'home','admin','gallery','blog','appointment','patient-portal','faq','privacy-policy','terms-of-service',
+      'home','admin','gallery','blog','appointment','patient-portal','faq','privacy-policy','terms-of-service','cookie-policy',
       'root-canal','dental-implants','braces','aligners','teeth-whitening','smile-makeover','pediatric-dentistry'
     ]);
     if (!known.has(currentPage)) {
@@ -153,6 +154,8 @@ function App() {
         return <PrivacyPolicy />;
       case 'terms-of-service':
         return <TermsOfService />;
+      case 'cookie-policy':
+        return <CookiePolicy />;
       // Service pages
       case 'root-canal':
         return <RootCanal onNavigate={navigateToPage} />;
@@ -194,8 +197,8 @@ function App() {
     return (
       <>
         <Helmet>
-          <title>Admin Panel - Dent O Dent</title>
-          <meta name="description" content="Admin panel for managing Dent O Dent website content and settings." />
+          <title>Admin Panel - Dent 'O' Dent</title>
+          <meta name="description" content="Admin panel for managing Dent 'O' Dent website content and settings." />
           <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         {renderPage()}
@@ -208,7 +211,7 @@ function App() {
   return (
     <>
         <Helmet>
-          <title>{header.seoTitle || header.siteTitle || 'Dent O Dent - Premier Dental Clinic in Kolkata | Dr. Setketu Chakraborty'}</title>
+          <title>{header.seoTitle || header.siteTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata | Dr. Setketu Chakraborty"}</title>
           <meta name="description" content={header.seoDescription || 'Top-rated Dentist and Dental Clinic in Kolkata offering painless treatments: Dental Implants, Root Canal, Braces, Aligners, Smile Makeover, and Emergency Care. Book your appointment today!'} />
           <meta name="keywords" content="Dentist Kolkata, Dental Clinic Kolkata, Best Dentist in Kolkata, Dental Implants Kolkata, Root Canal Kolkata, Orthodontist Kolkata, Cosmetic Dentistry Kolkata, Emergency Dentist Kolkata" />
           <link rel="canonical" href={canonicalUrl} />
@@ -216,14 +219,14 @@ function App() {
 
           {/* Open Graph */}
           <meta property="og:type" content="website" />
-          <meta property="og:title" content={header.ogTitle || 'Dent O Dent - Premier Dental Clinic in Kolkata'} />
-          <meta property="og:description" content={header.ogDescription || 'Advanced dental treatments with modern technology and compassionate care in Kolkata. Book your appointment with Dent O Dent.'} />
+          <meta property="og:title" content={header.ogTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata"} />
+          <meta property="og:description" content={header.ogDescription || "Advanced dental treatments with modern technology and compassionate care in Kolkata. Book your appointment with Dent 'O' Dent."} />
           <meta property="og:url" content={canonicalUrl} />
           <meta property="og:image" content={header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
 
           {/* Twitter Card */}
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content={header.twitterTitle || 'Dent O Dent - Premier Dental Clinic in Kolkata'} />
+          <meta name="twitter:title" content={header.twitterTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata"} />
           <meta name="twitter:description" content={header.twitterDescription || 'Advanced dental treatments with modern technology and compassionate care in Kolkata.'} />
           <meta name="twitter:image" content={header.twitterImage || header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
 
@@ -231,7 +234,7 @@ function App() {
           <script type="application/ld+json">{JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Dentist',
-            name: 'Dent O Dent',
+            name: "Dent 'O' Dent",
             image: 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81',
             url: canonicalUrl,
             telephone: '+916290093271',

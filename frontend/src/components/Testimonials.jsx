@@ -263,7 +263,7 @@ const Testimonials = () => {
           <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl p-6 md:p-8 text-white">
             <h3 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">Inspired by Our Patients?</h3>
             <p className="text-base md:text-xl mb-4 md:mb-6 opacity-90">
-              Join our community of satisfied patients and experience the Dent O Dent difference.
+              Join our community of satisfied patients and experience the Dent 'O' Dent difference.
             </p>
             <Button
               onClick={handleBookAppointment}

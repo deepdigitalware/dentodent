@@ -1,101 +1,85 @@
-# Node & project artifacts
+# Node dependencies
 node_modules/
+
+# Build outputs
 dist/
+dist-frontend/
+dist-admin/
 frontend/dist/
 admin/dist/
-dist-admin/
-dist-frontend/
-deployment-package/
-temp_backup/
-.venv/
+build/
+coverage/
+*.tgz
 
 # Environment files
 .env
+.env.*
 backend/.env
 admin/.env
 frontend/.env
 
-# Logs and OS files
+# Logs
+logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / Editor
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+.trae/
 
-# Exclude all python and other scripts in root
+# Root-level scripts and misc
 /*.py
-/*.txt
-/*.md
 /*.sh
-/test*.js
-/test_upload*
-/check*.js
-/debug*.js
-/fix*.js
-/deploy*.js
-/verify*.js
-/start*.js
-/inspect*.js
-/analyze*.js
-/aggressive*.js
-/complete*.js
-/comprehensive*.js
-/detailed*.js
-/diagnose*.js
-/direct*.js
-/enable*.js
-/final*.js
-/force*.js
-/get*.js
-/grant*.js
-/hard*.js
-/install*.js
-/investigate*.js
-/lavya*.js
-/manual*.js
-/monitor*.js
-/nextjs*.js
-/nginx*.js
-/precise*.js
-/production*.js
-/proper*.js
-/quick*.js
-/read*.js
-/rebuild*.js
-/remote*.js
-/resolve*.js
-/restart*.js
-/restore*.js
-/run*.js
-/service*.js
-/setup*.js
-/simple*.js
-/ssl*.js
-/synchronize*.js
-/update*.js
-/urgent*.js
-/vps*.js
+/*.bat
+/*.txt
 
-# Exclude junk in subdirectories
+# Allow essential root configs
+!/README.md
+!/Dockerfile
+!/docker-compose.yaml
+!/package.json
+!/package-lock.json
+!/tailwind.config.cjs
+!/postcss.config.cjs
+!/vite.config.js
+!/vite.config.admin-build.js
+
+# Python virtualenv and caches
+.venv/
+venv/
+__pycache__/
+
+# Runtime data and uploads
+backend/public/assets/uploads/
+backend/data/
+tmp/
+temp/
+deployment-package/
+temp_backup/
+
+# Exclude dev/test scripts and configs
 frontend/test*.js
 frontend/verify*.js
 frontend/simple-server.js
 frontend/server.js
-backend/check*.js
-backend/test*.js
-backend/populate*.js
-backend/init-db.sql
-backend/setup-db.sql
 admin/minimal.jsx
 admin/vite.config.simple.js
 admin/server.js
-admin/admin-server.js
+backend/init-db.sql
+backend/setup-db.sql
+backend/populate-*.js
+ 
+# Root-level dev/test helpers
+/test*.js
+/test_upload.*
+/start-all-local.js
 
+# Exclude root-level markdown/docs except README
+/*.md
 !/README.md
-!/package.json
-!/package-lock.json
-!/vite.config.js
-!/postcss.config.js
-!/tailwind.config.js
-!/.gitignore
-!/server.js
-!/admin-server.js
-!/frontend-server.js

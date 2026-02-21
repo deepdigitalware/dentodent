@@ -27,11 +27,11 @@ export default function ServicePage({
   return (
     <section className="py-20" id="services-page">
       <Helmet>
-        <title>{title} | Dent O Dent Kolkata</title>
+        <title>{title} | Dent 'O' Dent Kolkata</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:type" content="article" />
-        <meta property="og:title" content={`${title} | Dent O Dent Kolkata`} />
+        <meta property="og:title" content={`${title} | Dent 'O' Dent Kolkata`} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content={`${image}?w=1200&h=630&fit=crop`} />
@@ -41,7 +41,7 @@ export default function ServicePage({
           serviceType,
           provider: {
             '@type': 'Dentist',
-            name: 'Dent O Dent',
+            name: "Dent 'O' Dent",
             address: {
               '@type': 'PostalAddress',
               streetAddress: '1/8/1, near Master Da Surya Sen Club, Suryanagar, Regent Grove, Bansdroni',

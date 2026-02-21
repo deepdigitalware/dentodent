@@ -26,15 +26,15 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${apiUrl}/api/forms/submit/contact`, {
+      const res = await fetch(`${apiUrl}/api/forms/submit/appointment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ submission: formData })
       });
-      if (!res.ok) throw new Error('Failed to submit contact form');
+      if (!res.ok) throw new Error('Failed to submit appointment form');
       toast({
-        title: "📧 Message Sent!",
-        description: "Thank you for contacting us. We'll get back to you within 24 hours."
+        title: "📧 Appointment Request Sent!",
+        description: "We will reach you shortly to confirm your appointment."
       });
       setFormData({ name: '', email: '', phone: '', service: '', message: '' });
     } catch (err) {
@@ -52,8 +52,20 @@ const Contact = () => {
     window.open('https://wa.me/916290093271', '_blank');
   };
 
-  // Use only API data, no fallbacks
-  const services = content.contact?.services || [];
+  // Build service options from API content
+  const services = (() => {
+    const svcFromSection = Array.isArray(content.services?.services)
+      ? content.services.services.map(s => s?.title || s?.name || s)
+      : [];
+    const svcFromTreatments = Array.isArray(content.treatments)
+      ? content.treatments.map(t => t?.title || t?.name || t)
+      : [];
+    const svcFromContact = Array.isArray(content.contact?.services) ? content.contact.services : [];
+    const unique = Array.from(new Set([...svcFromSection, ...svcFromTreatments, ...svcFromContact]
+      .map(s => String(s || '').trim())
+      .filter(Boolean)));
+    return unique;
+  })();
 
   return (
     <section id="contact" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -97,7 +109,7 @@ const Contact = () => {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2.5 md:px-4 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base"
-                    placeholder="Your full name"
+                    placeholder="Your Name"
                   />
                 </div>
                 <div>
@@ -111,7 +123,7 @@ const Contact = () => {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2.5 md:px-4 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base"
-                    placeholder="your.email@example.com"
+                    placeholder="Your Email"
                   />
                 </div>
               </div>
@@ -128,7 +140,7 @@ const Contact = () => {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2.5 md:px-4 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base"
-                    placeholder="+91 6290093271"
+                    placeholder="Your Number"
                   />
                 </div>
                 <div>
@@ -192,7 +204,7 @@ const Contact = () => {
                   allowFullScreen=""
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Dent O Dent Location"
+                  title="Dent 'O' Dent Location"
                   className="w-full h-full"
                 ></iframe>
               </div>

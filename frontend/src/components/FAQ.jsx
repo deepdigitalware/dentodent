@@ -106,7 +106,7 @@ const FAQ = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
               onClick={() => window.open('https://wa.me/916290093271?text=Hi%20Dent%20O%20Dent%2C%20I%20have%20a%20question%20about%20your%20dental%20services.', '_blank')}
-              className="bg-[#25D366] hover:bg-[#128C7E] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center"
+              className="bg-white hover:bg-white text-black px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-gray-200"
             >
               <WhatsAppIcon className="w-5 h-5 mr-2" />
               Chat on WhatsApp

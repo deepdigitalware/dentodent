@@ -27,11 +27,11 @@ export default function BlogPost({ slug }) {
   return (
     <article className="py-16">
       <Helmet>
-        <title>{post.title} | Dent O Dent Blog</title>
+        <title>{post.title} | Dent 'O' Dent Blog</title>
         <meta name="description" content={post.excerpt} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:type" content="article" />
-        <meta property="og:title" content={`${post.title} | Dent O Dent Blog`} />
+        <meta property="og:title" content={`${post.title} | Dent 'O' Dent Blog`} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content={isRemote ? `${post.cover}?w=1200&h=630&fit=crop` : post.cover} />
@@ -44,7 +44,7 @@ export default function BlogPost({ slug }) {
           author: { '@type': 'Person', name: 'Dr. Setketu Chakraborty' },
           publisher: {
             '@type': 'Organization',
-            name: 'Dent O Dent',
+            name: "Dent 'O' Dent",
             logo: { '@type': 'ImageObject', url: 'https://www.dentodent.in/logo.png' }
           },
           mainEntityOfPage: canonicalUrl,

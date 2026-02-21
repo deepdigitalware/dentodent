@@ -158,7 +158,7 @@ const AdminPanel = () => {
   const userMenuRef = useRef(null);
   
   const { toast } = useToast();
-  const { apiUrl, fetchWithRefresh } = useContent();
+  const { apiUrl, fetchWithRefresh, content } = useContent();
 
   useEffect(() => {
     const authToken = localStorage.getItem('admin_token');
@@ -389,6 +389,16 @@ const AdminPanel = () => {
     return <AdminLogin onLogin={handleLogin} />;
   }
 
+  const adminSettings = (() => {
+    try {
+      const raw = localStorage.getItem('dod-admin-settings');
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  })();
+  const logoUrl = adminSettings?.site?.logo || adminSettings?.branding?.logo || adminSettings?.logoUrl || content?.header?.logoUrl;
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -494,11 +504,14 @@ const AdminPanel = () => {
               {/* Sidebar Header */}
               <div className="p-6 border-b border-slate-800 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50">
-                    <span className="text-white font-bold text-xl">D</span>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50 overflow-hidden bg-white">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="Clinic Logo" className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="text-blue-600 font-bold text-xl">D</span>
+                    )}
                   </div>
                   <div>
-                    <h1 className="text-white font-bold text-lg tracking-tight">Dent "O" Dent</h1>
                     <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">Admin Panel</p>
                   </div>
                 </div>
@@ -566,8 +579,8 @@ const AdminPanel = () => {
                                   }}
                                   className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-all duration-200 text-sm ${
                                     activeTab === child.id
-                                      ? 'text-blue-400 bg-blue-900/20 font-medium'
-                                      : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                                      ? 'text-white bg-slate-800 font-medium'
+                                      : 'text-slate-300 hover:text-white hover:bg-slate-800'
                                   }`}
                                 >
                                   <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
@@ -584,7 +597,7 @@ const AdminPanel = () => {
               </nav>
 
               {/* Sidebar Footer */}
-              <div className="p-4 border-t border-slate-800 bg-slate-900/50 space-y-3">
+              <div className="p-4 border-t border-slate-800 bg-slate-900 space-y-3">
                 <a 
                   href="http://localhost:3000" 
                   target="_blank" 
@@ -595,7 +608,7 @@ const AdminPanel = () => {
                   <span>View Live Site</span>
                 </a>
 
-                <div className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700">
+                <div className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
                     {userRole.charAt(0).toUpperCase()}
                   </div>

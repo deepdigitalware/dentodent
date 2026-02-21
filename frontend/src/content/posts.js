@@ -7,7 +7,7 @@ export const posts = [
     excerpt: 'Looking for the best dentist in Kolkata? Compare treatments, costs, and technology in this 2025 guide.',
     keywords: ['best dentist kolkata', 'dental clinic kolkata', 'dentist near me'],
     cover: 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81',
-    content: `Choosing a dental clinic in Kolkata can be overwhelming. In this guide, we compare technology (digital X-rays, rotary endo), common treatments (RCT, implants, braces), emergency availability, and cost transparency. Learn how Dent O Dent provides painless treatments with experienced specialists.`,
+    content: `Choosing a dental clinic in Kolkata can be overwhelming. In this guide, we compare technology (digital X-rays, rotary endo), common treatments (RCT, implants, braces), emergency availability, and cost transparency. Learn how Dent 'O' Dent provides painless treatments with experienced specialists.`,
   },
   {
     slug: 'root-canal-cost-in-kolkata-painless-options',
@@ -17,7 +17,7 @@ export const posts = [
     excerpt: 'Understand pain-free RCT options, typical prices, and same-day emergency treatment availability in Kolkata.',
     keywords: ['root canal kolkata', 'rct cost kolkata', 'painless root canal'],
     cover: 'https://images.unsplash.com/photo-1588776814546-1ff441c36edb',
-    content: `Root canal therapy at Dent O Dent uses rotary endodontics and apex locators for precise and comfortable procedures. Typical pricing depends on tooth location and severity. We offer transparent estimates and EMI plans.`,
+    content: `Root canal therapy at Dent 'O' Dent uses rotary endodontics and apex locators for precise and comfortable procedures. Typical pricing depends on tooth location and severity. We offer transparent estimates and EMI plans.`,
   },
   {
     slug: 'dental-implants-vs-bridges-kolkata',

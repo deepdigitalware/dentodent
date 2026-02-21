@@ -3,6 +3,8 @@ import path from 'path';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import fs from 'fs';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 // Get __dirname equivalent in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -14,9 +16,28 @@ const PORT = 4000;
 // Middleware
 app.use(cors());
 
+app.use('/api', createProxyMiddleware({
+  target: 'http://localhost:4444/api',
+  changeOrigin: true,
+  secure: false,
+  ws: true,
+  logLevel: 'silent'
+}));
+
+// Detect built frontend directory and index.html path
+const distCandidates = [
+  path.join(__dirname, '..', 'dist-frontend'),
+  path.join(__dirname, '..', 'frontend', 'dist')
+];
+const distPath = distCandidates.find(p => fs.existsSync(p)) || distCandidates[0];
+const indexCandidates = [
+  path.join(distPath, 'index.html'),
+  path.join(distPath, 'frontend', 'src', 'index.html')
+];
+const indexPath = indexCandidates.find(p => fs.existsSync(p)) || path.join(distPath, 'index.html');
+
 // Serve static files with proper MIME types
-const staticPath = path.join(__dirname, '..', 'dist-frontend');
-app.use(express.static(staticPath, {
+app.use(express.static(distPath, {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
@@ -40,7 +61,7 @@ app.get('*', (req, res) => {
     return res.status(404).send('Not found');
   }
   // For all other routes, serve the index.html (for SPA routing)
-  res.sendFile(path.join(__dirname, '..', 'dist-frontend', 'index.html'));
+  res.sendFile(indexPath);
 });
 
 // Start server

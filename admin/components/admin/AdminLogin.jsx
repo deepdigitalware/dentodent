@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 import { useContent } from '../../contexts/ContentContext';
 
 const AdminLogin = ({ onLogin }) => {
-  const { apiUrl } = useContent();
+  const { apiUrl, content } = useContent();
   const [credentials, setCredentials] = useState({
     username: '',
     password: ''
@@ -13,6 +13,9 @@ const AdminLogin = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const logoUrl = (content?.header?.logoUrl && typeof content.header.logoUrl === 'string' && content.header.logoUrl.length > 0)
+    ? content.header.logoUrl
+    : `${apiUrl}/assets/images/logo.svg`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,18 +74,15 @@ const AdminLogin = ({ onLogin }) => {
         transition={{ duration: 0.6 }}
         className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md"
       >
-        {/* Logo and Header */}
         <div className="text-center mb-8">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full inline-flex items-center justify-center mx-auto mb-4 px-6 py-3"
+            className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mx-auto mb-2 bg-white"
           >
-            <span style={{ fontFamily: 'Aclonica, system-ui' }} className="text-white font-bold text-2xl">DeepDesk</span>
+            <img src={logoUrl} alt="Dent O Dent" className="w-full h-full object-contain" loading="eager" />
           </motion.div>
-          <h1 style={{ fontFamily: 'Aclonica, system-ui' }} className="text-2xl font-bold text-gray-800 mb-2">DeepDesk</h1>
-          <p className="text-gray-600">Dent 'O' Dent Dental Clinic</p>
         </div>
 
         {/* Login Form */}

@@ -38,7 +38,7 @@ const AppointmentBooking = () => {
     privacyAccepted: false
   });
 
-  const services = [
+  const defaultServices = [
     {
       id: 'consultation',
       name: 'General Consultation',
@@ -88,6 +88,29 @@ const AppointmentBooking = () => {
       icon: '🦴'
     }
   ];
+
+  const dynamicServices = (() => {
+    const svcFromSection = Array.isArray(content.services?.services)
+      ? content.services.services.map(s => s?.title || s?.name || s)
+      : [];
+    const svcFromTreatments = Array.isArray(content.treatments)
+      ? content.treatments.map(t => t?.title || t?.name || t)
+      : [];
+    const svcFromContact = Array.isArray(content.contact?.services) ? content.contact.services : [];
+    const names = Array.from(new Set([...svcFromSection, ...svcFromTreatments, ...svcFromContact]
+      .map(s => String(s || '').trim())
+      .filter(Boolean)));
+    return names.map(n => ({
+      id: n.toLowerCase().replace(/\s+/g, '-'),
+      name: n,
+      description: '',
+      duration: '',
+      price: '',
+      icon: '🦷'
+    }));
+  })();
+
+  const services = dynamicServices.length ? dynamicServices : defaultServices;
 
   const timeSlots = [
     '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
@@ -328,7 +351,7 @@ const AppointmentBooking = () => {
                 ? 'border-blue-500 bg-blue-50 shadow-lg'
                 : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
             }`}
-            onClick={() => handleInputChange('service', service.id)}
+            onClick={() => handleInputChange('service', service.name)}
           >
             <div className="flex items-start space-x-3 md:space-x-4">
               <div className="text-2xl md:text-3xl flex-shrink-0">{service.icon}</div>
@@ -480,7 +503,7 @@ const AppointmentBooking = () => {
             onChange={(e) => handleInputChange('email', e.target.value)}
             required
             className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
-            placeholder="your.email@example.com"
+            placeholder="Your Email"
           />
         </div>
         <div>
@@ -491,7 +514,7 @@ const AppointmentBooking = () => {
             onChange={(e) => handleInputChange('phone', e.target.value)}
             required
             className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
-            placeholder="+91 9876543210"
+            placeholder="Your Number"
           />
         </div>
       </div>
@@ -582,7 +605,7 @@ const AppointmentBooking = () => {
   );
 
   const renderConfirmation = () => {
-    const selectedService = services.find(s => s.id === formData.service);
+    const selectedService = services.find(s => s.name === formData.service);
     
     return (
       <div className="space-y-6">
@@ -616,7 +639,7 @@ const AppointmentBooking = () => {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Estimated Cost:</span>
-              <span className="font-medium text-blue-600">{selectedService?.price}</span>
+              <span className="font-medium text-blue-600">{selectedService?.price || '—'}</span>
             </div>
           </div>
         </div>

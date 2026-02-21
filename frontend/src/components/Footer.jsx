@@ -1,9 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import mapPinIcon from '@/assets/icons/map-pin.svg';
-import phoneIcon from '@/assets/icons/phone.svg';
-import mailIcon from '@/assets/icons/mail.svg';
-import clockIcon from '@/assets/icons/clock.svg';
+import { MapPin, Phone, Clock } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useI18n } from '@/lib/i18n.jsx';
 import { useContent } from '@/contexts/ContentContext';
@@ -38,18 +35,29 @@ const Footer = ({ onNavigate }) => {
     'Gallery',
     'Blog',
     'FAQ',
-    'Contact Us',
-    'Patient Portal'
+    'Contact Us'
   ];
 
-  const services = [
-    'General Dentistry',
-    'Cosmetic Dentistry',
-    'Orthodontics',
-    'Oral Surgery',
-    'Dental Implants',
-    'Pediatric Care'
-  ];
+  const services = (() => {
+    const svcFromSection = Array.isArray(content.services?.services)
+      ? content.services.services.map(s => s?.title || s?.name || s)
+      : [];
+    const svcFromTreatments = Array.isArray(content.treatments)
+      ? content.treatments.map(t => t?.title || t?.name || t)
+      : [];
+    const unique = Array.from(new Set([...svcFromSection, ...svcFromTreatments]
+      .map(s => String(s || '').trim())
+      .filter(Boolean)));
+    if (unique.length) return unique;
+    return [
+      'General Dentistry',
+      'Cosmetic Dentistry',
+      'Orthodontics',
+      'Oral Surgery',
+      'Dental Implants',
+      'Pediatric Care'
+    ];
+  })();
 
   const legalLinks = [
     'Privacy Policy',
@@ -60,7 +68,8 @@ const Footer = ({ onNavigate }) => {
   const { t } = useI18n();
 
   // Fallback values for footer content
-  const footerText = content.footer.text || "© 2025 Dent 'O' Dent Dental Clinic. All rights reserved.";
+  const year = new Date().getFullYear();
+  const footerText = content.footer.text || `© ${year} Dent 'O' Dent Dental Clinic. All Rights Reserved.`;
   const clinicName = content.footer.clinicName || "Dent 'O' Dent";
   const poweredByText = "Powered by";
 
@@ -198,7 +207,7 @@ const Footer = ({ onNavigate }) => {
             <span className="text-lg md:text-xl font-semibold">{t('footer_contact')}</span>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
-                <img src={mapPinIcon} alt="Location" className="w-5 h-5 mt-0.5 flex-shrink-0" loading="lazy" />
+                <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/90" />
                 <div>
                   <p className="text-gray-300 text-sm">
                     1/8/1, near Master Da Surya Sen Club, Suryanagar, Regent Grove, Bansdroni, Kolkata, West Bengal 700040
@@ -206,12 +215,12 @@ const Footer = ({ onNavigate }) => {
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <img src={phoneIcon} alt="Phone" className="w-5 h-5 flex-shrink-0" loading="lazy" />
+                <Phone className="w-5 h-5 flex-shrink-0 text-white/90" />
                 <p className="text-gray-300 text-sm">{content?.contact?.phone || '+91 6290093271'}</p>
               </div>
               {/* Email removed as requested */}
               <div className="flex items-start space-x-3">
-                <img src={clockIcon} alt="Hours" className="w-5 h-5 mt-0.5 flex-shrink-0" loading="lazy" />
+                <Clock className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/90" />
                 <div>
                   <p className="text-gray-300 text-sm">
                     Thursday to Sunday: 10AM - 10PM
@@ -232,7 +241,13 @@ const Footer = ({ onNavigate }) => {
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 text-xs md:text-sm text-center md:text-left">
-              {footerText} <span className="hover:text-white cursor-pointer transition-colors duration-200" onClick={handleDeepverseClick}>{poweredByText} Deepverse</span>
+              {footerText} {' '} {poweredByText}{' '}
+              <span
+                className="hover:text-white cursor-pointer transition-colors duration-200 underline underline-offset-2"
+                onClick={handleDeepverseClick}
+              >
+                Deepverse
+              </span>
             </p>
             <div className="flex flex-wrap gap-4 md:gap-6 text-xs md:text-sm justify-center">
               {legalLinks.map((link) => (
