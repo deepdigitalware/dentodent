@@ -497,25 +497,20 @@ const AdminPanel = () => {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -300, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed left-0 top-0 h-full w-72 bg-slate-900 text-slate-300 z-50 shadow-2xl lg:static lg:z-auto lg:w-72 flex flex-col border-r border-slate-800"
+              className="fixed left-0 top-0 h-full w-72 bg-white text-gray-800 z-50 shadow-2xl lg:static lg:z-auto lg:w-72 flex flex-col border-r border-gray-200"
             >
               {/* Sidebar Header */}
-              <div className="p-6 border-b border-slate-800 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50 overflow-hidden bg-white">
-                    {logoUrl ? (
-                      <img src={logoUrl} alt="Clinic Logo" className="w-full h-full object-contain" />
-                    ) : (
-                      <span className="text-blue-600 font-bold text-xl">D</span>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">Admin Panel</p>
-                  </div>
+              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+                <div className="w-full">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="Clinic Logo" className="w-full h-auto object-contain" />
+                  ) : (
+                    <span className="text-blue-600 font-bold text-xl">D</span>
+                  )}
                 </div>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden p-1 hover:bg-slate-800 rounded-md text-slate-400 hover:text-white transition-colors"
+                  className="lg:hidden p-1 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-900 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -537,14 +532,14 @@ const AdminPanel = () => {
                       className={`w-full flex items-center justify-between space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                         activeTab === item.id || (item.children && item.children.some(child => child.id === activeTab))
                           ? 'bg-blue-600 text-white shadow-md shadow-blue-900/20'
-                          : 'hover:bg-slate-800 text-slate-300 hover:text-white'
+                          : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
                       }`}
                     >
                       <div className="flex items-center space-x-3">
                         <item.icon className={`w-5 h-5 ${
                           activeTab === item.id || (item.children && item.children.some(child => child.id === activeTab))
                             ? 'text-white' 
-                            : 'text-slate-400 group-hover:text-white'
+                            : 'text-gray-400 group-hover:text-gray-900'
                         }`} />
                         <span className="font-medium text-sm">{item.label}</span>
                       </div>
@@ -565,7 +560,7 @@ const AdminPanel = () => {
                           exit={{ height: 0, opacity: 0 }}
                           className="overflow-hidden"
                         >
-                          <div className="ml-4 pl-4 border-l border-slate-700 mt-1 space-y-1 py-1">
+                          <div className="ml-4 pl-4 border-l border-gray-200 mt-1 space-y-1 py-1">
                             {item.children
                               .filter(child => allowedTabs.has(child.id))
                               .map((child) => (
@@ -577,8 +572,8 @@ const AdminPanel = () => {
                                   }}
                                   className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-all duration-200 text-sm ${
                                     activeTab === child.id
-                                      ? 'text-white bg-slate-800 font-medium'
-                                      : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                                      ? 'text-gray-900 bg-gray-100 font-medium'
+                                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                   }`}
                                 >
                                   <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
@@ -595,7 +590,7 @@ const AdminPanel = () => {
               </nav>
 
               {/* Sidebar Footer */}
-              <div className="p-4 border-t border-slate-800 bg-slate-900 space-y-3">
+              <div className="p-4 border-t border-gray-200 bg-white space-y-3">
                 <a 
                   href="https://dentodentdentalclinic.com" 
                   target="_blank" 
@@ -606,13 +601,13 @@ const AdminPanel = () => {
                   <span>View Live Site</span>
                 </a>
 
-                <div className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700">
+                <div className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-gray-100 border border-gray-200">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
                     {userRole.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">Admin User</p>
-                    <p className="text-xs text-slate-400 truncate capitalize">{userRole}</p>
+                    <p className="text-sm font-medium text-gray-900 truncate">Admin User</p>
+                    <p className="text-xs text-gray-500 truncate capitalize">{userRole}</p>
                   </div>
                 </div>
               </div>

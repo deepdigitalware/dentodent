@@ -65,11 +65,11 @@ const PORT = process.env.PORT || process.env.API_PORT || 4444;
 
 // Database configuration
 const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'dentodent',
-  user: process.env.DB_USER || 'dentodent',
-  password: process.env.DB_PASSWORD || 'Deep@DOD',
+  host: process.env.DB_HOST || process.env.PGHOST || 'coolify-db',
+  port: parseInt(process.env.DB_PORT || process.env.PGPORT || '5432', 10),
+  database: process.env.DB_NAME || process.env.PGDATABASE || 'dentodent',
+  user: process.env.DB_USER || process.env.PGUSER || 'dentodent',
+  password: process.env.DB_PASSWORD || process.env.PGPASSWORD || 'Deep@DOD',
 });
 
 // Middleware
@@ -859,9 +859,12 @@ async function initializeDatabase() {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS images (
         id SERIAL PRIMARY KEY,
-        url TEXT NOT NULL,
-        alt TEXT NOT NULL,
+        url TEXT,
+        alt TEXT,
         category VARCHAR(100) DEFAULT 'general',
+        path TEXT,
+        name TEXT,
+        section VARCHAR(100),
         uploaded_at TIMESTAMP DEFAULT NOW()
       )
     `);
@@ -876,6 +879,10 @@ async function initializeDatabase() {
         url TEXT NOT NULL,
         category VARCHAR(100) DEFAULT 'general',
         tags JSONB DEFAULT '[]',
+        file_path TEXT,
+        file_type VARCHAR(100),
+        file_size BIGINT,
+        original_name VARCHAR(255),
         uploaded_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )

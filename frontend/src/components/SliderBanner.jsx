@@ -56,17 +56,23 @@ const SliderBanner = () => {
             : []));
 
       const convertedSlides = rawSlides
-        .filter(s => s.active !== false)
+        .filter((s) => s && s.active !== false)
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-        .map((s, i) => ({
-          id: i + 1,
-          // Adjust image paths to be relative to the frontend src folder
-          image: s.imageUrl?.startsWith('/assets/') ? s.imageUrl : (s.image?.startsWith('/assets/') ? s.image : s.imageUrl || s.image),
-          title: s.title,
-          subtitle: s.subtitle,
-          linkUrl: s.linkUrl,
-          linkLabel: s.linkLabel
-        }));
+        .map((s, i) => {
+          const img =
+            typeof s === 'string'
+              ? (s.startsWith('/assets/') || s.startsWith('http') ? s : undefined)
+              : (s.imageUrl?.startsWith('/assets/') ? s.imageUrl : (s.image?.startsWith('/assets/') ? s.image : s.imageUrl || s.image));
+          return {
+            id: i + 1,
+            image: img,
+            title: typeof s === 'object' ? s.title : undefined,
+            subtitle: typeof s === 'object' ? s.subtitle : undefined,
+            linkUrl: typeof s === 'object' ? s.linkUrl : undefined,
+            linkLabel: typeof s === 'object' ? s.linkLabel : undefined
+          };
+        })
+        .filter((s) => !!s.image);
       
       setSlides(convertedSlides);
       setLoading(false);

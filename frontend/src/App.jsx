@@ -3,8 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as HotToaster } from 'react-hot-toast';
 import Header from '@/components/Header';
-import SliderBanner from '@/components/SliderBanner';
-import BannerSlider from '@/components/BannerSlider';
+ import SliderBanner from '@/components/SliderBanner';
 import Hero from '@/components/Hero';
 import About from '@/components/About';
 import Services from '@/components/Services';
@@ -175,7 +174,7 @@ function App() {
       default:
         return (
           <>
-            <BannerSlider />
+            <SliderBanner />
             <Hero />
             <About />
             <Services />

@@ -10,11 +10,11 @@ services:
       - NODE_ENV=production
       - PORT=4444
       - API_PORT=4444
-      - DB_HOST=${DB_HOST:-${PGHOST:-127.0.0.1}}
-      - DB_PORT=${DB_PORT:-${PGPORT:-5432}}
-      - DB_NAME=${DB_NAME:-${PGDATABASE:-dentodent}}
-      - DB_USER=${DB_USER:-${PGUSER:-dentodent}}
-      - DB_PASSWORD=${DB_PASSWORD:-${PGPASSWORD:-Deep@DOD}}
+      - PGHOST=${PGHOST}
+      - PGPORT=${PGPORT}
+      - PGDATABASE=${PGDATABASE}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
       # Optional SMTP configuration for form emails
       - EMAIL_PROVIDER=${EMAIL_PROVIDER:-}
       - GMAIL_USER=${GMAIL_USER:-}

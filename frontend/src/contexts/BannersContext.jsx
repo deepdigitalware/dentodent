@@ -22,13 +22,9 @@ const getApiUrl = () => {
   if (typeof window !== 'undefined') {
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
-    // For dentodent domain, use api subdomain
+    // Prefer same-origin so the Node servers can proxy /api internally
     if (hostname.includes('dentodent')) {
-      // For admin panel, use the main api domain
-      if (hostname.includes('admin')) {
-        return `${protocol}//api.dentodentdentalclinic.com`;
-      }
-      return `${protocol}//api.${hostname.replace('www.', '')}`;
+      return `${protocol}//${hostname.replace('www.', '')}`;
     }
     // For localhost, use same-origin base to leverage local proxy (/api -> VPS)
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
