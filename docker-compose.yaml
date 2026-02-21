@@ -50,7 +50,7 @@ services:
     environment:
       - NODE_ENV=production
       - FRONTEND_PORT=4000
-      - API_URL=http://backend:4444
+      - API_URL=https://api.dentodentdentalclinic.com
     labels:
       - "coolify.managed=true"
     healthcheck:
@@ -71,7 +71,7 @@ services:
     environment:
       - NODE_ENV=production
       - ADMIN_PORT=4001
-      - API_URL=http://backend:4444
+      - API_URL=https://api.dentodentdentalclinic.com
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"

@@ -3,6 +3,7 @@ import path from 'path';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import multer from 'multer';
 
 // Get __dirname equivalent in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +34,9 @@ app.use((req, res, next) => {
   res.setHeader('Surrogate-Control', 'no-store');
   next();
 });
+
+// Multer setup for proxying uploads
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // API Routes must be defined BEFORE static file serving
 // Health check
@@ -248,25 +252,12 @@ app.get('/api/images', async (req, res) => {
     // For gallery images, use local content management DB server to avoid authentication issues
     const { category } = req.query;
     
-    if (category === 'gallery') {
-      // Use local content management DB server for gallery images
-      const localApiUrl = `http://localhost:6666/api/images?category=gallery`;
-      console.log('Fetching gallery images from local API:', localApiUrl);
-      
-      const response = await fetch(localApiUrl);
-      const images = await response.json();
-      
-      res.json(images);
-    } else {
-      // For other categories, proxy to VPS API
-      const vpsApiUrl = `${API_ORIGIN}/api/images`;
-      console.log('Fetching images from VPS API:', vpsApiUrl);
-      
-      const response = await fetch(vpsApiUrl);
-      const images = await response.json();
-      
-      res.json(images);
-    }
+    // Proxy all image requests to the configured API origin
+    const apiUrl = `${API_ORIGIN}/api/images${category ? `?category=${encodeURIComponent(category)}` : ''}`;
+    console.log('Fetching images from API:', apiUrl);
+    const response = await fetch(apiUrl);
+    const images = await response.json();
+    res.json(images);
   } catch (err) {
     console.error('Images fetch error:', err);
     res.status(500).json({ error: 'Failed to load media items' });
@@ -358,7 +349,7 @@ app.put('/api/media/:id', async (req, res) => {
 app.delete('/api/media/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const vpsApiUrl = `https://api.dentodentdentalclinic.com/api/media/${id}`;
+    const vpsApiUrl = `${API_ORIGIN}/api/media/${id}`;
     console.log('Deleting media item via VPS API:', vpsApiUrl);
     
     const response = await fetch(vpsApiUrl, {
@@ -373,6 +364,106 @@ app.delete('/api/media/:id', async (req, res) => {
   }
 });
 
+// Proxy upload endpoint
+app.post('/api/upload/media', upload.single('file'), async (req, res) => {
+  try {
+    const vpsApiUrl = `${API_ORIGIN}/api/upload/media`;
+    console.log('Uploading media via VPS API:', vpsApiUrl, 'name=', req.file?.originalname);
+    const form = new FormData();
+    if (req.file && req.file.buffer) {
+      const blob = new Blob([req.file.buffer], { type: req.file.mimetype || 'application/octet-stream' });
+      form.append('file', blob, req.file.originalname || 'upload.bin');
+    }
+    // Forward additional fields if provided
+    const title = req.body?.title || req.file?.originalname || 'upload';
+    const category = req.body?.category || 'general';
+    form.append('title', title);
+    form.append('category', category);
+
+    const response = await fetch(vpsApiUrl, { method: 'POST', body: form });
+    const result = await response.json();
+    res.status(response.status).json(result);
+  } catch (err) {
+    console.error('Media upload proxy error:', err);
+    res.status(500).json({ error: 'Failed to upload media' });
+  }
+});
+
+// Token refresh proxy
+app.post('/api/token/refresh', async (req, res) => {
+  try {
+    const vpsApiUrl = `${API_ORIGIN}/api/token/refresh`;
+    const response = await fetch(vpsApiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body || {})
+    });
+    const result = await response.json();
+    res.status(response.status).json(result);
+  } catch (err) {
+    console.error('Token refresh error:', err);
+    res.status(500).json({ error: 'Failed to refresh token' });
+  }
+});
+
+// Banners proxy routes
+app.get('/api/banners', async (req, res) => {
+  try {
+    const vpsApiUrl = `${API_ORIGIN}/api/banners`;
+    const response = await fetch(vpsApiUrl);
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error('Banners fetch error:', err);
+    res.status(500).json({ error: 'Failed to load banners' });
+  }
+});
+
+app.post('/api/banners', async (req, res) => {
+  try {
+    const vpsApiUrl = `${API_ORIGIN}/api/banners`;
+    const response = await fetch(vpsApiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body || {})
+    });
+    const result = await response.json();
+    res.status(response.status).json(result);
+  } catch (err) {
+    console.error('Banner create error:', err);
+    res.status(500).json({ error: 'Failed to create banner' });
+  }
+});
+
+app.put('/api/banners/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const vpsApiUrl = `${API_ORIGIN}/api/banners/${id}`;
+    const response = await fetch(vpsApiUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body || {})
+    });
+    const result = await response.json();
+    res.status(response.status).json(result);
+  } catch (err) {
+    console.error('Banner update error:', err);
+    res.status(500).json({ error: 'Failed to update banner' });
+  }
+});
+
+app.delete('/api/banners/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const vpsApiUrl = `${API_ORIGIN}/api/banners/${id}`;
+    const response = await fetch(vpsApiUrl, { method: 'DELETE' });
+    const result = await response.json();
+    res.status(response.status).json(result);
+  } catch (err) {
+    console.error('Banner delete error:', err);
+    res.status(500).json({ error: 'Failed to delete banner' });
+  }
+});
 // Serve static files AFTER API routes
 app.use(express.static(path.join(__dirname, '..', 'admin', 'dist')));
 

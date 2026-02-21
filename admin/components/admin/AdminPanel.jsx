@@ -491,10 +491,7 @@ const AdminPanel = () => {
       <AnimatePresence>
         {sidebarOpen && (
           <>
-            <div 
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            />
+            {/* Removed dark overlay to prevent header transparency */}
             <motion.div
               initial={{ x: -300, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -600,7 +597,7 @@ const AdminPanel = () => {
               {/* Sidebar Footer */}
               <div className="p-4 border-t border-slate-800 bg-slate-900 space-y-3">
                 <a 
-                  href="http://localhost:3000" 
+                  href="https://dentodentdentalclinic.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center justify-center space-x-2 w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm"
