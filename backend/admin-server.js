@@ -9,7 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = 4001;
+const PORT = Number(process.env.ADMIN_PORT || process.env.PORT || 4001);
+const API_ORIGIN = process.env.API_URL || 'https://api.dentodentdentalclinic.com';
 
 // Middleware
 app.use(cors({
@@ -71,7 +72,7 @@ app.post('/api/login', (req, res) => {
 app.get('/api/content', async (req, res) => {
   try {
     // Direct to VPS API
-    const vpsApiUrl = 'https://api.dentodentdentalclinic.com/api/content';
+    const vpsApiUrl = `${API_ORIGIN}/api/content`;
     console.log('Fetching content from VPS API:', vpsApiUrl);
     
     const response = await fetch(vpsApiUrl);
@@ -222,7 +223,7 @@ app.put('/api/content/:section', async (req, res) => {
     const data = req.body;
     
     // Direct to VPS API
-    const vpsApiUrl = `https://api.dentodentdentalclinic.com/api/content/${section}`;
+    const vpsApiUrl = `${API_ORIGIN}/api/content/${section}`;
     console.log(`Updating content via VPS API: ${vpsApiUrl}`, data);
     
     const response = await fetch(vpsApiUrl, {
@@ -258,7 +259,7 @@ app.get('/api/images', async (req, res) => {
       res.json(images);
     } else {
       // For other categories, proxy to VPS API
-      const vpsApiUrl = `https://api.dentodentdentalclinic.com/api/images`;
+      const vpsApiUrl = `${API_ORIGIN}/api/images`;
       console.log('Fetching images from VPS API:', vpsApiUrl);
       
       const response = await fetch(vpsApiUrl);
@@ -276,7 +277,7 @@ app.get('/api/images', async (req, res) => {
 // Get all media items
 app.get('/api/media', async (req, res) => {
   try {
-    const vpsApiUrl = `https://api.dentodentdentalclinic.com/api/media`;
+    const vpsApiUrl = `${API_ORIGIN}/api/media`;
     console.log('Fetching media items from VPS API:', vpsApiUrl);
     
     const response = await fetch(vpsApiUrl);
@@ -293,7 +294,7 @@ app.get('/api/media', async (req, res) => {
 app.get('/api/media/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const vpsApiUrl = `https://api.dentodentdentalclinic.com/api/media/${id}`;
+    const vpsApiUrl = `${API_ORIGIN}/api/media/${id}`;
     console.log('Fetching media item from VPS API:', vpsApiUrl);
     
     const response = await fetch(vpsApiUrl);
@@ -310,7 +311,7 @@ app.get('/api/media/:id', async (req, res) => {
 app.post('/api/media', async (req, res) => {
   try {
     const mediaData = req.body;
-    const vpsApiUrl = `https://api.dentodentdentalclinic.com/api/media`;
+    const vpsApiUrl = `${API_ORIGIN}/api/media`;
     console.log('Creating media item via VPS API:', vpsApiUrl);
     
     const response = await fetch(vpsApiUrl, {
@@ -334,7 +335,7 @@ app.put('/api/media/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const mediaData = req.body;
-    const vpsApiUrl = `https://api.dentodentdentalclinic.com/api/media/${id}`;
+    const vpsApiUrl = `${API_ORIGIN}/api/media/${id}`;
     console.log('Updating media item via VPS API:', vpsApiUrl);
     
     const response = await fetch(vpsApiUrl, {

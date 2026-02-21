@@ -9,6 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import { useContent } from '@/contexts/ContentContext';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 import { AnimatePresence, motion } from 'framer-motion';
+import siteLogo from '@/assets/icons/logo.svg';
 
 const Header = ({ onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -131,12 +132,8 @@ const Header = ({ onNavigate }) => {
               className="flex items-center space-x-3 group"
             >
               <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-3">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0">
-                  {header.logoUrl ? (
-                    <img src={header.logoUrl} alt={(header.siteTitle || 'Site') + ' Logo'} className="w-full h-full object-contain" loading="eager" />
-                  ) : (
-                    <span className="text-white font-bold text-lg md:text-xl">D</span>
-                  )}
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-md overflow-hidden flex items-center justify-center bg-white flex-shrink-0 border border-gray-200">
+                  <img src={header.logoUrl || siteLogo} alt={(header.siteTitle || 'Site') + ' Logo'} className="w-full h-full object-contain" loading="eager" />
                 </div>
                 <div className="text-left hidden sm:block">
                   <h1 className="text-xl md:text-2xl font-display font-bold gradient-text">

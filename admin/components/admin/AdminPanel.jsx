@@ -77,6 +77,7 @@ import {
 import { Button } from '../ui/button';
 import { useToast } from '../ui/use-toast';
 import AdminLogin from './AdminLogin';
+import sharedLogo from 'shared-assets/logo.svg';
 import { useContent } from '../../contexts/ContentContext';
 
 // Import real components
@@ -397,7 +398,7 @@ const AdminPanel = () => {
       return {};
     }
   })();
-  const logoUrl = adminSettings?.site?.logo || adminSettings?.branding?.logo || adminSettings?.logoUrl || content?.header?.logoUrl;
+  const logoUrl = adminSettings?.site?.logo || adminSettings?.branding?.logo || adminSettings?.logoUrl || content?.header?.logoUrl || sharedLogo;
 
   const renderContent = () => {
     switch (activeTab) {

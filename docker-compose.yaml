@@ -5,17 +5,31 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: node backend/content-management-db.js
+    command: ${BACKEND_COMMAND:-node backend/server-local-fs.js}
     environment:
       - NODE_ENV=production
       - PORT=4444
-      - PGHOST=${PGHOST:-postgresql}
-      - PGPORT=${PGPORT:-5432}
-      - PGUSER=${PGUSER:-dentodent}
-      - PGPASSWORD=${PGPASSWORD:-Deep@DOD}
-      - PGDATABASE=${PGDATABASE:-dentodent}
+      # Optional SMTP configuration for form emails
+      - EMAIL_PROVIDER=${EMAIL_PROVIDER:-}
+      - GMAIL_USER=${GMAIL_USER:-}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - FROM_EMAIL=${FROM_EMAIL:-no-reply@dentodentdentalclinic.com}
+      - EMAIL_RECIPIENTS=${EMAIL_RECIPIENTS:-deepversestudio@gmail.com,drsetketuchakraborty@gmail.com}
     labels:
       - "coolify.managed=true"
+    volumes:
+      - backend_data:/app/backend/data
+      - backend_uploads:/app/backend/public/assets/uploads
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4444/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     ports:
       - "4444:4444"
     networks:
@@ -26,8 +40,17 @@ services:
       context: .
       dockerfile: Dockerfile
     command: node backend/frontend-server.js
+    environment:
+      - NODE_ENV=production
+      - FRONTEND_PORT=4000
+      - API_URL=http://backend:4444
     labels:
       - "coolify.managed=true"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     ports:
       - "4000:4000"
     networks:
@@ -38,8 +61,17 @@ services:
       context: .
       dockerfile: Dockerfile
     command: node backend/admin-server.js
+    environment:
+      - NODE_ENV=production
+      - ADMIN_PORT=4001
+      - API_URL=http://backend:4444
     labels:
       - "coolify.managed=true"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4001/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     ports:
       - "4001:4001"
     networks:
@@ -48,3 +80,7 @@ services:
 networks:
   coolify:
     external: true
+
+volumes:
+  backend_data:
+  backend_uploads:

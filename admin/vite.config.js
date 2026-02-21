@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./"),
+      "shared-assets": resolve(__dirname, "../frontend/src/assets/icons"),
     },
   },
   base: '/', // Use absolute paths for assets

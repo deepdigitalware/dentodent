@@ -13,7 +13,8 @@ export default defineConfig({
   root: resolve(__dirname, 'admin'),
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'admin')
+      '@': resolve(__dirname, 'admin'),
+      'shared-assets': resolve(__dirname, 'frontend', 'src', 'assets', 'icons')
     }
   },
   build: {
