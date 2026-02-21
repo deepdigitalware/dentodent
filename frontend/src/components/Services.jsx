@@ -1,25 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Smile, Shield, Zap, Heart, Star, Crown, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { useContent } from '@/contexts/ContentContext';
 
 const Services = () => {
   const { content } = useContent();
-  
-  // Use API-only data
   const servicesData = Array.isArray(content.services?.services)
     ? content.services.services
     : [];
 
   const handleLearnMore = (serviceName) => {
-    // Scroll to appointment section or show appointment modal
     const appointmentSection = document.getElementById('appointment');
     if (appointmentSection) {
       appointmentSection.scrollIntoView({ behavior: 'smooth' });
     } else {
-      // If no appointment section on page, show toast with contact info
       toast({
         title: `🦷 ${serviceName}`,
         description: `Please call us at +91 6290093271 or WhatsApp us to book your ${serviceName.toLowerCase()} appointment.`
@@ -30,12 +26,11 @@ const Services = () => {
   return (
     <section id="services" className="py-16 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          viewport={{ once: true, amount: 0.1 }} // Reduce amount for better performance
+          viewport={{ once: true, amount: 0.1 }}
           className="text-center mb-12 md:mb-16"
         >
           {content.services?.title && (
@@ -50,7 +45,6 @@ const Services = () => {
           )}
         </motion.div>
 
-        {/* Services Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {servicesData.map((service, index) => (
             <motion.div
@@ -58,10 +52,9 @@ const Services = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true, amount: 0.1 }} // Reduce amount for better performance
+              viewport={{ once: true, amount: 0.1 }}
               className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden card-3d group"
             >
-              {/* Header with image background or gradient, text at bottom */}
               <div className="relative h-32 sm:h-36 md:h-40">
                 {service.image ? (
                   <img
@@ -84,7 +77,6 @@ const Services = () => {
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-4 sm:p-5 md:p-6">
                 <ul className="space-y-2 mb-4 md:mb-6">
                   {(Array.isArray(service.features) ? service.features : []).map((feature, featureIndex) => (
@@ -107,12 +99,11 @@ const Services = () => {
           ))}
         </div>
 
-        {/* CTA Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          viewport={{ once: true, amount: 0.1 }} // Reduce amount for better performance
+          viewport={{ once: true, amount: 0.1 }}
           className="text-center mt-12 md:mt-16"
         >
           <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl p-6 md:p-8 text-white">
