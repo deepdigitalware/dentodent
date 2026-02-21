@@ -31,20 +31,22 @@ const Footer = ({ onNavigate }) => {
     window.open('https://wa.me/917003614633', '_blank');
   };
 
-  const quickLinks = [
-    'About Us',
-    'Gallery',
-    'Blog',
-    'FAQ',
-    'Contact Us'
-  ];
+  const quickLinks = Array.isArray(content.footer?.quickLinks) && content.footer.quickLinks.length > 0
+    ? content.footer.quickLinks
+    : [
+      'About Us',
+      'Gallery',
+      'Blog',
+      'FAQ',
+      'Contact Us'
+    ];
 
   const services = (() => {
     const svcFromSection = Array.isArray(content.services?.services)
-      ? content.services.services.map(s => s?.title || s?.name || s)
+      ? content.services.services.map(s => s?.title || s?.name || s).filter(Boolean)
       : [];
     const svcFromTreatments = Array.isArray(content.treatments)
-      ? content.treatments.map(t => t?.title || t?.name || t)
+      ? content.treatments.map(t => t?.title || t?.name || t).filter(Boolean)
       : [];
     const unique = Array.from(new Set([...svcFromSection, ...svcFromTreatments]
       .map(s => String(s || '').trim())
@@ -60,18 +62,20 @@ const Footer = ({ onNavigate }) => {
     ];
   })();
 
-  const legalLinks = [
-    'Privacy Policy',
-    'Terms of Service',
-    'Cookie Policy'
-  ];
+  const legalLinks = Array.isArray(content.footer?.legalLinks) && content.footer.legalLinks.length > 0
+    ? content.footer.legalLinks
+    : [
+      'Privacy Policy',
+      'Terms of Service',
+      'Cookie Policy'
+    ];
 
   const { t } = useI18n();
 
   // Fallback values for footer content
   const year = new Date().getFullYear();
-  const footerText = content.footer.text || `© ${year} Dent 'O' Dent Dental Clinic. All Rights Reserved.`;
-  const clinicName = content.footer.clinicName || "Dent 'O' Dent";
+  const footerText = content.footer.text || `© ${year} Dent O Dent Dental Clinic. All Rights Reserved.`;
+  const clinicName = content.footer.clinicName || "Dent O Dent";
   const poweredByText = "Powered by";
 
   return (
@@ -90,7 +94,7 @@ const Footer = ({ onNavigate }) => {
               <img
                 src={content?.header?.logoUrl || siteLogo}
                 alt="Clinic Logo"
-                className="h-14 md:h-20 object-contain"
+                className="h-12 md:h-16 object-contain"
                 style={{ filter: 'brightness(0) invert(1)' }}
               />
             </div>

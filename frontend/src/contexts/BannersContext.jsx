@@ -12,7 +12,7 @@ const getApiUrl = () => {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
       const forced = window.localStorage.getItem('dod-api-url');
-      if (forced && /^https:\/\//.test(forced)) {
+      if (forced && /^(https?:\/\/)/.test(forced)) {
         console.log('[DOD] Using forced API URL from localStorage:', forced);
         return forced;
       }

@@ -11,13 +11,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = 4000;
+const PORT = Number(process.env.FRONTEND_PORT || process.env.PORT || 4000);
+const API_ORIGIN = process.env.API_URL || process.env.API_ORIGIN || 'http://localhost:4444';
 
 // Middleware
 app.use(cors());
 
 app.use('/api', createProxyMiddleware({
-  target: 'http://localhost:4444/api',
+  target: `${API_ORIGIN}/api`,
   changeOrigin: true,
   secure: false,
   ws: true,
