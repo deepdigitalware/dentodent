@@ -65,11 +65,11 @@ const PORT = process.env.PORT || process.env.API_PORT || 4444;
 
 // Database configuration
 const pool = new Pool({
-  host: process.env.DB_HOST || process.env.PGHOST || 'coolify-db',
-  port: parseInt(process.env.DB_PORT || process.env.PGPORT || '5432', 10),
-  database: process.env.DB_NAME || process.env.PGDATABASE || 'dentodent',
-  user: process.env.DB_USER || process.env.PGUSER || 'dentodent',
-  password: process.env.DB_PASSWORD || process.env.PGPASSWORD || 'Deep@DOD',
+  host: process.env.PGHOST || '127.0.0.1',
+  port: parseInt(process.env.PGPORT || '5432', 10),
+  database: process.env.PGDATABASE || 'dentodent',
+  user: process.env.PGUSER || 'dentodent',
+  password: process.env.PGPASSWORD || 'Deep@DOD',
 });
 
 // Middleware

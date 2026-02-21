@@ -14,11 +14,11 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const pool = new Pool({
-  host: process.env.DB_HOST || process.env.PGHOST || 'coolify-db',
-  port: parseInt(process.env.DB_PORT || process.env.PGPORT || '5432', 10),
-  database: process.env.DB_NAME || process.env.PGDATABASE || 'dentodent',
-  user: process.env.DB_USER || process.env.PGUSER || 'dentodent',
-  password: process.env.DB_PASSWORD || process.env.PGPASSWORD || 'Deep@DOD',
+  host: process.env.PGHOST || '127.0.0.1',
+  port: parseInt(process.env.PGPORT || '5432', 10),
+  database: process.env.PGDATABASE || 'dentodent',
+  user: process.env.PGUSER || 'dentodent',
+  password: process.env.PGPASSWORD || 'Deep@DOD',
 });
 
 const schema = `
