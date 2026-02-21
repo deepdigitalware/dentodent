@@ -132,15 +132,12 @@ const Header = ({ onNavigate }) => {
               className="flex items-center space-x-3 group"
             >
               <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-3">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-md overflow-hidden flex items-center justify-center bg-white flex-shrink-0 border border-gray-200">
-                  <img src={header.logoUrl || siteLogo} alt={(header.siteTitle || 'Site') + ' Logo'} className="w-full h-full object-contain" loading="eager" />
-                </div>
-                <div className="text-left hidden sm:block">
-                  <h1 className="text-xl md:text-2xl font-display font-bold gradient-text">
-                    {header.siteTitle || 'Dent "O" Dent'}
-                  </h1>
-                  <p className="text-xs md:text-sm text-gray-600 hidden md:block">{header.siteSubtitle || 'Premium Dental Care'}</p>
-                </div>
+                <img
+                  src={header.logoUrl || siteLogo}
+                  alt={(header.siteTitle || 'Site') + ' Logo'}
+                  className="h-12 md:h-16 object-contain"
+                  loading="eager"
+                />
               </motion.div>
             </button>
 

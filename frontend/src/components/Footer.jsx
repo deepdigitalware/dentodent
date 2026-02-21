@@ -4,6 +4,7 @@ import { MapPin, Phone, Clock } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useI18n } from '@/lib/i18n.jsx';
 import { useContent } from '@/contexts/ContentContext';
+import siteLogo from '@/assets/icons/logo.svg';
 
 const Footer = ({ onNavigate }) => {
   const { content } = useContent();
@@ -85,14 +86,8 @@ const Footer = ({ onNavigate }) => {
             viewport={{ once: true, amount: 0.1 }} // Reduce amount for better performance
             className="space-y-6"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-lg md:text-xl">D</span>
-              </div>
-              <div>
-                <span className="text-xl md:text-2xl font-display font-bold">{clinicName}</span>
-                <p className="text-blue-200 text-xs md:text-sm">Premium Dental Care</p>
-              </div>
+            <div className="flex items-center">
+              <img src={content?.header?.logoUrl || siteLogo} alt="Clinic Logo" className="h-14 md:h-20 object-contain" />
             </div>
             <p className="text-gray-300 leading-relaxed text-sm md:text-base">
               {t('footer_premium')}
@@ -206,26 +201,21 @@ const Footer = ({ onNavigate }) => {
           >
             <span className="text-lg md:text-xl font-semibold">{t('footer_contact')}</span>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/90" />
-                <div>
-                  <p className="text-gray-300 text-sm">
-                    1/8/1, near Master Da Surya Sen Club, Suryanagar, Regent Grove, Bansdroni, Kolkata, West Bengal 700040
-                  </p>
-                </div>
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 flex-shrink-0 text-white/90" />
+                <p className="text-gray-300 text-sm">
+                  1/8/1, near Master Da Surya Sen Club, Suryanagar, Regent Grove, Bansdroni, Kolkata, West Bengal 700040
+                </p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 flex-shrink-0 text-white/90" />
                 <p className="text-gray-300 text-sm">{content?.contact?.phone || '+91 6290093271'}</p>
               </div>
-              {/* Email removed as requested */}
-              <div className="flex items-start space-x-3">
-                <Clock className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/90" />
-                <div>
-                  <p className="text-gray-300 text-sm">
-                    Thursday to Sunday: 10AM - 10PM
-                  </p>
-                </div>
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 flex-shrink-0 text-white/90" />
+                <p className="text-gray-300 text-sm">
+                  Thursday to Sunday: 10AM - 10PM
+                </p>
               </div>
             </div>
           </motion.div>
@@ -242,12 +232,7 @@ const Footer = ({ onNavigate }) => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 text-xs md:text-sm text-center md:text-left">
               {footerText} {' '} {poweredByText}{' '}
-              <span
-                className="hover:text-white cursor-pointer transition-colors duration-200 underline underline-offset-2"
-                onClick={handleDeepverseClick}
-              >
-                Deepverse
-              </span>
+              <span className="hover:text-white cursor-pointer transition-colors duration-200" onClick={handleDeepverseClick}>Deepverse</span>
             </p>
             <div className="flex flex-wrap gap-4 md:gap-6 text-xs md:text-sm justify-center">
               {legalLinks.map((link) => (
