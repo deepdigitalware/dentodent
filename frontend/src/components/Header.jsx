@@ -19,8 +19,13 @@ const Header = ({ onNavigate }) => {
   
   const { t } = useI18n();
   const { content } = useContent();
-
-  const tickerItems = Array.isArray(content?.header?.ticker) ? content.header.ticker : [];
+ 
+  const tickerSource = Array.isArray(content?.header?.ticker) ? content.header.ticker : [];
+  const tickerItems = (tickerSource && tickerSource.length > 0) ? tickerSource : [
+    { text: 'Hours Thu–Sun: 10AM – 10PM' },
+    { text: 'Call: +91 6290093271' },
+    { text: 'Affordable, quality dental care in Salt Lake' }
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -38,7 +43,6 @@ const Header = ({ onNavigate }) => {
     const handleScroll = () => {
       const y = window.scrollY || 0;
       setIsScrolled(y > 20);
-      setShowTopbar(y === 0);
     };
     window.addEventListener('scroll', handleScroll, { passive: true }); // Add passive for better performance
     return () => window.removeEventListener('scroll', handleScroll);

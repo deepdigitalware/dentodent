@@ -13,16 +13,8 @@ const getApiUrl = () => {
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
       const port = window.location.port;
-      // For dentodent admin domain, use the proper API URL
-      if (hostname.includes('dentodent') && hostname.includes('admin')) {
-        return 'https://api.dentodentdentalclinic.com';
-      }
       if (hostname.includes('admin')) {
-        // If we're on admin port, API is on the same port
-        if (port === '4001' || port === '6001') {
-          return `http://${hostname}:${port}`;
-        }
-        return `${window.location.protocol}//${hostname}`;
+        return `${window.location.protocol}//${hostname}${port ? `:${port}` : ''}`;
       }
     }
   } catch {}
@@ -31,12 +23,8 @@ const getApiUrl = () => {
     const protocol = window.location.protocol === 'http:' ? 'http:' : 'https:';
     const hostname = window.location.hostname;
     const port = window.location.port;
-    // For dentodent domain, use api subdomain
     if (hostname.includes('dentodent')) {
-      if (hostname.includes('admin')) {
-        return 'https://api.dentodentdentalclinic.com';
-      }
-      return `${protocol}//api.${hostname.replace('www.', '')}`;
+      return `${protocol}//${hostname}`;
     }
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       // On localhost, if we're on admin port, API is on backend port 4444

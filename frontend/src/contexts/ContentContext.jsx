@@ -25,11 +25,7 @@ const getApiUrl = () => {
     const hostname = window.location.hostname;
     // For dentodent domain, use api subdomain
     if (hostname.includes('dentodent')) {
-      // For admin panel, use the main api domain
-      if (hostname.includes('admin')) {
-        return `${protocol}//api.dentodentdentalclinic.com`;
-      }
-      return `${protocol}//api.${hostname.replace('www.', '')}`;
+      return `${protocol}//${hostname}`;
     }
     // For localhost, use same-origin base to leverage local proxy (/api -> VPS)
     if (hostname === 'localhost' || hostname === '127.0.0.1') {

@@ -77,8 +77,7 @@ const BannerSlider = () => {
         onClick={() => handleBannerClick(currentBanner.link_url)}
       />
 
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/30" />
+      
 
       {/* Banner content */}
       <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4 py-20 md:py-0">
