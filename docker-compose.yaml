@@ -27,6 +27,7 @@ services:
       - "traefik.http.routers.dod-backend.entrypoints=websecure"
       - "traefik.http.routers.dod-backend.tls=true"
       - "traefik.http.routers.dod-backend.service=dod-backend"
+      - "traefik.docker.network=coolify"
       - "traefik.http.services.dod-backend.loadbalancer.server.port=4444"
     volumes:
       - backend_data:/app/backend/data
@@ -78,6 +79,7 @@ services:
       - "traefik.http.routers.dod-admin.entrypoints=websecure"
       - "traefik.http.routers.dod-admin.tls=true"
       - "traefik.http.routers.dod-admin.service=dod-admin"
+      - "traefik.docker.network=coolify"
       - "traefik.http.services.dod-admin.loadbalancer.server.port=4001"
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:4001/api/health', r => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
