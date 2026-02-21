@@ -42,7 +42,7 @@ COPY --from=builder /app/dist-frontend ./dist-frontend
 COPY --from=builder /app/admin/dist ./admin/dist
 
 # Expose ports
-EXPOSE 4444 3000 6001
+EXPOSE 4444 4000 6001
 
 # Command is handled by docker-compose.yaml
 CMD ["npm", "start"]

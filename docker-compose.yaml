@@ -26,9 +26,11 @@ services:
       - backend_data:/app/backend/data
       - backend_uploads:/app/backend/public/assets/uploads
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4444/health"]
+      test:
+        - CMD-SHELL
+        - node -e "require('http').get('http://localhost:4444/health', r => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
       interval: 10s
-      timeout: 3s
+      timeout: 5s
       retries: 5
     ports:
       - "4444:4444"
@@ -47,9 +49,11 @@ services:
     labels:
       - "coolify.managed=true"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      test:
+        - CMD-SHELL
+        - node -e "require('http').get('http://localhost:4000/health', r => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
       interval: 10s
-      timeout: 3s
+      timeout: 5s
       retries: 5
     ports:
       - "4000:4000"
