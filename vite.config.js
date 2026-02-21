@@ -1,18 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
-import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
   plugins: [
     react(),
-    // Add compression plugin for better performance
-    viteCompression({
-      algorithm: 'gzip',
-      ext: '.gz',
-      threshold: 10240, // Only compress files larger than 10KB
-      deleteOriginFile: false
-    })
   ],
   resolve: {
     alias: {

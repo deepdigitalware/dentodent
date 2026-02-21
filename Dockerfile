@@ -11,15 +11,15 @@ COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
 # Install dependencies for root
-RUN npm install --legacy-peer-deps
+RUN npm ci
 
 # Install dependencies for admin
 WORKDIR /app/admin
-RUN npm install --legacy-peer-deps
+RUN npm ci
 
 # Install dependencies for frontend
 WORKDIR /app/frontend
-RUN npm install --legacy-peer-deps
+RUN npm ci
 
 # Go back to root and copy the rest of the source code
 WORKDIR /app
