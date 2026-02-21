@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: ${BACKEND_COMMAND:-node backend/content-management-db.js}
+    command: node backend/content-management-db.js
     environment:
       - NODE_ENV=production
       - PORT=4444
@@ -16,16 +16,16 @@ services:
       - PGUSER=${PGUSER}
       - PGPASSWORD=${PGPASSWORD}
       # Optional SMTP configuration for form emails
-      - EMAIL_PROVIDER=${EMAIL_PROVIDER:-}
-      - GMAIL_USER=${GMAIL_USER:-}
-      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
-      - SMTP_HOST=${SMTP_HOST:-}
-      - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_SECURE=${SMTP_SECURE:-false}
-      - SMTP_USER=${SMTP_USER:-}
-      - SMTP_PASS=${SMTP_PASS:-}
-      - FROM_EMAIL=${FROM_EMAIL:-no-reply@dentodentdentalclinic.com}
-      - EMAIL_RECIPIENTS=${EMAIL_RECIPIENTS:-deepversestudio@gmail.com,drsetketuchakraborty@gmail.com}
+      - EMAIL_PROVIDER=${EMAIL_PROVIDER}
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - EMAIL_RECIPIENTS=${EMAIL_RECIPIENTS}
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
