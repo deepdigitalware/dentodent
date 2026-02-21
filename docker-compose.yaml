@@ -5,10 +5,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: ${BACKEND_COMMAND:-node backend/server-local-fs.js}
+    command: ${BACKEND_COMMAND:-node backend/content-management-db.js}
     environment:
       - NODE_ENV=production
       - PORT=4444
+      - API_PORT=4444
+      - DB_HOST=${DB_HOST:-${PGHOST:-127.0.0.1}}
+      - DB_PORT=${DB_PORT:-${PGPORT:-5432}}
+      - DB_NAME=${DB_NAME:-${PGDATABASE:-dentodent}}
+      - DB_USER=${DB_USER:-${PGUSER:-dentodent}}
+      - DB_PASSWORD=${DB_PASSWORD:-${PGPASSWORD:-Deep@DOD}}
       # Optional SMTP configuration for form emails
       - EMAIL_PROVIDER=${EMAIL_PROVIDER:-}
       - GMAIL_USER=${GMAIL_USER:-}
@@ -50,7 +56,7 @@ services:
     environment:
       - NODE_ENV=production
       - FRONTEND_PORT=4000
-      - API_URL=https://api.dentodentdentalclinic.com
+      - API_URL=http://backend:4444
     labels:
       - "coolify.managed=true"
     healthcheck:
@@ -71,7 +77,7 @@ services:
     environment:
       - NODE_ENV=production
       - ADMIN_PORT=4001
-      - API_URL=https://api.dentodentdentalclinic.com
+      - API_URL=http://backend:4444
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
