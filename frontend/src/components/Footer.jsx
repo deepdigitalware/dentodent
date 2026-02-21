@@ -87,7 +87,12 @@ const Footer = ({ onNavigate }) => {
             className="space-y-6"
           >
             <div className="flex items-center">
-              <img src={content?.header?.logoUrl || siteLogo} alt="Clinic Logo" className="h-14 md:h-20 object-contain" />
+              <img
+                src={content?.header?.logoUrl || siteLogo}
+                alt="Clinic Logo"
+                className="h-14 md:h-20 object-contain"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
             </div>
             <p className="text-gray-300 leading-relaxed text-sm md:text-base">
               {t('footer_premium')}
@@ -201,8 +206,8 @@ const Footer = ({ onNavigate }) => {
           >
             <span className="text-lg md:text-xl font-semibold">{t('footer_contact')}</span>
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 flex-shrink-0 text-white/90" />
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 flex-shrink-0 text-white/90 self-start mt-0.5" />
                 <p className="text-gray-300 text-sm">
                   1/8/1, near Master Da Surya Sen Club, Suryanagar, Regent Grove, Bansdroni, Kolkata, West Bengal 700040
                 </p>

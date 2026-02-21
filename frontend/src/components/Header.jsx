@@ -135,7 +135,7 @@ const Header = ({ onNavigate }) => {
                 <img
                   src={header.logoUrl || siteLogo}
                   alt={(header.siteTitle || 'Site') + ' Logo'}
-                  className="h-12 md:h-16 object-contain"
+                  className="h-20 md:h-24 object-contain"
                   loading="eager"
                 />
               </motion.div>
