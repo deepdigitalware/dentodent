@@ -64,6 +64,11 @@ const Services = () => {
 
               <div className="relative z-10 h-full flex flex-col justify-end p-4 sm:p-5 md:p-6 text-white">
                 <h3 className="text-lg md:text-xl font-bold mb-1">{service.title}</h3>
+                {service.price && (
+                  <p className="text-blue-200 font-semibold text-xs sm:text-sm mb-0.5">
+                    {service.price}
+                  </p>
+                )}
                 {service.description && (
                   <p className="text-white/90 text-xs sm:text-sm">
                     {service.description}

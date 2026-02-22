@@ -91,9 +91,143 @@ function App() {
       seoDescription = "Learn how Dent 'O' Dent Dental Clinic Kolkata uses cookies and similar technologies on our website.";
       seoRobots = 'noindex,nofollow';
       break;
+    case 'root-canal':
+      seoTitle = "Painless Root Canal Treatment in Kolkata | Dent 'O' Dent";
+      seoDescription = "Single or two-visit painless root canal treatment in Kolkata with modern rotary endodontics and digital X-rays at Dent 'O' Dent.";
+      break;
+    case 'dental-implants':
+      seoTitle = "Dental Implants in Kolkata | Replace Missing Teeth | Dent 'O' Dent";
+      seoDescription = "Long-lasting dental implants in Kolkata for single or multiple missing teeth with 3D planning and premium implant systems.";
+      break;
+    case 'braces':
+      seoTitle = "Braces Treatment in Kolkata | Metal, Ceramic & Self-Ligating | Dent 'O' Dent";
+      seoDescription = "Comprehensive orthodontic treatment in Kolkata: metal braces, ceramic braces, and self-ligating options for teens and adults.";
+      break;
+    case 'aligners':
+      seoTitle = "Clear Aligners in Kolkata | Invisible Teeth Straightening | Dent 'O' Dent";
+      seoDescription = "Transparent clear aligners in Kolkata for discreet teeth straightening with digital planning and regular monitoring.";
+      break;
+    case 'teeth-whitening':
+      seoTitle = "Teeth Whitening in Kolkata | Safe Laser & Office Bleaching | Dent 'O' Dent";
+      seoDescription = "Safe dental teeth whitening in Kolkata including laser whitening and in-office bleaching supervised by an experienced dentist.";
+      break;
+    case 'smile-makeover':
+      seoTitle = "Smile Makeover in Kolkata | Veneers, Bonding & Contouring | Dent 'O' Dent";
+      seoDescription = "Customized smile makeover plans in Kolkata using veneers, bonding, crowns, and gum contouring to transform your smile.";
+      break;
+    case 'pediatric-dentistry':
+      seoTitle = "Child Dentist in Kolkata | Pediatric Dental Clinic | Dent 'O' Dent";
+      seoDescription = "Gentle pediatric dentistry in Kolkata for kids and teens, including fillings, preventive care, and habit counseling.";
+      break;
     case 'home':
     default:
       break;
+  }
+
+  const serviceSeoMap = {
+    'root-canal': {
+      name: 'Root Canal Treatment',
+      description: 'Painless single or two-visit root canal treatment using rotary instruments and digital X-rays.',
+      urlPath: '/root-canal'
+    },
+    'dental-implants': {
+      name: 'Dental Implants',
+      description: 'Implant-supported tooth replacement for single or multiple missing teeth.',
+      urlPath: '/dental-implants'
+    },
+    'braces': {
+      name: 'Braces Treatment',
+      description: 'Orthodontic braces for correcting crowded, spaced, or protruding teeth.',
+      urlPath: '/braces'
+    },
+    'aligners': {
+      name: 'Clear Aligners',
+      description: 'Transparent removable aligners for discreet teeth straightening.',
+      urlPath: '/aligners'
+    },
+    'teeth-whitening': {
+      name: 'Teeth Whitening',
+      description: 'Dental whitening procedures to brighten stained or discolored teeth.',
+      urlPath: '/teeth-whitening'
+    },
+    'smile-makeover': {
+      name: 'Smile Makeover',
+      description: 'Combined cosmetic dental treatments to enhance overall smile aesthetics.',
+      urlPath: '/smile-makeover'
+    },
+    'pediatric-dentistry': {
+      name: 'Pediatric Dentistry',
+      description: 'Comprehensive dental care for infants, children, and teenagers.',
+      urlPath: '/pediatric-dentistry'
+    }
+  };
+
+  const structuredData = [];
+
+  structuredData.push({
+    '@context': 'https://schema.org',
+    '@type': 'Dentist',
+    name: "Dent 'O' Dent",
+    image: 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81',
+    url: canonicalUrl,
+    telephone: '+916290093271',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '1/8/1, near Master Da Surya Sen Club, Suryanagar, Regent Grove, Bansdroni',
+      addressLocality: 'Kolkata',
+      addressRegion: 'West Bengal',
+      postalCode: '700040',
+      addressCountry: 'IN'
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 22.4749,
+      longitude: 88.3629
+    },
+    openingHoursSpecification: [
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], opens: '09:00', closes: '20:00' },
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Sunday', opens: '10:00', closes: '18:00' }
+    ],
+    sameAs: [
+      'https://www.facebook.com/',
+      'https://www.instagram.com/',
+      'https://g.co/kgs/'
+    ]
+  });
+
+  const faqItems = Array.isArray(content?.faq?.items) ? content.faq.items : [];
+  if (currentPage === 'faq' && faqItems.length > 0) {
+    structuredData.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer
+        }
+      }))
+    });
+  }
+
+  if (serviceSeoMap[currentPage]) {
+    const svc = serviceSeoMap[currentPage];
+    structuredData.push({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: svc.name,
+      description: svc.description,
+      provider: {
+        '@type': 'Dentist',
+        name: "Dent 'O' Dent"
+      },
+      areaServed: {
+        '@type': 'City',
+        name: 'Kolkata'
+      },
+      url: `${typeof window !== 'undefined' ? window.location.origin : 'https://www.dentodentdentalclinic.com'}${svc.urlPath}`
+    });
   }
 
   useEffect(() => {
@@ -260,55 +394,30 @@ function App() {
         <Helmet>
           <title>{seoTitle}</title>
           <meta name="description" content={seoDescription} />
-          <meta name="keywords" content="Dentist Kolkata, Dental Clinic Kolkata, Best Dentist in Kolkata, Dental Implants Kolkata, Root Canal Kolkata, Orthodontist Kolkata, Cosmetic Dentistry Kolkata, Emergency Dentist Kolkata" />
+          <meta
+            name="keywords"
+            content="Dentist Kolkata, Dental Clinic Kolkata, Best Dentist in Kolkata, Root Canal Treatment Kolkata, Painless Root Canal Kolkata, Dental Implants Kolkata, Full Mouth Implants Kolkata, Braces Treatment Kolkata, Ceramic Braces Kolkata, Invisible Braces Kolkata, Clear Aligners Kolkata, Invisalign Kolkata, Smile Makeover Kolkata, Teeth Whitening Kolkata, Cosmetic Dentistry Kolkata, Pediatric Dentist Kolkata, Child Dental Clinic Kolkata, Emergency Dentist Kolkata, 24x7 Dental Emergency Kolkata, Dent O Dent Dental Clinic"
+          />
           <meta name="robots" content={seoRobots} />
           <link rel="canonical" href={canonicalUrl} />
           {header.faviconUrl && <link rel="icon" href={header.faviconUrl} />}
 
-          {/* Open Graph */}
           <meta property="og:type" content="website" />
           <meta property="og:title" content={header.ogTitle || seoTitle} />
           <meta property="og:description" content={header.ogDescription || seoDescription} />
           <meta property="og:url" content={canonicalUrl} />
           <meta property="og:image" content={header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
 
-          {/* Twitter Card */}
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={header.twitterTitle || seoTitle} />
           <meta name="twitter:description" content={header.twitterDescription || seoDescription} />
           <meta name="twitter:image" content={header.twitterImage || header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
 
-          {/* Local Business Schema (Dentist) */}
-          <script type="application/ld+json">{JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Dentist',
-            name: "Dent 'O' Dent",
-            image: 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81',
-            url: canonicalUrl,
-            telephone: '+916290093271',
-            address: {
-              '@type': 'PostalAddress',
-              streetAddress: '1/8/1, near Master Da Surya Sen Club, Suryanagar, Regent Grove, Bansdroni',
-              addressLocality: 'Kolkata',
-              addressRegion: 'West Bengal',
-              postalCode: '700040',
-              addressCountry: 'IN'
-            },
-            geo: {
-              '@type': 'GeoCoordinates',
-              latitude: 22.4749,
-              longitude: 88.3629
-            },
-            openingHoursSpecification: [
-              { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], opens: '09:00', closes: '20:00' },
-              { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Sunday', opens: '10:00', closes: '18:00' }
-            ],
-            sameAs: [
-              'https://www.facebook.com/',
-              'https://www.instagram.com/',
-              'https://g.co/kgs/'
-            ]
-          })}</script>
+          {structuredData.map((entry, index) => (
+            <script key={index} type="application/ld+json">
+              {JSON.stringify(entry)}
+            </script>
+          ))}
         </Helmet>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 overflow-x-hidden pt-24 md:pt-28">
           <Header onNavigate={navigateToPage} />

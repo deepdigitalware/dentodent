@@ -5,6 +5,49 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { useContent } from '@/contexts/ContentContext';
 
+const FALLBACK_GALLERY_IMAGES = [
+  {
+    id: 1,
+    src: 'https://images.pexels.com/photos/6812529/pexels-photo-6812529.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Modern dental chair in treatment room',
+    category: 'clinic',
+    title: 'State-of-the-Art Clinic',
+    description: 'Advanced treatment rooms designed for your comfort.',
+    likes: 0,
+    isLiked: false
+  },
+  {
+    id: 2,
+    src: 'https://images.pexels.com/photos/6812599/pexels-photo-6812599.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Dentist examining patient',
+    category: 'treatments',
+    title: 'Gentle Dental Care',
+    description: 'Experienced dentists providing painless treatments.',
+    likes: 0,
+    isLiked: false
+  },
+  {
+    id: 3,
+    src: 'https://images.pexels.com/photos/5355692/pexels-photo-5355692.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Dental instruments on tray',
+    category: 'equipment',
+    title: 'Sterilized Instruments',
+    description: 'Strict hygiene protocols for every procedure.',
+    likes: 0,
+    isLiked: false
+  },
+  {
+    id: 4,
+    src: 'https://images.pexels.com/photos/5355717/pexels-photo-5355717.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Smiling patient after treatment',
+    category: 'smiles',
+    title: 'Happy Smiles',
+    description: 'Transforming smiles with cosmetic dentistry.',
+    likes: 0,
+    isLiked: false
+  }
+];
+
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -45,8 +88,8 @@ const Gallery = () => {
     return () => { cancelled = true; };
   }, [apiUrl]);
 
-  // Use API-only images
-  const galleryImages = apiImages;
+  // Use API images when available, otherwise fall back to default demo images
+  const galleryImages = apiImages.length > 0 ? apiImages : FALLBACK_GALLERY_IMAGES;
 
   // Build categories dynamically from available images
   const toLabel = (id) => id.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
@@ -72,34 +115,7 @@ const Gallery = () => {
     setSelectedImage(null);
   };
 
-  const handleDownload = (imageUrl) => {
-    try {
-      const a = document.createElement('a');
-      a.href = imageUrl;
-      const fileName = (imageUrl.split('/').pop() || 'image').split('?')[0];
-      a.download = fileName || 'image';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      toast({ title: '📥 Download Started', description: 'Image download started.' });
-    } catch (e) {
-      toast({ title: 'Download failed', description: e?.message || 'Unable to download image', variant: 'destructive' });
-    }
-  };
-
-  const handleShare = async (image) => {
-    const shareUrl = image?.src;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: image?.title || 'Gallery Image', text: image?.description, url: shareUrl });
-        return;
-      }
-      await navigator.clipboard.writeText(shareUrl);
-      toast({ title: '🔗 Link Copied', description: shareUrl });
-    } catch (e) {
-      toast({ title: 'Share failed', description: e?.message || 'Unable to share image', variant: 'destructive' });
-    }
-  };
+  // Download and share actions removed per production requirements
 
   return (
     <section id="gallery" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -231,30 +247,7 @@ const Gallery = () => {
                   <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-1.5 md:mb-2">{image.title}</h3>
                   <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4">{image.description}</p>
                   
-                  <div className="flex items-center justify-between">
-                    <div />
-                    
-                    <div className="flex space-x-1.5 md:space-x-2">
-                      <Button
-                        onClick={() => handleDownload(image.src)}
-                        variant="outline"
-                        size="sm"
-                        className="text-gray-600 hover:text-blue-600 p-1.5 md:p-2"
-                        aria-label="Download image"
-                      >
-                        <Download className="w-3 h-3 md:w-4 md:h-4" />
-                      </Button>
-                      <Button
-                        onClick={() => handleShare(image)}
-                        variant="outline"
-                        size="sm"
-                        className="text-gray-600 hover:text-blue-600 p-1.5 md:p-2"
-                        aria-label="Share image"
-                      >
-                        <Share2 className="w-3 h-3 md:w-4 md:h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                  <div className="flex items-center justify-between" />
                 </div>
               </motion.div>
             ))}

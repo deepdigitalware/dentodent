@@ -9,7 +9,6 @@ import ErrorBoundary from '@/components/ErrorBoundary.jsx';
 import { ContentProvider } from '@/contexts/ContentContext.jsx';
 import { BannersProvider } from '@/contexts/BannersContext.jsx';
 
-// Only render frontend content, never admin
 const renderFrontend = () => {
   const AppWithoutAdmin = () => {
     return (

@@ -9,22 +9,6 @@ import ErrorBoundary from '@/components/ErrorBoundary.jsx';
 import { ContentProvider } from '@/contexts/ContentContext.jsx';
 import { BannersProvider } from '@/contexts/BannersContext.jsx';
 
-// Initialize Google Analytics
-if (typeof window !== 'undefined' && !window.location.pathname.includes('/admin')) {
-  // Create script element for gtag.js
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-BCTEYDNMMR';
-  document.head.appendChild(script);
-  
-  // Initialize gtag
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  window.gtag = gtag;
-  gtag('js', new Date());
-  gtag('config', 'G-BCTEYDNMMR');
-}
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>

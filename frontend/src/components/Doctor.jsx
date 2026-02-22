@@ -7,8 +7,8 @@ import { useContent } from '@/contexts/ContentContext';
 const Doctor = () => {
   const { content } = useContent();
   const doctor = content?.doctor || {};
-  const name = doctor.name;
-  const subtitle = doctor.title;
+  const name = doctor.name || 'Dr. Setketu Chakraborty';
+  const subtitle = doctor.title || 'Bachelor of Dental Surgery';
   const bioText = doctor.bio;
   const photoUrl = doctor.image;
   
@@ -32,7 +32,7 @@ const Doctor = () => {
     { icon: GraduationCap, title: 'Education', details: education },
     { icon: Award, title: 'Certifications', details: certifications },
     { icon: Users, title: 'Experience', details: experience }
-  ].filter(item => item.details.length > 0);
+  ].filter(item => Array.isArray(item.details) && item.details.length > 0);
   
   const handleConsultation = () => {
     window.open('https://wa.me/916290093271', '_blank');
@@ -94,8 +94,8 @@ const Doctor = () => {
           >
             {/* Bio */}
             <div>
-              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">About {name}</h3>
-              {String(bioText).split(/\n\n+/).map((paragraph, idx) => (
+              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">{name}</h3>
+              {bioText && String(bioText).trim() && String(bioText).split(/\n\n+/).map((paragraph, idx) => (
                 <p key={idx} className="text-gray-600 leading-relaxed mb-3 md:mb-4 text-sm md:text-base">
                   {paragraph}
                 </p>

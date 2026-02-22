@@ -28,11 +28,12 @@ const Header = ({ onNavigate }) => {
   ];
 
   useEffect(() => {
+    if (!tickerItems.length) return;
     const timer = setInterval(() => {
       setTickerIndex((prev) => (prev + 1) % tickerItems.length);
     }, 3000);
     return () => clearInterval(timer);
-  }, []);
+  }, [tickerItems.length]);
   const [siteSettings, setSiteSettings] = useState(() => {
     try {
       return (typeof window !== 'undefined') ? JSON.parse(localStorage.getItem('site_settings') || '{}') : {};
@@ -194,19 +195,23 @@ const Header = ({ onNavigate }) => {
           <div className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-2 hidden md:block overflow-hidden">
             <div className="flex justify-center items-center text-sm px-4 sm:px-6 lg:px-8 h-6 relative">
               <AnimatePresence mode='wait'>
+                {tickerItems.length > 0 && (
                 <motion.div
-                  key={tickerIndex}
+                  key={tickerIndex % tickerItems.length}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -20, opacity: 0 }}
                   transition={{ duration: 0.5 }}
                   className="flex items-center gap-2 absolute"
                 >
-                  {tickerItems[tickerIndex].icon && (
-                    <img src={tickerItems[tickerIndex].icon} alt="Icon" className="w-4 h-4" />
+                  {tickerItems[tickerIndex % tickerItems.length]?.icon && (
+                    <img src={tickerItems[tickerIndex % tickerItems.length].icon} alt="Icon" className="w-4 h-4" />
                   )}
-                  <span className="font-medium">{tickerItems[tickerIndex].text}</span>
+                  <span className="font-medium">
+                    {tickerItems[tickerIndex % tickerItems.length]?.text || ''}
+                  </span>
                 </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </div>
@@ -217,19 +222,23 @@ const Header = ({ onNavigate }) => {
           <div className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-2 md:hidden overflow-hidden">
             <div className="flex justify-center items-center text-xs px-4 h-5 relative">
               <AnimatePresence mode='wait'>
+                {tickerItems.length > 0 && (
                 <motion.div
-                  key={tickerIndex}
+                  key={tickerIndex % tickerItems.length}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -20, opacity: 0 }}
                   transition={{ duration: 0.5 }}
                   className="flex items-center gap-2 absolute"
                 >
-                  {tickerItems[tickerIndex].icon && (
-                    <img src={tickerItems[tickerIndex].icon} alt="Icon" className="w-3 h-3" />
+                  {tickerItems[tickerIndex % tickerItems.length]?.icon && (
+                    <img src={tickerItems[tickerIndex % tickerItems.length].icon} alt="Icon" className="w-3 h-3" />
                   )}
-                  <span className="font-medium">{tickerItems[tickerIndex].text}</span>
+                  <span className="font-medium">
+                    {tickerItems[tickerIndex % tickerItems.length]?.text || ''}
+                  </span>
                 </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </div>

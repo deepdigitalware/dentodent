@@ -92,24 +92,76 @@ const AppointmentBooking = () => {
   ];
 
   const dynamicServices = (() => {
-    const svcFromSection = Array.isArray(content.services?.services)
-      ? content.services.services.map(s => s?.title || s?.name || s)
+    const sectionServices = Array.isArray(content.services?.services)
+      ? content.services.services
       : [];
-    const svcFromTreatments = Array.isArray(content.treatments)
-      ? content.treatments.map(t => t?.title || t?.name || t)
+    const treatmentItems = Array.isArray(content.treatments?.items)
+      ? content.treatments.items
       : [];
-    const svcFromContact = Array.isArray(content.contact?.services) ? content.contact.services : [];
-    const names = Array.from(new Set([...svcFromSection, ...svcFromTreatments, ...svcFromContact]
-      .map(s => String(s || '').trim())
-      .filter(Boolean)));
-    return names.map(n => ({
-      id: n.toLowerCase().replace(/\s+/g, '-'),
-      name: n,
-      description: '',
-      duration: '',
-      price: '',
-      icon: '🦷'
-    }));
+    const contactServices = Array.isArray(content.contact?.services)
+      ? content.contact.services
+      : [];
+
+    const fromServices = sectionServices.map((s, index) => {
+      const name = s?.title || s?.name || s;
+      const id = (s?.slug || name || `service-${index}`).toString().toLowerCase().replace(/\s+/g, '-');
+      return {
+        id,
+        name: String(name || '').trim(),
+        description: s?.description || '',
+        duration: s?.duration || '',
+        price: s?.price || '',
+        icon: s?.icon || '🦷'
+      };
+    });
+
+    const fromTreatments = treatmentItems.map((t, index) => {
+      const name = t?.title || t?.name || t;
+      const id = (t?.slug || name || `treatment-${index}`).toString().toLowerCase().replace(/\s+/g, '-');
+      return {
+        id,
+        name: String(name || '').trim(),
+        description: t?.description || '',
+        duration: t?.duration || '',
+        price: t?.price || '',
+        icon: '🦷'
+      };
+    });
+
+    const fromContact = contactServices.map((s, index) => {
+      const name = s?.title || s?.name || s;
+      const id = (s?.slug || name || `contact-service-${index}`).toString().toLowerCase().replace(/\s+/g, '-');
+      return {
+        id,
+        name: String(name || '').trim(),
+        description: '',
+        duration: '',
+        price: '',
+        icon: '🦷'
+      };
+    });
+
+    const all = [...fromServices, ...fromTreatments, ...fromContact]
+      .filter(s => s.name);
+
+    const byName = new Map();
+    all.forEach(s => {
+      const key = s.name.toLowerCase();
+      if (!byName.has(key)) {
+        byName.set(key, s);
+      } else {
+        const existing = byName.get(key);
+        byName.set(key, {
+          ...existing,
+          description: existing.description || s.description,
+          duration: existing.duration || s.duration,
+          price: existing.price || s.price,
+          icon: existing.icon || s.icon
+        });
+      }
+    });
+
+    return Array.from(byName.values());
   })();
 
   const services = dynamicServices.length ? dynamicServices : defaultServices;
@@ -191,7 +243,6 @@ const AppointmentBooking = () => {
           .footer-right { display: flex; align-items: center; gap: 12px; }
           .footer-note { white-space: nowrap; font-size: 9px; }
           .accent { color: #0ea5e9; font-weight: 600; }
-          .footer-badge { padding: 4px 10px; border-radius: 999px; background: #16a34a; color: #ecfdf5; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; }
           .logo { height: 40px; }
         </style>
       </head>
@@ -211,8 +262,7 @@ const AppointmentBooking = () => {
           <div class="footer">
             <span class="footer-meta">Generated on <strong>${createdAt}</strong></span>
             <div class="footer-right">
-              <span class="footer-note accent">This document is for patient reference and does not confirm a final appointment slot until verified by our clinic.</span>
-              <span class="footer-badge">Booking Confirmed</span>
+              <span class="footer-note accent">This document is for patient reference only and the final appointment slot will be confirmed by our clinic.</span>
             </div>
           </div>
         </div>

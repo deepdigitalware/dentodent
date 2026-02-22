@@ -12,7 +12,7 @@ export default function ServicePage({
 }) {
   const canonicalUrl = (typeof window !== 'undefined')
     ? `${window.location.origin}/${slug}`
-    : `https://www.dentodent.in/${slug}`;
+    : `https://dentodentdentalclinic.com/${slug}`;
 
   const otherLinks = [
     { name: 'Dental Implants', slug: 'dental-implants' },

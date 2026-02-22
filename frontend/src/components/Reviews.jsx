@@ -17,11 +17,36 @@ const Reviews = () => {
   const { content } = useContent();
   
   // Use normalized reviews array from API/content context
-  const reviewsData = Array.isArray(content.reviews)
-    ? content.reviews
-    : Array.isArray(content.reviews?.items)
-      ? content.reviews.items
-      : [];
+  const reviewsData = (() => {
+    if (Array.isArray(content.reviews?.items) && content.reviews.items.length > 0) {
+      return content.reviews.items;
+    }
+    if (Array.isArray(content.reviews) && content.reviews.length > 0) {
+      return content.reviews;
+    }
+    // Fallback to initial defaults if API has no reviews
+    const defaults = [
+      {
+        name: 'Priya Sharma',
+        rating: 5,
+        message: 'Very professional and friendly staff. My root canal was completely painless and the doctor explained every step clearly.',
+        date: '2024-01-15'
+      },
+      {
+        name: 'Rahul Verma',
+        rating: 5,
+        message: 'Clean clinic, modern equipment and excellent treatment. I am very happy with my smile makeover.',
+        date: '2024-02-03'
+      },
+      {
+        name: 'Ananya Gupta',
+        rating: 4,
+        message: 'Got my teeth cleaning and fillings done. The team was patient and made sure I was comfortable throughout.',
+        date: '2024-02-20'
+      }
+    ];
+    return defaults;
+  })();
 
   return (
     <section id="reviews" className="py-20 bg-gradient-to-br from-blue-50 to-gray-50">

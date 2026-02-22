@@ -178,7 +178,21 @@ export const ContentProvider = ({ children }) => {
         if (response.ok) {
           const apiContent = await response.json();
           console.log('API content loaded successfully:', apiContent);
-          // Generic normalization: any object containing array 'items' or 'posts' -> use that array
+
+          const normalizeArray = (value) => {
+            if (Array.isArray(value)) return value;
+            if (value && typeof value === 'object') {
+              if (Array.isArray(value.items)) return value.items;
+              if (Array.isArray(value.posts)) return value.posts;
+            }
+            return [];
+          };
+
+          const normalizeObject = (value) => {
+            if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+            return {};
+          };
+
           const generic = (() => {
             const out = {};
             try {
@@ -191,31 +205,17 @@ export const ContentProvider = ({ children }) => {
             } catch {}
             return out;
           })();
-          // Ensure array-based sections are always arrays
-          const safeContent = {
-            // Start with defaults to ensure all properties exist
+
+          const baseRaw = (apiContent && typeof apiContent === 'object' && !Array.isArray(apiContent))
+            ? apiContent
+            : {};
+          const base = {
             header: {},
             hero: {},
             about: {},
             services: {},
             contact: {},
             doctor: {},
-            testimonials: (() => {
-              const t = apiContent.testimonials;
-              if (Array.isArray(t)) return t;
-              if (t && typeof t === 'object') {
-                if (Array.isArray(t.items)) return t.items;
-              }
-              return [];
-            })(),
-            gallery: (() => {
-              const g = apiContent.gallery;
-              if (Array.isArray(g)) return g;
-              if (g && typeof g === 'object') {
-                if (Array.isArray(g.items)) return g.items;
-              }
-              return [];
-            })(),
             blog: {},
             privacyPolicy: {},
             termsOfService: {},
@@ -226,38 +226,42 @@ export const ContentProvider = ({ children }) => {
             patient: {},
             footer: {},
             map: {},
-            // Handle nested array structures with more robust checking
-            blogPosts: (() => {
-              const bp = apiContent.blogPosts;
-              if (Array.isArray(bp)) return bp;
-              if (bp && typeof bp === 'object') {
-                if (Array.isArray(bp.posts)) return bp.posts;
-                if (Array.isArray(bp.items)) return bp.items;
-              }
-              return [];
-            })(),
-            treatments: (() => {
-              const t = apiContent.treatments;
-              if (Array.isArray(t)) return t;
-              if (t && typeof t === 'object') {
-                if (Array.isArray(t.items)) return t.items;
-                if (Array.isArray(t.posts)) return t.posts;
-              }
-              return [];
-            })(),
-            reviews: (() => {
-              const r = apiContent.reviews;
-              if (Array.isArray(r)) return r;
-              if (r && typeof r === 'object') {
-                if (Array.isArray(r.items)) return r.items;
-                if (Array.isArray(r.posts)) return r.posts;
-              }
-              return [];
-            })(),
-            // Merge other properties from API content then override with generic array normalization
-            ...apiContent,
+            ...baseRaw,
             ...generic
           };
+
+          const safeContent = {
+            ...base,
+            hero: normalizeObject(base.hero),
+            about: normalizeObject(base.about),
+            services: normalizeObject(base.services),
+            contact: normalizeObject(base.contact),
+            doctor: normalizeObject(base.doctor),
+            blog: normalizeObject(base.blog),
+            privacyPolicy: normalizeObject(base.privacyPolicy),
+            termsOfService: normalizeObject(base.termsOfService),
+            faq: normalizeObject(base.faq),
+            appointment: normalizeObject(base.appointment),
+            slider: normalizeObject(base.slider),
+            cta: normalizeObject(base.cta),
+            patient: normalizeObject(base.patient),
+            footer: normalizeObject(base.footer),
+            map: normalizeObject(base.map),
+            testimonials: normalizeArray(base.testimonials),
+            gallery: normalizeArray(base.gallery),
+            blogPosts: normalizeArray(base.blogPosts),
+            treatments: (() => {
+              const section = normalizeObject(base.treatments);
+              const items = normalizeArray(section.items || base.treatments);
+              return { ...section, items };
+            })(),
+            reviews: (() => {
+              const section = normalizeObject(base.reviews);
+              const items = normalizeArray(section.items || base.reviews);
+              return { ...section, items };
+            })()
+          };
+
           setContent(safeContent);
         } else {
           console.warn('Failed to load content from API, status:', response.status);
@@ -267,7 +271,21 @@ export const ContentProvider = ({ children }) => {
           if (altResponse.ok) {
           const apiContent = await altResponse.json();
             console.log('Alternative API content loaded successfully:', apiContent);
-            // Generic normalization: any object containing array 'items' or 'posts' -> use that array
+
+            const normalizeArray = (value) => {
+              if (Array.isArray(value)) return value;
+              if (value && typeof value === 'object') {
+                if (Array.isArray(value.items)) return value.items;
+                if (Array.isArray(value.posts)) return value.posts;
+              }
+              return [];
+            };
+
+            const normalizeObject = (value) => {
+              if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+              return {};
+            };
+
             const generic = (() => {
               const out = {};
               try {
@@ -280,32 +298,17 @@ export const ContentProvider = ({ children }) => {
               } catch {}
               return out;
             })();
-            // Ensure array-based sections are always arrays
-            const base = (apiContent && typeof apiContent === 'object' && !Array.isArray(apiContent)) ? apiContent : {};
-            const safeContent = {
-              // Start with defaults to ensure all properties exist
+
+            const baseRaw = (apiContent && typeof apiContent === 'object' && !Array.isArray(apiContent))
+              ? apiContent
+              : {};
+            const base = {
               header: {},
               hero: {},
               about: {},
               services: {},
               contact: {},
               doctor: {},
-              testimonials: (() => {
-                const t = base.testimonials;
-                if (Array.isArray(t)) return t;
-                if (t && typeof t === 'object') {
-                  if (Array.isArray(t.items)) return t.items;
-                }
-                return [];
-              })(),
-              gallery: (() => {
-                const g = base.gallery;
-                if (Array.isArray(g)) return g;
-                if (g && typeof g === 'object') {
-                  if (Array.isArray(g.items)) return g.items;
-                }
-                return [];
-              })(),
               blog: {},
               privacyPolicy: {},
               termsOfService: {},
@@ -316,38 +319,42 @@ export const ContentProvider = ({ children }) => {
               patient: {},
               footer: {},
               map: {},
-              // Handle nested array structures with more robust checking
-              blogPosts: (() => {
-                const bp = base.blogPosts;
-                if (Array.isArray(bp)) return bp;
-                if (bp && typeof bp === 'object') {
-                  if (Array.isArray(bp.posts)) return bp.posts;
-                  if (Array.isArray(bp.items)) return bp.items;
-                }
-                return [];
-              })(),
-              treatments: (() => {
-                const t = base.treatments;
-                if (Array.isArray(t)) return t;
-                if (t && typeof t === 'object') {
-                  if (Array.isArray(t.items)) return t.items;
-                  if (Array.isArray(t.posts)) return t.posts;
-                }
-                return [];
-              })(),
-              reviews: (() => {
-                const r = base.reviews;
-                if (Array.isArray(r)) return r;
-                if (r && typeof r === 'object') {
-                  if (Array.isArray(r.items)) return r.items;
-                  if (Array.isArray(r.posts)) return r.posts;
-                }
-                return [];
-              })(),
-              // Merge other properties then override with generic array normalization
-              ...base,
+              ...baseRaw,
               ...generic
             };
+
+            const safeContent = {
+              ...base,
+              hero: normalizeObject(base.hero),
+              about: normalizeObject(base.about),
+              services: normalizeObject(base.services),
+              contact: normalizeObject(base.contact),
+              doctor: normalizeObject(base.doctor),
+              blog: normalizeObject(base.blog),
+              privacyPolicy: normalizeObject(base.privacyPolicy),
+              termsOfService: normalizeObject(base.termsOfService),
+              faq: normalizeObject(base.faq),
+              appointment: normalizeObject(base.appointment),
+              slider: normalizeObject(base.slider),
+              cta: normalizeObject(base.cta),
+              patient: normalizeObject(base.patient),
+              footer: normalizeObject(base.footer),
+              map: normalizeObject(base.map),
+              testimonials: normalizeArray(base.testimonials),
+              gallery: normalizeArray(base.gallery),
+              blogPosts: normalizeArray(base.blogPosts),
+              treatments: (() => {
+                const section = normalizeObject(base.treatments);
+                const items = normalizeArray(section.items || base.treatments);
+                return { ...section, items };
+              })(),
+              reviews: (() => {
+                const section = normalizeObject(base.reviews);
+                const items = normalizeArray(section.items || base.reviews);
+                return { ...section, items };
+              })()
+            };
+
             setContent(safeContent);
           } else {
             console.warn('Alternative endpoint also failed, status:', altResponse.status);

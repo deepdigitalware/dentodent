@@ -20,9 +20,75 @@ const initialContent = {
   footer: {},
   privacyPolicy: {},
   termsOfService: {},
-  blogPosts: [],
+  blogPosts: [
+    {
+      id: 1,
+      slug: 'painless-root-canal-kolkata',
+      title: 'Painless Root Canal Treatment in Kolkata: Step-by-Step Guide',
+      category: 'root-canal',
+      date: '2024-01-10',
+      excerpt: 'Learn how modern rotary instruments, digital X-rays, and proper anaesthesia make root canal treatment almost painless at Dent \'O\' Dent.',
+      readTime: '6 min read',
+      author: 'Dr. Setketu Chakraborty',
+      tags: ['Root Canal', 'Pain Free', 'Kolkata'],
+      keywords: ['painless rct kolkata', 'root canal cost', 'dentist bansdroni'],
+      cover: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=1200&auto=format&fit=crop',
+      featured: true
+    },
+    {
+      id: 2,
+      slug: 'braces-vs-aligners-kolkata',
+      title: 'Braces vs Clear Aligners: Which is Better for You?',
+      category: 'orthodontics',
+      date: '2024-02-02',
+      excerpt: 'Compare treatment time, comfort, cost and appearance of traditional metal braces vs. clear aligners for teens and adults.',
+      readTime: '7 min read',
+      author: 'Dr. Setketu Chakraborty',
+      tags: ['Braces', 'Aligners', 'Smile Makeover'],
+      keywords: ['braces in kolkata', 'clear aligners cost', 'teeth straightening'],
+      cover: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200&auto=format&fit=crop',
+      featured: true
+    },
+    {
+      id: 3,
+      slug: 'teeth-whitening-tips-at-home-and-clinic',
+      title: 'Teeth Whitening in Kolkata: Home vs. Clinic Treatments',
+      category: 'teeth-whitening',
+      date: '2024-02-20',
+      excerpt: 'Understand the difference between over-the-counter whitening kits and professional in‑clinic teeth whitening.',
+      readTime: '5 min read',
+      author: 'Dr. Setketu Chakraborty',
+      tags: ['Whitening', 'Cosmetic Dentistry'],
+      keywords: ['teeth whitening kolkata', 'yellow teeth treatment'],
+      cover: 'https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1200&auto=format&fit=crop',
+      featured: false
+    }
+  ],
   treatments: [],
-  reviews: [],
+  reviews: {
+    title: 'What Our Patients Say',
+    subtitle: 'Real experiences from patients treated at Dent "O" Dent',
+    items: [
+      {
+        name: 'Priya Sharma',
+        rating: 5,
+        message: 'Very professional and friendly staff. My root canal was completely painless and the doctor explained every step clearly.',
+        date: '2024-01-15'
+      },
+      {
+        name: 'Rahul Verma',
+        rating: 5,
+        message: 'Clean clinic, modern equipment and excellent treatment. I am very happy with my smile makeover.',
+        date: '2024-02-03'
+      },
+      {
+        name: 'Ananya Gupta',
+        rating: 4,
+        message: 'Got my teeth cleaning and fillings done. The team was patient and made sure I was comfortable throughout.',
+        date: '2024-02-20'
+      }
+    ]
+  },
   map: {}
 };
 
@@ -114,39 +180,57 @@ export const ContentProvider = ({ children }) => {
         if (response.ok) {
           const apiContent = await response.json();
           console.log('API content loaded successfully:', apiContent);
-          // Ensure array-based sections are always arrays
+
+          const normalizeArray = (value) => {
+            if (Array.isArray(value)) return value;
+            if (value && typeof value === 'object') {
+              if (Array.isArray(value.items)) return value.items;
+              if (Array.isArray(value.posts)) return value.posts;
+            }
+            return [];
+          };
+
+          const normalizeObject = (value) => {
+            if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+            return {};
+          };
+
+          const base = (apiContent && typeof apiContent === 'object' && !Array.isArray(apiContent))
+            ? { ...initialContent, ...apiContent }
+            : { ...initialContent };
+
           const safeContent = {
-            ...initialContent,
-            ...apiContent,
-            // Handle nested array structures with more robust checking
-            blogPosts: (() => {
-              const bp = apiContent.blogPosts;
-              if (Array.isArray(bp)) return bp;
-              if (bp && typeof bp === 'object') {
-                if (Array.isArray(bp.posts)) return bp.posts;
-                if (Array.isArray(bp.items)) return bp.items;
-              }
-              return [];
-            })(),
+            ...base,
+            hero: normalizeObject(base.hero),
+            about: normalizeObject(base.about),
+            services: normalizeObject(base.services),
+            contact: normalizeObject(base.contact),
+            doctor: normalizeObject(base.doctor),
+            blog: normalizeObject(base.blog),
+            faq: normalizeObject(base.faq),
+            appointment: normalizeObject(base.appointment),
+            slider: normalizeObject(base.slider),
+            cta: normalizeObject(base.cta),
+            patient: normalizeObject(base.patient),
+            footer: normalizeObject(base.footer),
+            privacyPolicy: normalizeObject(base.privacyPolicy),
+            termsOfService: normalizeObject(base.termsOfService),
+            map: normalizeObject(base.map),
+            testimonials: normalizeArray(base.testimonials),
+            gallery: normalizeArray(base.gallery),
+            blogPosts: normalizeArray(base.blogPosts),
             treatments: (() => {
-              const t = apiContent.treatments;
-              if (Array.isArray(t)) return t;
-              if (t && typeof t === 'object') {
-                if (Array.isArray(t.items)) return t.items;
-                if (Array.isArray(t.posts)) return t.posts;
-              }
-              return [];
+              const section = normalizeObject(base.treatments);
+              const items = normalizeArray(section.items || base.treatments);
+              return { ...section, items };
             })(),
             reviews: (() => {
-              const r = apiContent.reviews;
-              if (Array.isArray(r)) return r;
-              if (r && typeof r === 'object') {
-                if (Array.isArray(r.items)) return r.items;
-                if (Array.isArray(r.posts)) return r.posts;
-              }
-              return [];
+              const section = normalizeObject(base.reviews);
+              const items = normalizeArray(section.items || base.reviews);
+              return { ...section, items };
             })()
           };
+
           setContent(safeContent);
         } else {
           console.warn('Failed to load content from API, status:', response.status);
@@ -156,40 +240,58 @@ export const ContentProvider = ({ children }) => {
           if (altResponse.ok) {
             const apiContent = await altResponse.json();
             console.log('Alternative API content loaded successfully:', apiContent);
-            // Ensure array-based sections are always arrays
-            const base = (apiContent && typeof apiContent === 'object' && !Array.isArray(apiContent)) ? apiContent : {};
+
+            const normalizeArray = (value) => {
+              if (Array.isArray(value)) return value;
+              if (value && typeof value === 'object') {
+                if (Array.isArray(value.items)) return value.items;
+                if (Array.isArray(value.posts)) return value.posts;
+              }
+              return [];
+            };
+
+            const normalizeObject = (value) => {
+              if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+              return {};
+            };
+
+            const baseRaw = (apiContent && typeof apiContent === 'object' && !Array.isArray(apiContent))
+              ? apiContent
+              : {};
+            const base = { ...initialContent, ...baseRaw };
+
             const safeContent = {
-              ...initialContent,
               ...base,
-              // Handle nested array structures with more robust checking
-              blogPosts: (() => {
-                const bp = base.blogPosts;
-                if (Array.isArray(bp)) return bp;
-                if (bp && typeof bp === 'object') {
-                  if (Array.isArray(bp.posts)) return bp.posts;
-                  if (Array.isArray(bp.items)) return bp.items;
-                }
-                return [];
-              })(),
+              hero: normalizeObject(base.hero),
+              about: normalizeObject(base.about),
+              services: normalizeObject(base.services),
+              contact: normalizeObject(base.contact),
+              doctor: normalizeObject(base.doctor),
+              blog: normalizeObject(base.blog),
+              faq: normalizeObject(base.faq),
+              appointment: normalizeObject(base.appointment),
+              slider: normalizeObject(base.slider),
+              cta: normalizeObject(base.cta),
+              patient: normalizeObject(base.patient),
+              footer: normalizeObject(base.footer),
+              privacyPolicy: normalizeObject(base.privacyPolicy),
+              termsOfService: normalizeObject(base.termsOfService),
+              map: normalizeObject(base.map),
+              testimonials: normalizeArray(base.testimonials),
+              gallery: normalizeArray(base.gallery),
+              blogPosts: normalizeArray(base.blogPosts),
               treatments: (() => {
-                const t = base.treatments;
-                if (Array.isArray(t)) return t;
-                if (t && typeof t === 'object') {
-                  if (Array.isArray(t.items)) return t.items;
-                  if (Array.isArray(t.posts)) return t.posts;
-                }
-                return [];
+                const section = normalizeObject(base.treatments);
+                const items = normalizeArray(section.items || base.treatments);
+                return { ...section, items };
               })(),
               reviews: (() => {
-                const r = base.reviews;
-                if (Array.isArray(r)) return r;
-                if (r && typeof r === 'object') {
-                  if (Array.isArray(r.items)) return r.items;
-                  if (Array.isArray(r.posts)) return r.posts;
-                }
-                return [];
+                const section = normalizeObject(base.reviews);
+                const items = normalizeArray(section.items || base.reviews);
+                return { ...section, items };
               })()
             };
+
             setContent(safeContent);
           } else {
             console.warn('Alternative endpoint also failed, status:', altResponse.status);

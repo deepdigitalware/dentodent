@@ -392,7 +392,7 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
           <label className="block text-sm font-medium text-gray-700">Services</label>
           {isEditing && (
             <Button
-              onClick={() => addArrayItem('services', { name: '', description: '', icon: '🦷', imageUrl: '' })}
+              onClick={() => addArrayItem('services', { name: '', description: '', icon: '🦷', imageUrl: '', price: '', duration: '' })}
               className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm"
             >
               <Plus className="w-4 h-4 mr-1" />
@@ -427,6 +427,22 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
                 placeholder="Icon (emoji)"
                 value={service.icon || ''}
                 onChange={(e) => handleArrayChange('services', index, 'icon', e.target.value)}
+                className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={!isEditing}
+              />
+              <input
+                type="text"
+                placeholder="Price (e.g. ₹800)"
+                value={service.price || ''}
+                onChange={(e) => handleArrayChange('services', index, 'price', e.target.value)}
+                className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={!isEditing}
+              />
+              <input
+                type="text"
+                placeholder="Duration (e.g. 45-60 minutes)"
+                value={service.duration || ''}
+                onChange={(e) => handleArrayChange('services', index, 'duration', e.target.value)}
                 className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={!isEditing}
               />
@@ -1636,7 +1652,7 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
         <label className="block text-sm font-medium text-gray-700">Treatments</label>
         {isEditing && (
           <Button
-            onClick={() => addArrayItem('items', { title: '', description: '', imageUrl: '', slug: '' })}
+            onClick={() => addArrayItem('items', { title: '', description: '', imageUrl: '', slug: '', price: '', duration: '' })}
             className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm"
           >
             <Plus className="w-4 h-4 mr-1" />
@@ -1657,6 +1673,8 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input type="text" placeholder="Title" value={item.title || ''} onChange={(e) => handleArrayChange('items', index, 'title', e.target.value)} className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" disabled={!isEditing} />
             <input type="text" placeholder="Slug" value={item.slug || ''} onChange={(e) => handleArrayChange('items', index, 'slug', e.target.value)} className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" disabled={!isEditing} />
+            <input type="text" placeholder="Price (e.g. ₹3,500)" value={item.price || ''} onChange={(e) => handleArrayChange('items', index, 'price', e.target.value)} className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" disabled={!isEditing} />
+            <input type="text" placeholder="Duration (e.g. 45-60 minutes)" value={item.duration || ''} onChange={(e) => handleArrayChange('items', index, 'duration', e.target.value)} className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" disabled={!isEditing} />
             <div className="md:col-span-2">
               <ImagePicker
                 label="Treatment Image"

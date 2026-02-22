@@ -49,7 +49,13 @@ const Treatments = () => {
                 <div className="h-48 bg-cover bg-center" style={{ backgroundImage: `url(${treatment.imageUrl})` }} />
               )}
               <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2">{treatment.title}</h3>
+                <h3 className="text-xl font-semibold mb-1">{treatment.title}</h3>
+                {treatment.price && (
+                  <p className="text-blue-600 font-semibold mb-1">{treatment.price}</p>
+                )}
+                {treatment.duration && (
+                  <p className="text-gray-500 text-sm mb-2">Duration: {treatment.duration}</p>
+                )}
                 {treatment.description && (
                   <p className="text-gray-600 mb-4">{treatment.description}</p>
                 )}

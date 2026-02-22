@@ -19,7 +19,7 @@ export default function BlogPost({ slug }) {
 
   const canonicalUrl = (typeof window !== 'undefined')
     ? `${window.location.origin}/blog-${post.slug}`
-    : `https://www.dentodent.in/blog-${post.slug}`;
+    : `https://dentodentdentalclinic.com/blog-${post.slug}`;
 
   const isRemote = typeof post.cover === 'string' && post.cover.startsWith('http');
   const coverMain = isRemote ? `${post.cover}?w=1200&h=630&fit=crop` : post.cover;
@@ -45,7 +45,7 @@ export default function BlogPost({ slug }) {
           publisher: {
             '@type': 'Organization',
             name: "Dent 'O' Dent",
-            logo: { '@type': 'ImageObject', url: 'https://www.dentodent.in/logo.png' }
+            logo: { '@type': 'ImageObject', url: 'https://dentodentdentalclinic.com/logo.png' }
           },
           mainEntityOfPage: canonicalUrl,
           keywords: post.keywords,
