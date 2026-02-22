@@ -923,9 +923,9 @@ const AppointmentBooking = () => {
             <Button
               type="button"
               onClick={() => window.open('https://wa.me/916290093271?text=Hi%20Dent%20O%20Dent%2C%20I%20would%20like%20to%20book%20a%20dental%20appointment.', '_blank')}
-              className="flex items-center gap-2 bg-white text-emerald-600 hover:bg-gray-100 px-6 py-3 rounded-full font-semibold shadow-lg"
+              className="flex items-center gap-2 bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-full font-semibold shadow-lg"
             >
-              <WhatsAppIcon className="w-5 h-5" />
+              <WhatsAppIcon className="w-5 h-5 text-teal-500" />
               <span>Chat on WhatsApp</span>
             </Button>
           </div>

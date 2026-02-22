@@ -6,9 +6,18 @@ import { useContent } from '@/contexts/ContentContext';
 
 const Services = () => {
   const { content } = useContent();
-  const servicesData = Array.isArray(content.services?.services)
+  const servicesData = (Array.isArray(content.services?.services)
     ? content.services.services
-    : [];
+    : []).filter(
+      (service) =>
+        service &&
+        (service.title || service.name || service.description || service.image)
+    );
+
+  const rawTitle = content.services?.title;
+  const displayTitle = rawTitle
+    ? rawTitle.replace(/Services/gi, 'Treatments')
+    : 'Our Treatments';
 
   const handleLearnMore = () => {
     if (typeof window !== 'undefined') {
@@ -26,9 +35,9 @@ const Services = () => {
           viewport={{ once: true, amount: 0.1 }}
           className="text-center mb-12 md:mb-16"
         >
-          {content.services?.title && (
+          {displayTitle && (
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-display font-bold mb-4 md:mb-6">
-              {content.services.title}
+              {displayTitle}
             </h2>
           )}
           {content.services?.subtitle && (
