@@ -63,7 +63,6 @@ const upload = multer({
 const app = express();
 const PORT = process.env.PORT || process.env.API_PORT || 4444;
 
-// Database configuration
 const pool = new Pool({
   host: process.env.PGHOST || '127.0.0.1',
   port: parseInt(process.env.PGPORT || '5432', 10),
@@ -71,6 +70,17 @@ const pool = new Pool({
   user: process.env.PGUSER || 'dentodent',
   password: process.env.PGPASSWORD || 'Deep@DOD',
 });
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+const resolveAssetUrl = (value) => {
+  if (!value || typeof value !== 'string') return value;
+  if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  if (!value.startsWith('/assets/') && !value.startsWith('/images/')) return value;
+  if (!isProduction) return value;
+  const base = process.env.ASSETS_BASE_URL || process.env.PUBLIC_ASSETS_BASE || 'https://api.dentodentdentalclinic.com';
+  return `${base}${value}`;
+};
 
 // Middleware
 app.use(cors({
@@ -120,6 +130,14 @@ const healthCheck = async (req, res) => {
     });
   }
 };
+
+app.get('/', (req, res) => {
+  res.json({
+    status: 'OK',
+    service: 'DOD - Content Management API with PostgreSQL',
+    message: 'See /health or /api/health for detailed status'
+  });
+});
 
 app.get('/health', healthCheck);
 app.get('/api/health', healthCheck);
@@ -399,11 +417,14 @@ app.delete('/api/content/:section', async (req, res) => {
 app.get('/api/media', async (req, res) => {
   try {
     console.log('Fetching all media items from database');
-    
     const result = await pool.query('SELECT * FROM media_items ORDER BY uploaded_at DESC');
-    
-    console.log(`Returning ${result.rows.length} media items`);
-    res.json(result.rows);
+    const rows = result.rows.map(item => ({
+      ...item,
+      url: resolveAssetUrl(item.url),
+      file_path: resolveAssetUrl(item.file_path)
+    }));
+    console.log(`Returning ${rows.length} media items`);
+    res.json(rows);
   } catch (err) {
     console.error('Media fetch error:', err);
     res.status(500).json({ error: 'Failed to load media items' });
@@ -422,13 +443,16 @@ app.get('/api/media/:id', async (req, res) => {
     
     console.log(`Fetching media item with ID: ${mediaId}`);
     
-    const result = await pool.query(
-      'SELECT * FROM media_items WHERE id = $1',
-      [mediaId]
-    );
+    const result = await pool.query('SELECT * FROM media_items WHERE id = $1', [mediaId]);
     
     if (result.rows.length > 0) {
-      res.json(result.rows[0]);
+      const item = result.rows[0];
+      const normalized = {
+        ...item,
+        url: resolveAssetUrl(item.url),
+        file_path: resolveAssetUrl(item.file_path)
+      };
+      res.json(normalized);
     } else {
       res.status(404).json({ error: 'Media item not found' });
     }
@@ -558,8 +582,11 @@ app.get('/api/images', async (req, res) => {
     }
     
     const result = await pool.query(query, params);
-    
-    res.json(result.rows);
+    const rows = result.rows.map(row => ({
+      ...row,
+      url: resolveAssetUrl(row.url)
+    }));
+    res.json(rows);
   } catch (err) {
     console.error('Images fetch error:', err);
     res.status(500).json({ error: 'Failed to load images' });
@@ -679,11 +706,14 @@ app.get('/api/metrics', async (req, res) => {
 app.get('/api/banners', async (req, res) => {
   try {
     console.log('Fetching banners from database...');
-    const result = await pool.query(
-      'SELECT * FROM banners ORDER BY display_order ASC'
-    );
-    console.log(`Found ${result.rows.length} banners`);
-    res.json(result.rows);
+    const result = await pool.query('SELECT * FROM banners ORDER BY display_order ASC');
+    const rows = result.rows.map(row => ({
+      ...row,
+      image_url: resolveAssetUrl(row.image_url),
+      mobile_image_url: resolveAssetUrl(row.mobile_image_url)
+    }));
+    console.log(`Found ${rows.length} banners`);
+    res.json(rows);
   } catch (err) {
     console.error('Error fetching banners:', err);
     res.status(500).json({ error: 'Failed to fetch banners' });
