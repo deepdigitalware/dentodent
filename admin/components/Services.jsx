@@ -15,7 +15,7 @@ const Services = () => {
     }
   })();
 
-  const slugify = (str) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const slugify = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const resolveServiceImage = (title, fallbackUrl) => {
     const slug = slugify(title);
     const adminUrl = adminSettings?.sectionImages?.services?.[slug];

@@ -121,7 +121,7 @@ const MediaLibrary = ({ initialTab = 'all' }) => {
     
     // Apply search filter
     if (searchTerm) {
-      const q = searchTerm.toLowerCase();
+      const q = (searchTerm || '').toLowerCase();
       filtered = filtered.filter(item => {
         const title = (item.title || '').toLowerCase();
         const caption = (item.caption || '').toLowerCase();

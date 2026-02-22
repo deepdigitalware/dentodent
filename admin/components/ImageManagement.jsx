@@ -250,7 +250,8 @@ const ImageManagement = () => {
       ico: 'bg-red-100 text-red-800',
       gif: 'bg-pink-100 text-pink-800'
     };
-    return colors[type.toLowerCase()] || 'bg-gray-100 text-gray-800';
+    const key = (type || '').toLowerCase();
+    return colors[key] || 'bg-gray-100 text-gray-800';
   };
 
   return (

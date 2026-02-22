@@ -90,10 +90,13 @@ const ImagePicker = ({ value, onChange, section = 'general', label = 'Image', di
     }
   };
 
-  const filteredImages = images.filter(img => 
-    img.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (img.section && img.section.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredImages = images.filter((img) => {
+    const query = (searchTerm || '').toLowerCase();
+    const name = (img.name || img.title || img.alt_text || '').toLowerCase();
+    const sectionName = (img.section || '').toLowerCase();
+    if (!query) return true;
+    return name.includes(query) || sectionName.includes(query);
+  });
 
   return (
     <div className="mb-4">

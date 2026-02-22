@@ -29,8 +29,8 @@ const Gallery = () => {
   })();
 
   const mapFileToImage = (path, url, idx) => {
-    const file = path.split('/').pop() || `image-${idx}`;
-    const lower = file.toLowerCase();
+    const fileName = ((path || '').split('/').pop()) || `image-${idx}`;
+    const lower = fileName.toLowerCase();
     const category = lower.startsWith('before-after')
       ? 'before-after'
       : lower.startsWith('treatments')
@@ -42,7 +42,7 @@ const Gallery = () => {
       : lower.startsWith('technology')
       ? 'technology'
       : 'all';
-    const title = file.replace(/[-_]/g, ' ').replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+    const title = fileName.replace(/[-_]/g, ' ').replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
     return {
       id: 1000 + idx,
       src: url,

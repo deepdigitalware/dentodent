@@ -18,8 +18,9 @@ const Footer = ({ onNavigate }) => {
   };
 
   const handleLinkClick = (link) => {
+    const safeLink = (link || '').toLowerCase().replace(/\s+/g, '-');
     if (onNavigate) {
-      onNavigate(link.toLowerCase().replace(/\s+/g, '-'));
+      onNavigate(safeLink);
     } else {
       toast({
         title: `🔗 ${link}`,
