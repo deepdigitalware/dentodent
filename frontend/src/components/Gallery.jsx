@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download, Share2, Filter, Grid, List } from 'lucide-react';
+import { Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
 import { useContent } from '@/contexts/ContentContext';
 
 const FALLBACK_GALLERY_IMAGES = [
@@ -49,7 +48,6 @@ const FALLBACK_GALLERY_IMAGES = [
 ];
 
 const Gallery = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
   const { apiUrl } = useContent();
@@ -107,16 +105,6 @@ const Gallery = () => {
     ? galleryImages 
     : galleryImages.filter(img => img.category === activeFilter);
 
-  const handleImageClick = (image) => {
-    setSelectedImage(image);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedImage(null);
-  };
-
-  // Download and share actions removed per production requirements
-
   return (
     <section id="gallery" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -132,7 +120,7 @@ const Gallery = () => {
             Gallery
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Browse images uploaded via the admin panel.
+            Explore our clinic, treatments and patient smile transformations.
           </p>
           {isLoadingApi && (
             <p className="mt-2 text-sm text-gray-500">Loading images…</p>
@@ -216,24 +204,9 @@ const Gallery = () => {
                   <img
                     src={image.src}
                     alt={image.alt}
-                    className="w-full h-full object-cover cursor-pointer"
-                    onClick={() => handleImageClick(image)}
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
-                  
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="flex space-x-1.5 md:space-x-2">
-                      <Button
-                        onClick={() => handleImageClick(image)}
-                        className="bg-white text-gray-800 hover:bg-gray-100 p-1.5 md:p-2"
-                        size="sm"
-                        aria-label="View image"
-                      >
-                        <Filter className="w-3 h-3 md:w-4 md:h-4" />
-                      </Button>
-                    </div>
-                  </div>
 
                   {/* Category Badge */}
                   <div className="absolute top-3 left-3 md:top-4 md:left-4">
@@ -276,67 +249,6 @@ const Gallery = () => {
           </div>
         </motion.div>
       </div>
-
-      {/* Image Modal */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-2 md:p-4"
-            onClick={handleCloseModal}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="relative max-w-4xl max-h-[90vh] bg-white rounded-2xl overflow-hidden w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={handleCloseModal}
-                className="absolute top-3 right-3 md:top-4 md:right-4 z-10 bg-white/90 backdrop-blur-sm p-1.5 md:p-2 rounded-full hover:bg-white transition-colors"
-                aria-label="Close image"
-              >
-                <X className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-              </button>
-              
-              <img
-                src={selectedImage.src}
-                alt={selectedImage.alt}
-                className="w-full h-auto max-h-[60vh] md:max-h-[70vh] object-contain"
-                loading="eager"
-              />
-              
-              <div className="p-4 md:p-6">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-1.5 md:mb-2">{selectedImage.title}</h3>
-                <p className="text-gray-600 mb-3 md:mb-4 text-sm md:text-base">{selectedImage.description}</p>
-                
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div className="flex space-x-2 ml-auto">
-                    <Button
-                      onClick={() => handleDownload(selectedImage.src)}
-                      className="bg-blue-600 text-white hover:bg-blue-700 py-1.5 md:py-2 px-3 md:px-4 text-sm md:text-base"
-                    >
-                      <Download className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
-                      Download
-                    </Button>
-                    <Button
-                      onClick={() => handleShare(selectedImage)}
-                      variant="outline"
-                      className="border-blue-600 text-blue-600 hover:bg-blue-50 py-1.5 md:py-2 px-3 md:px-4 text-sm md:text-base"
-                    >
-                      <Share2 className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
-                      Share
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };

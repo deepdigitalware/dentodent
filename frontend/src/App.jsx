@@ -20,7 +20,6 @@ import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import Gallery from '@/components/Gallery';
 import Blog from '@/components/Blog';
-import Treatments from '@/components/Treatments';
 import Reviews from '@/components/Reviews';
 import BlogList from '@/components/BlogList';
 import BlogPost from '@/components/BlogPost';
@@ -360,7 +359,6 @@ function App() {
             <Hero />
             <About />
             <Services />
-            <Treatments />
             <Doctor />
             <Testimonials />
             <Gallery />

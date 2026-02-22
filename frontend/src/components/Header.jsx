@@ -101,7 +101,7 @@ const Header = ({ onNavigate }) => {
     : [
         { label: 'Home', mode: 'scroll', target: 'home' },
         { label: 'Why Choose Us', mode: 'scroll', target: 'about' },
-        { label: 'Treatments', mode: 'scroll', target: 'services' },
+        { label: 'Treatments', mode: 'scroll', target: 'treatments' },
         { label: 'Gallery', mode: 'route', target: 'gallery' },
         { label: 'Blog', mode: 'route', target: 'blog' },
         { label: 'FAQ', mode: 'scroll', target: 'faq' },
