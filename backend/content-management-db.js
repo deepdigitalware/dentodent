@@ -235,9 +235,13 @@ app.get('/api/content', async (req, res) => {
     const content = {};
     
     result.rows.forEach(row => {
+      const raw = row.content_data || {};
+      const normalized = (raw && typeof raw === 'object' && raw.data && typeof raw.data === 'object')
+        ? raw.data
+        : raw;
       content[row.section_id] = {
         id: row.section_id,
-        ...row.content_data
+        ...normalized
       };
     });
     
@@ -261,9 +265,13 @@ app.get('/api/content/:section', async (req, res) => {
     );
     
     if (result.rows.length > 0) {
+      const raw = result.rows[0].content_data || {};
+      const normalized = (raw && typeof raw === 'object' && raw.data && typeof raw.data === 'object')
+        ? raw.data
+        : raw;
       const content = {
         id: section,
-        ...result.rows[0].content_data
+        ...normalized
       };
       res.json(content);
     } else {
@@ -279,14 +287,15 @@ app.get('/api/content/:section', async (req, res) => {
 app.put('/api/content/:section', async (req, res) => {
   try {
     const { section } = req.params;
-    const updatedData = req.body;
+    const updatedDataRaw = req.body || {};
+    const updatedData = (updatedDataRaw && typeof updatedDataRaw === 'object' && updatedDataRaw.data && typeof updatedDataRaw.data === 'object')
+      ? updatedDataRaw.data
+      : updatedDataRaw;
     
     console.log(`Updating content section: ${section}`, updatedData);
     
-    // Remove the id from the data to store (it's in the section parameter)
-    const { id, ...dataToStore } = updatedData;
+    const { id, ...dataToStore } = updatedData || {};
     
-    // Upsert the content section
     const result = await pool.query(
       `INSERT INTO content_sections (section_id, content_data, updated_at)
        VALUES ($1, $2, NOW())
@@ -297,11 +306,15 @@ app.put('/api/content/:section', async (req, res) => {
     );
     
     console.log(`Content section ${section} updated successfully`);
+    const raw = result.rows[0].content_data || {};
+    const normalized = (raw && typeof raw === 'object' && raw.data && typeof raw.data === 'object')
+      ? raw.data
+      : raw;
     res.json({
       message: 'Content updated successfully',
       data: {
         id: section,
-        ...result.rows[0].content_data
+        ...normalized
       }
     });
   } catch (err) {
@@ -314,11 +327,13 @@ app.put('/api/content/:section', async (req, res) => {
 app.post('/api/content/:section', async (req, res) => {
   try {
     const { section } = req.params;
-    const newData = req.body;
+    const newDataRaw = req.body || {};
+    const newData = (newDataRaw && typeof newDataRaw === 'object' && newDataRaw.data && typeof newDataRaw.data === 'object')
+      ? newDataRaw.data
+      : newDataRaw;
     
     console.log(`Creating new content section: ${section}`, newData);
     
-    // Check if section already exists
     const existing = await pool.query(
       'SELECT 1 FROM content_sections WHERE section_id = $1',
       [section]
@@ -328,8 +343,7 @@ app.post('/api/content/:section', async (req, res) => {
       return res.status(409).json({ error: 'Content section already exists' });
     }
     
-    // Remove the id from the data to store
-    const { id, ...dataToStore } = newData;
+    const { id, ...dataToStore } = newData || {};
     
     const result = await pool.query(
       `INSERT INTO content_sections (section_id, content_data, created_at, updated_at)
@@ -339,11 +353,15 @@ app.post('/api/content/:section', async (req, res) => {
     );
     
     console.log(`Content section ${section} created successfully`);
+    const raw = result.rows[0].content_data || {};
+    const normalized = (raw && typeof raw === 'object' && raw.data && typeof raw.data === 'object')
+      ? raw.data
+      : raw;
     res.status(201).json({
       message: 'Content created successfully',
       data: {
         id: section,
-        ...result.rows[0].content_data
+        ...normalized
       }
     });
   } catch (err) {

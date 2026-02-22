@@ -372,7 +372,7 @@ export const ContentProvider = ({ children }) => {
     try {
       const response = await fetchWithRefresh(`${apiUrl}/api/content/${section}`, {
         method: 'PUT',
-        body: JSON.stringify({ data: newContent })
+        body: JSON.stringify(newContent)
       });
 
       let data;

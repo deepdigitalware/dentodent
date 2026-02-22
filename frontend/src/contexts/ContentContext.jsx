@@ -220,7 +220,7 @@ export const ContentProvider = ({ children }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ data: newContent })
+        body: JSON.stringify(newContent)
       });
       
       if (!response.ok) {

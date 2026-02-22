@@ -224,7 +224,10 @@ app.get('/api/content', async (req, res) => {
 app.put('/api/content/:section', async (req, res) => {
   try {
     const { section } = req.params;
-    const data = req.body;
+    const raw = req.body || {};
+    const data = (raw && typeof raw === 'object' && raw.data && typeof raw.data === 'object')
+      ? raw.data
+      : raw;
     
     // Direct to VPS API
     const vpsApiUrl = `${API_ORIGIN}/api/content/${section}`;
@@ -235,7 +238,7 @@ app.put('/api/content/:section', async (req, res) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ data })
+      body: JSON.stringify(data)
     });
     
     const result = await response.json();
