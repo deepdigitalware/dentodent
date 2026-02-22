@@ -178,6 +178,7 @@ const MediaLibrary = ({ initialTab = 'all' }) => {
       
       toast({ title: "Success", description: `${files.length} file(s) uploaded successfully!` });
       if (fileInputRef.current) fileInputRef.current.value = '';
+      await fetchMediaItems();
     } catch (e) {
       setError(e.message);
       toast({

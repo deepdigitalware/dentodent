@@ -48,6 +48,54 @@ function App() {
     ? `${window.location.origin}${window.location.pathname}`
     : 'https://www.dentodentdentalclinic.com/';
 
+  const baseTitle = header.seoTitle || header.siteTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata | Dr. Setketu Chakraborty";
+  const baseDescription = header.seoDescription || 'Top-rated Dentist and Dental Clinic in Kolkata offering painless treatments: Dental Implants, Root Canal, Braces, Aligners, Smile Makeover, and Emergency Care. Book your appointment today!';
+  let seoTitle = baseTitle;
+  let seoDescription = baseDescription;
+  let seoRobots = 'index,follow';
+
+  switch (currentPage) {
+    case 'gallery':
+      seoTitle = "Dental Treatment Before & After Photos | Dent 'O' Dent Kolkata";
+      seoDescription = "View real before-and-after dental treatment photos from Dent 'O' Dent in Kolkata, including smile makeovers, implants, braces, and more.";
+      break;
+    case 'blog':
+      seoTitle = "Dental Blog Kolkata | Dental Tips, Treatment Costs & Guides";
+      seoDescription = "Expert dental blog from Dent 'O' Dent Kolkata: root canal, implants, braces vs aligners, teeth whitening safety, and clinic selection tips.";
+      break;
+    case 'appointment':
+      seoTitle = "Book Dentist Appointment Online | Dent 'O' Dent Kolkata";
+      seoDescription = "Book a dental appointment online with Dent 'O' Dent Kolkata for painless treatments, same-day emergencies, and routine check-ups.";
+      break;
+    case 'patient-portal':
+      seoTitle = "Dental Patient Portal | Dent 'O' Dent Kolkata";
+      seoDescription = "Secure patient portal for managing appointments, treatment history, and communication with Dent 'O' Dent clinic in Kolkata.";
+      seoRobots = 'noindex,follow';
+      break;
+    case 'faq':
+      seoTitle = "Dental FAQs | Common Questions Answered | Dent 'O' Dent Kolkata";
+      seoDescription = "Answers to common questions about dental treatments, root canal pain, implant safety, braces vs aligners, and clinic timings in Kolkata.";
+      break;
+    case 'privacy-policy':
+      seoTitle = "Privacy Policy | Dent 'O' Dent Dental Clinic Kolkata";
+      seoDescription = "Read the privacy policy of Dent 'O' Dent Dental Clinic Kolkata explaining how we collect, use, and protect your personal data.";
+      seoRobots = 'noindex,nofollow';
+      break;
+    case 'terms-of-service':
+      seoTitle = "Terms of Service | Dent 'O' Dent Dental Clinic Kolkata";
+      seoDescription = "Review the terms and conditions for using Dent 'O' Dent Dental Clinic Kolkata website, services, and appointment system.";
+      seoRobots = 'noindex,nofollow';
+      break;
+    case 'cookie-policy':
+      seoTitle = "Cookie Policy | Dent 'O' Dent Dental Clinic Kolkata";
+      seoDescription = "Learn how Dent 'O' Dent Dental Clinic Kolkata uses cookies and similar technologies on our website.";
+      seoRobots = 'noindex,nofollow';
+      break;
+    case 'home':
+    default:
+      break;
+  }
+
   useEffect(() => {
     // Check current route
     const checkRoute = () => {
@@ -210,23 +258,24 @@ function App() {
   return (
     <>
         <Helmet>
-          <title>{header.seoTitle || header.siteTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata | Dr. Setketu Chakraborty"}</title>
-          <meta name="description" content={header.seoDescription || 'Top-rated Dentist and Dental Clinic in Kolkata offering painless treatments: Dental Implants, Root Canal, Braces, Aligners, Smile Makeover, and Emergency Care. Book your appointment today!'} />
+          <title>{seoTitle}</title>
+          <meta name="description" content={seoDescription} />
           <meta name="keywords" content="Dentist Kolkata, Dental Clinic Kolkata, Best Dentist in Kolkata, Dental Implants Kolkata, Root Canal Kolkata, Orthodontist Kolkata, Cosmetic Dentistry Kolkata, Emergency Dentist Kolkata" />
+          <meta name="robots" content={seoRobots} />
           <link rel="canonical" href={canonicalUrl} />
           {header.faviconUrl && <link rel="icon" href={header.faviconUrl} />}
 
           {/* Open Graph */}
           <meta property="og:type" content="website" />
-          <meta property="og:title" content={header.ogTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata"} />
-          <meta property="og:description" content={header.ogDescription || "Advanced dental treatments with modern technology and compassionate care in Kolkata. Book your appointment with Dent 'O' Dent."} />
+          <meta property="og:title" content={header.ogTitle || seoTitle} />
+          <meta property="og:description" content={header.ogDescription || seoDescription} />
           <meta property="og:url" content={canonicalUrl} />
           <meta property="og:image" content={header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
 
           {/* Twitter Card */}
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content={header.twitterTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata"} />
-          <meta name="twitter:description" content={header.twitterDescription || 'Advanced dental treatments with modern technology and compassionate care in Kolkata.'} />
+          <meta name="twitter:title" content={header.twitterTitle || seoTitle} />
+          <meta name="twitter:description" content={header.twitterDescription || seoDescription} />
           <meta name="twitter:image" content={header.twitterImage || header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
 
           {/* Local Business Schema (Dentist) */}

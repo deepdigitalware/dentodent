@@ -67,6 +67,8 @@ const Contact = () => {
     return unique;
   })();
 
+  const contactSection = content.contact || {};
+
   return (
     <section id="contact" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,12 +80,16 @@ const Contact = () => {
           viewport={{ once: true, amount: 0.1 }} // Reduce amount for better performance
           className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-display font-bold mb-4 md:mb-6">
-            {content.contact.title}
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            {content.contact.subtitle}
-          </p>
+          {contactSection.title && (
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-display font-bold mb-4 md:mb-6">
+              {contactSection.title}
+            </h2>
+          )}
+          {contactSection.subtitle && (
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              {contactSection.subtitle}
+            </p>
+          )}
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-16">

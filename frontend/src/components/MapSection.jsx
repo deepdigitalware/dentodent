@@ -22,7 +22,7 @@ const MapSection = () => {
           className="text-center mb-8"
         >
           <h2 className="text-4xl lg:text-5xl font-display font-bold mb-4">
-            {content.map.title || 'Find Us'}
+            {map.title || 'Find Us'}
           </h2>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto">
             {address}

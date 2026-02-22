@@ -116,7 +116,9 @@ const Error404 = () => {
               onClick={openWhatsApp}
               className="bg-white hover:bg-white text-black px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-gray-200"
             >
-              <WhatsAppIcon className="w-5 h-5 mr-2" />
+              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#25D366] mr-2">
+                <WhatsAppIcon className="w-4 h-4" />
+              </span>
               Chat on WhatsApp
             </Button>
           </div>

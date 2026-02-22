@@ -9,7 +9,8 @@ const FAQ = () => {
   const { content } = useContent();
   const [openItems, setOpenItems] = useState(new Set());
  
-  const faqData = content.faq?.items || [];
+  const faqSection = content.faq || {};
+  const faqData = faqSection.items || [];
  
   const toggleItem = (id) => {
     const newOpenItems = new Set(openItems);
@@ -32,12 +33,16 @@ const FAQ = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-display font-bold mb-6">
-            {content.faq.title}
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {content.faq.subtitle}
-          </p>
+          {faqSection.title && (
+            <h2 className="text-4xl lg:text-5xl font-display font-bold mb-6">
+              {faqSection.title}
+            </h2>
+          )}
+          {faqSection.subtitle && (
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {faqSection.subtitle}
+            </p>
+          )}
         </motion.div>
 
         {/* FAQ Items - Simple Accordion Style */}
@@ -108,7 +113,9 @@ const FAQ = () => {
               onClick={() => window.open('https://wa.me/916290093271?text=Hi%20Dent%20O%20Dent%2C%20I%20have%20a%20question%20about%20your%20dental%20services.', '_blank')}
               className="bg-white hover:bg-white text-black px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center border border-gray-200"
             >
-              <WhatsAppIcon className="w-5 h-5 mr-2" />
+              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#25D366] mr-2">
+                <WhatsAppIcon className="w-4 h-4" />
+              </span>
               Chat on WhatsApp
             </Button>
           </div>

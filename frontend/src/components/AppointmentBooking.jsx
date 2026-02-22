@@ -178,8 +178,6 @@ const AppointmentBooking = () => {
           .card { max-width: 800px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 32px 40px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12); }
           .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
           .brand { display: flex; align-items: center; gap: 12px; }
-          .brand-title { font-size: 22px; font-weight: 700; letter-spacing: 0.03em; color: #0f172a; }
-          .brand-sub { font-size: 12px; text-transform: uppercase; color: #64748b; letter-spacing: 0.14em; }
           .badge { padding: 6px 12px; border-radius: 999px; background: linear-gradient(to right, #0ea5e9, #22c55e); color: white; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; }
           .title { font-size: 24px; font-weight: 700; margin-bottom: 4px; color: #0f172a; }
           .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 20px; }
@@ -188,9 +186,12 @@ const AppointmentBooking = () => {
           td { padding: 10px 12px; vertical-align: top; font-size: 13px; }
           .label { width: 32%; font-weight: 600; color: #4b5563; }
           .value { color: #111827; }
-          .footer { margin-top: 28px; font-size: 11px; color: #6b7280; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-          .footer span { display: block; }
+          .footer { margin-top: 28px; font-size: 10px; color: #6b7280; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+          .footer-meta { white-space: nowrap; font-size: 9px; }
+          .footer-right { display: flex; align-items: center; gap: 12px; }
+          .footer-note { white-space: nowrap; font-size: 9px; }
           .accent { color: #0ea5e9; font-weight: 600; }
+          .footer-badge { padding: 4px 10px; border-radius: 999px; background: #16a34a; color: #ecfdf5; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; }
           .logo { height: 40px; }
         </style>
       </head>
@@ -199,21 +200,20 @@ const AppointmentBooking = () => {
           <div class="header">
             <div class="brand">
               <img src="${siteLogo}" alt="Dent 'O' Dent Dental Clinic" class="logo" />
-              <div>
-                <div class="brand-title">DENT 'O' DENT</div>
-                <div class="brand-sub">DENTAL CLINIC • SALT LAKE</div>
-              </div>
             </div>
             <div class="badge">Appointment Summary</div>
           </div>
           <div>
-            <div class="title">Appointment Details</div>
-            <div class="subtitle">Summary of your requested dental appointment at Dent 'O' Dent.</div>
+            <div class="title">Dr. Setketu Chakraborty</div>
+            <div class="subtitle">Bachelor of Dental Surgery</div>
             <table>${rowsHtml}</table>
           </div>
           <div class="footer">
-            <span>Generated on <strong>${createdAt}</strong></span>
-            <span class="accent">This document is for patient reference and does not confirm a final appointment slot until verified by our clinic.</span>
+            <span class="footer-meta">Generated on <strong>${createdAt}</strong></span>
+            <div class="footer-right">
+              <span class="footer-note accent">This document is for patient reference and does not confirm a final appointment slot until verified by our clinic.</span>
+              <span class="footer-badge">Booking Confirmed</span>
+            </div>
           </div>
         </div>
         <script>

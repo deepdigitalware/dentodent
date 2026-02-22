@@ -2,6 +2,30 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ContentContext = createContext();
 
+const initialContent = {
+  header: {},
+  hero: {},
+  about: {},
+  services: {},
+  contact: {},
+  doctor: {},
+  testimonials: {},
+  gallery: {},
+  blog: {},
+  faq: {},
+  appointment: {},
+  slider: {},
+  cta: {},
+  patient: {},
+  footer: {},
+  privacyPolicy: {},
+  termsOfService: {},
+  blogPosts: [],
+  treatments: [],
+  reviews: [],
+  map: {}
+};
+
 // API base URL - using window.location for client-side detection
 const getApiUrl = () => {
   // Check environment variable first
@@ -47,30 +71,7 @@ export const useContent = () => {
 };
 
 export const ContentProvider = ({ children }) => {
-  const [content, setContent] = useState({
-    // Initialize with empty objects to be populated from API
-    header: {},
-    hero: {},
-    about: {},
-    services: {},
-    contact: {},
-    doctor: {},
-    testimonials: {},
-    gallery: {},
-    blog: {},
-    faq: {},
-    appointment: {},
-    slider: {},
-    cta: {},
-    patient: {},
-    footer: {},
-    privacyPolicy: {},
-    termsOfService: {},
-    blogPosts: [],
-    treatments: [],
-    reviews: [],
-    map: {}
-  });
+  const [content, setContent] = useState(initialContent);
 
   const [apiUrl, setApiUrl] = useState(getApiUrl());
 
@@ -115,6 +116,7 @@ export const ContentProvider = ({ children }) => {
           console.log('API content loaded successfully:', apiContent);
           // Ensure array-based sections are always arrays
           const safeContent = {
+            ...initialContent,
             ...apiContent,
             // Handle nested array structures with more robust checking
             blogPosts: (() => {
@@ -157,6 +159,7 @@ export const ContentProvider = ({ children }) => {
             // Ensure array-based sections are always arrays
             const base = (apiContent && typeof apiContent === 'object' && !Array.isArray(apiContent)) ? apiContent : {};
             const safeContent = {
+              ...initialContent,
               ...base,
               // Handle nested array structures with more robust checking
               blogPosts: (() => {
