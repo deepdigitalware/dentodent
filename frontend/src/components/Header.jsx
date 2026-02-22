@@ -276,16 +276,10 @@ const Header = ({ onNavigate }) => {
               ))}
               <div className="space-y-3 pt-3 border-t border-gray-200">
                 <Button
-                  onClick={() => {
-                    const ctaMode = header.ctaMode || 'route';
-                    const ctaTarget = header.ctaTarget || 'appointment';
-                    if (ctaMode === 'route') handleNavigation(ctaTarget);
-                    else if (ctaMode === 'scroll') scrollToSection(ctaTarget);
-                    else handleNavigation('appointment');
-                  }}
+                  onClick={() => window.open('https://wa.me/916290093271', '_blank')}
                   className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-2 rounded-full font-semibold shadow-lg text-sm"
                 >
-                  {header.ctaText || 'Book Appointment'}
+                  {header.ctaText || 'Book a Free Appointment'}
                 </Button>
               </div>
             </div>

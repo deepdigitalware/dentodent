@@ -181,29 +181,6 @@ const SliderBanner = () => {
         </svg>
       </button>
 
-      {/* Simple CTA over banner when title/subtitle/link set */}
-      <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4 py-20 md:py-0">
-        {current.title && (
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 max-w-4xl drop-shadow-lg">
-            {current.title}
-          </h1>
-        )}
-        {current.subtitle && (
-          <p className="text-lg md:text-xl text-white mb-6 max-w-2xl opacity-90 drop-shadow">
-            {current.subtitle}
-          </p>
-        )}
-        {current.linkUrl && (
-          <button
-            type="button"
-            onClick={handleCtaClick}
-            className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center gap-2"
-          >
-            <span>{current.linkLabel || 'Learn More'}</span>
-          </button>
-        )}
-      </div>
-
       {/* Dots Indicator */}
       <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 md:space-x-3">
         {slides.map((_, index) => (

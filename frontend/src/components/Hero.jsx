@@ -11,7 +11,7 @@ const Hero = () => {
   
   const handleBooking = () => {
     if (typeof window !== 'undefined') {
-      window.location.href = '/appointment';
+      window.open('https://wa.me/916290093271', '_blank');
     }
   };
 

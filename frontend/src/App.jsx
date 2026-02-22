@@ -362,7 +362,6 @@ function App() {
             <Doctor />
             <Testimonials />
             <Gallery />
-            <Reviews />
             <Blog />
             <FAQ />
             <Contact />

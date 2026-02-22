@@ -30,7 +30,6 @@ const Doctor = () => {
 
   const achievements = [
     { icon: GraduationCap, title: 'Education', details: education },
-    { icon: Award, title: 'Certifications', details: certifications },
     { icon: Users, title: 'Experience', details: experience }
   ].filter(item => Array.isArray(item.details) && item.details.length > 0);
   

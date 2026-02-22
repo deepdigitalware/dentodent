@@ -22,19 +22,38 @@ const Testimonials = () => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Use normalized reviews array from content
   const reviewsSource = Array.isArray(content.reviews)
     ? content.reviews
     : Array.isArray(content.reviews?.items)
       ? content.reviews.items
       : [];
 
-  const testimonialsData = reviewsSource.map(review => ({
-    name: review.name,
-    rating: review.rating,
-    text: review.message || review.comment,
-    date: review.date
-  }));
+  const normalizedReviews = Array.isArray(reviewsSource) ? reviewsSource : [];
+
+  const testimonialsData = normalizedReviews
+    .map((review) => {
+      const rawDate = review.date;
+      let formattedDate = rawDate;
+
+      if (rawDate) {
+        const d = new Date(rawDate);
+        if (!Number.isNaN(d.getTime())) {
+          formattedDate = d.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
+        }
+      }
+
+      return {
+        name: review.name || 'Patient',
+        rating: Number.isFinite(Number(review.rating)) ? Number(review.rating) : 5,
+        text: review.message || review.comment || '',
+        date: formattedDate
+      };
+    })
+    .filter((item) => item.text);
 
   const cardsPerSlide = isDesktop ? 3 : 1;
   const totalSlides = Math.ceil(testimonialsData.length / cardsPerSlide);
@@ -51,14 +70,17 @@ const Testimonials = () => {
   }, [totalSlides]);
 
   const nextSlide = () => {
+    if (totalSlides <= 0) return;
     setCurrentIndex((prev) => (prev + 1) % totalSlides);
   };
 
   const prevSlide = () => {
+    if (totalSlides <= 0) return;
     setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
   };
 
   const goToSlide = (index) => {
+    if (totalSlides <= 0) return;
     setCurrentIndex(index);
   };
 
@@ -94,9 +116,13 @@ const Testimonials = () => {
 
   const handleBookAppointment = () => {
     if (typeof window !== 'undefined') {
-      window.location.href = '/appointment';
+      window.open('https://wa.me/916290093271', '_blank');
     }
   };
+
+  if (!testimonialsData.length) {
+    return null;
+  }
 
   return (
     <section className="py-16 md:py-20 pb-20 md:pb-24 bg-white">
@@ -267,7 +293,7 @@ const Testimonials = () => {
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center mx-auto"
             >
               <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              Book Your Appointment
+              Book a Free Appointment
             </Button>
           </div>
         </motion.div>

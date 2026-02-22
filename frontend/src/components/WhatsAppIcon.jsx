@@ -1,11 +1,9 @@
 import React from 'react';
-import whatsappIcon from '@/assets/icons/whatsapp.svg';
+import { MessageCircle } from 'lucide-react';
 
-const WhatsAppIcon = ({ className = "w-5 h-5" }) => {
+const WhatsAppIcon = ({ className = 'w-5 h-5' }) => {
   return (
-    <img
-      src={whatsappIcon}
-      alt="WhatsApp"
+    <MessageCircle
       className={className}
     />
   );

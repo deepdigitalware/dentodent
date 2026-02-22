@@ -16,7 +16,6 @@ const Stars = ({ rating = 0 }) => {
 const Reviews = () => {
   const { content } = useContent();
   
-  // Use normalized reviews array from API/content context
   const reviewsData = (() => {
     if (Array.isArray(content.reviews?.items) && content.reviews.items.length > 0) {
       return content.reviews.items;
@@ -24,29 +23,12 @@ const Reviews = () => {
     if (Array.isArray(content.reviews) && content.reviews.length > 0) {
       return content.reviews;
     }
-    // Fallback to initial defaults if API has no reviews
-    const defaults = [
-      {
-        name: 'Priya Sharma',
-        rating: 5,
-        message: 'Very professional and friendly staff. My root canal was completely painless and the doctor explained every step clearly.',
-        date: '2024-01-15'
-      },
-      {
-        name: 'Rahul Verma',
-        rating: 5,
-        message: 'Clean clinic, modern equipment and excellent treatment. I am very happy with my smile makeover.',
-        date: '2024-02-03'
-      },
-      {
-        name: 'Ananya Gupta',
-        rating: 4,
-        message: 'Got my teeth cleaning and fillings done. The team was patient and made sure I was comfortable throughout.',
-        date: '2024-02-20'
-      }
-    ];
-    return defaults;
+    return [];
   })();
+
+  if (reviewsData.length === 0) {
+    return null;
+  }
 
   return (
     <section id="reviews" className="py-20 bg-gradient-to-br from-blue-50 to-gray-50">
@@ -70,10 +52,7 @@ const Reviews = () => {
           )}
         </motion.div>
 
-        {reviewsData.length === 0 ? (
-          <p className="text-center text-gray-500">No reviews available yet.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reviewsData.map((review, index) => (
             <motion.div
               key={index}
@@ -99,8 +78,7 @@ const Reviews = () => {
               )}
             </motion.div>
           ))}
-          </div>
-        )}
+        </div>
       </div>
     </section>
   );

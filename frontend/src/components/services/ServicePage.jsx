@@ -63,8 +63,8 @@ export default function ServicePage({
             <h1 className="text-4xl lg:text-5xl font-display font-bold mb-4">{title}</h1>
             <p className="text-lg text-gray-700 mb-6">{description}</p>
             <div className="flex gap-4">
-              <Button onClick={() => onNavigate && onNavigate('appointment')} className="bg-blue-600 text-white">
-                Book Appointment
+              <Button onClick={() => window.open('https://wa.me/916290093271', '_blank')} className="bg-blue-600 text-white">
+                Book a Free Appointment
               </Button>
               <Button onClick={() => onNavigate && onNavigate('contact')} variant="outline" className="border-blue-600 text-blue-600">
                 Contact Us
