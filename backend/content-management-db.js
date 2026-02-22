@@ -1271,6 +1271,58 @@ async function initializeDatabase() {
               featured: true,
               readTime: "4 min",
               tags: ["clinic", "welcome"]
+            },
+            {
+              id: 2,
+              slug: "painless-root-canal-kolkata-2026",
+              title: "Painless Root Canal Treatment in Kolkata (2026 Guide)",
+              category: "root-canal",
+              date: new Date().toISOString().split('T')[0],
+              excerpt: "Learn how modern rotary instruments and digital X-rays make root canal therapy comfortable and predictable.",
+              cover: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=1200",
+              author: "Dr. Setketu Chakraborty",
+              featured: true,
+              readTime: "6 min",
+              tags: ["root canal", "painless", "RCT"]
+            },
+            {
+              id: 3,
+              slug: "dental-implant-cost-kolkata-2026",
+              title: "Dental Implant Cost in Kolkata (2026 Updated Pricing)",
+              category: "implants",
+              date: new Date().toISOString().split('T')[0],
+              excerpt: "Transparent breakdown of single-tooth implant costs, full-arch options, and EMI facilities at Dent 'O' Dent.",
+              cover: "https://images.unsplash.com/photo-1582719478250-cc250a63c9a3?w=1200",
+              author: "Dent 'O' Dent Team",
+              featured: true,
+              readTime: "7 min",
+              tags: ["implants", "cost", "kolkata"]
+            },
+            {
+              id: 4,
+              slug: "braces-vs-aligners-kolkata-2026",
+              title: "Braces vs Clear Aligners: Which is Better for You in 2026?",
+              category: "orthodontics",
+              date: new Date().toISOString().split('T')[0],
+              excerpt: "Compare metal braces, ceramic braces, and clear aligners for teens and working professionals.",
+              cover: "https://images.unsplash.com/photo-1606811841690-4e2579c22109?w=1200",
+              author: "Orthodontic Team",
+              featured: false,
+              readTime: "8 min",
+              tags: ["braces", "aligners", "smile"]
+            },
+            {
+              id: 5,
+              slug: "teeth-whitening-safety-2026",
+              title: "Is Teeth Whitening Safe in 2026? Myths vs Facts",
+              category: "whitening",
+              date: new Date().toISOString().split('T')[0],
+              excerpt: "Understand in-clinic whitening vs home kits and how to keep sensitivity minimal.",
+              cover: "https://images.unsplash.com/photo-1580915411954-282cb1c9c450?w=1200",
+              author: "Dent 'O' Dent Team",
+              featured: false,
+              readTime: "5 min",
+              tags: ["whitening", "sensitivity", "cosmetic"]
             }
           ]
         })
@@ -1321,6 +1373,56 @@ async function initializeDatabase() {
               slug: "invisalign-aligners",
               imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600",
               description: "Discreet clear aligners to straighten your teeth comfortably."
+            },
+            {
+              title: "Single-Visit Root Canal",
+              slug: "single-visit-root-canal",
+              imageUrl: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600",
+              description: "Modern rotary root canal treatment completed in one to two visits."
+            },
+            {
+              title: "Dental Implants",
+              slug: "dental-implants-kolkata",
+              imageUrl: "https://images.unsplash.com/photo-1582719478250-cc250a63c9a3?w=600",
+              description: "Natural-looking implant solutions for single or multiple missing teeth."
+            }
+          ]
+        })
+      ]);
+
+      await pool.query(`
+        INSERT INTO content_sections (section_id, content_data)
+        VALUES ($1, $2)
+      `, [
+        'faq',
+        JSON.stringify({
+          title: "Frequently Asked Questions",
+          subtitle: "Answers to common dental questions in 2026",
+          items: [
+            {
+              id: "rct-pain-2026",
+              question: "Is root canal treatment still painful in 2026?",
+              answer: "With modern anesthesia, rotary instruments, and digital X-rays, most patients report only mild discomfort. At Dent 'O' Dent we also offer anxiety control protocols for nervous patients."
+            },
+            {
+              id: "implant-longevity-2026",
+              question: "How long do dental implants last?",
+              answer: "With proper brushing, flossing, and regular checkups, implants can last 15–20 years or more. 3D planning and guided surgery in 2026 further improve long-term success."
+            },
+            {
+              id: "aligner-time-2026",
+              question: "How long do clear aligners take to straighten teeth?",
+              answer: "Mild crowding may finish in 6–9 months, while complex cases can take 18–24 months. We monitor progress with periodic reviews and digital simulations."
+            },
+            {
+              id: "whitening-frequency-2026",
+              question: "How often can I do teeth whitening safely?",
+              answer: "Most patients can safely whiten every 12–18 months with in-clinic protocols and remineralizing pastes. We avoid over-whitening to protect enamel."
+            },
+            {
+              id: "emergency-dental-2026",
+              question: "What should I do in a dental emergency at night?",
+              answer: "Rinse with clean water, avoid taking aspirin directly on the gums, and contact our emergency number or WhatsApp. We prioritize severe pain, swelling, or trauma cases."
             }
           ]
         })
@@ -1333,7 +1435,17 @@ async function initializeDatabase() {
       await pool.query(`
         INSERT INTO images (url, alt, category) VALUES
         ('https://images.unsplash.com/photo-1588776813677-77d805c04d5c?w=1200', 'Dental care', 'hero'),
-        ('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800', 'Dental clinic', 'about')
+        ('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800', 'Dental clinic', 'about'),
+        ('https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=1200', 'Dental surgery team', 'gallery'),
+        ('https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200', 'Smiling patient in chair', 'gallery'),
+        ('https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=1200', 'Modern dental equipment', 'gallery'),
+        ('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200', 'Dentist explaining treatment plan', 'gallery'),
+        ('https://images.unsplash.com/photo-1606813902914-9a6f01f90b54?w=1200', 'Dental hygienist at work', 'gallery'),
+        ('https://images.unsplash.com/photo-1580910365203-7986c7a37c1b?w=1200', 'Close-up of bright smile', 'gallery'),
+        ('https://images.unsplash.com/photo-1609843470416-425a1e4b8caa?w=1200', 'Child at dental clinic', 'gallery'),
+        ('https://images.unsplash.com/photo-1599059813304-11265ba4b7a5?w=1200', 'Dental X-ray review', 'gallery'),
+        ('https://images.unsplash.com/photo-1582719478250-cc250a63c9a3?w=1200', 'Dentist with patient consultation', 'gallery'),
+        ('https://images.unsplash.com/photo-1606811841690-4e2579c22109?w=1200', 'Dental assistant preparing room', 'gallery')
       `);
     }
     
@@ -1343,7 +1455,9 @@ async function initializeDatabase() {
       await pool.query(`
         INSERT INTO media_items (title, caption, alt_text, url, category, tags) VALUES
         ('Dental Care', 'Professional dental care service', 'Dental care', 'https://images.unsplash.com/photo-1588776813677-77d805c04d5c?w=1200', 'hero', '["dental", "care"]'),
-        ('Dental Clinic', 'Modern dental clinic interior', 'Dental clinic', 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800', 'about', '["clinic", "interior"]')
+        ('Dental Clinic', 'Modern dental clinic interior', 'Dental clinic', 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800', 'about', '["clinic", "interior"]'),
+        ('Smile Makeover', 'Before and after smile transformation', 'Smile makeover', 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200', 'gallery', '["smile", "makeover"]'),
+        ('Painless Root Canal', 'Modern endodontic treatment setup', 'Root canal setup', 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=1200', 'gallery', '["root canal", "equipment"]')
       `);
     }
     
