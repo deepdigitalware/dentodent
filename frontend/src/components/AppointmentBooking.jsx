@@ -902,7 +902,7 @@ const AppointmentBooking = () => {
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
             >
               <CheckCircle className="w-4 h-4 mr-2" />
-              Book Appointment
+              Book a Free Appointment
             </Button>
           )}
         </div>

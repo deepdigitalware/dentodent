@@ -121,14 +121,14 @@ const Hero = () => {
                 onClick={handleBooking}
                 className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-base md:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 pulse-glow"
               >
-                {content.hero.buttonText}
+                Book a Free Appointment
               </Button>
               <Button
                 onClick={handleCall}
                 variant="outline"
                 className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-base md:text-lg transition-all duration-300"
               >
-                {content.hero.phoneNumber}
+                Call Now
               </Button>
             </motion.div>
 

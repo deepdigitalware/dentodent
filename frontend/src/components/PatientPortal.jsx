@@ -361,8 +361,7 @@ const PatientPortal = () => {
               onClick={() => setActiveTab('appointments')}
               className="bg-blue-600 hover:bg-blue-700 text-white p-3 text-sm"
             >
-              <Calendar className="w-4 h-4 mr-2" />
-              Book Appointment
+              Book a Free Appointment
             </Button>
             <Button
               onClick={() => setActiveTab('billing')}
@@ -397,7 +396,7 @@ const PatientPortal = () => {
         <h3 className="text-2xl font-bold text-gray-800">My Appointments</h3>
         <Button className="bg-blue-600 hover:bg-blue-700 text-white">
           <Plus className="w-4 h-4 mr-2" />
-          Book New Appointment
+          Book a Free Appointment
         </Button>
       </div>
 

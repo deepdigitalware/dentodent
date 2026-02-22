@@ -173,7 +173,7 @@ const Header = ({ onNavigate }) => {
                 className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 <WhatsAppIcon className="w-6 h-6" />
-                <span className="text-sm md:text-base">Schedule a Free Consultation</span>
+                <span className="text-sm md:text-base">Book a Free Appointment</span>
               </button>
             </div>
 

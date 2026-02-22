@@ -1,12 +1,8 @@
 import React from 'react';
-import { MessageCircle } from 'lucide-react';
+import whatsappGlyph from '@/assets/icons/whatsapp-glyph.png';
 
 const WhatsAppIcon = ({ className = 'w-5 h-5' }) => {
-  return (
-    <MessageCircle
-      className={className}
-    />
-  );
+  return <img src={whatsappGlyph} alt="WhatsApp" className={className} />;
 };
 
 export default WhatsAppIcon;
