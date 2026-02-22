@@ -367,25 +367,87 @@ app.delete('/api/media/:id', async (req, res) => {
   }
 });
 
-// Proxy upload endpoint
+// Proxy upload endpoint - with compatibility fallback
 app.post('/api/upload/media', upload.single('file'), async (req, res) => {
   try {
-    const vpsApiUrl = `${API_ORIGIN}/api/upload/media`;
-    console.log('Uploading media via VPS API:', vpsApiUrl, 'name=', req.file?.originalname);
-    const form = new FormData();
-    if (req.file && req.file.buffer) {
-      const blob = new Blob([req.file.buffer], { type: req.file.mimetype || 'application/octet-stream' });
-      form.append('file', blob, req.file.originalname || 'upload.bin');
+    if (!req.file || !req.file.buffer) {
+      console.error('Media upload error: no file received by admin proxy');
+      return res.status(400).json({ error: 'No file uploaded' });
     }
-    // Forward additional fields if provided
-    const title = req.body?.title || req.file?.originalname || 'upload';
-    const category = req.body?.category || 'general';
-    form.append('title', title);
-    form.append('category', category);
 
-    const response = await fetch(vpsApiUrl, { method: 'POST', body: form });
-    const result = await response.json();
-    res.status(response.status).json(result);
+    const title = req.body?.title || req.file.originalname || 'upload';
+    const category = req.body?.category || 'general';
+
+    const makeBlob = () =>
+      new Blob([req.file.buffer], {
+        type: req.file.mimetype || 'application/octet-stream',
+      });
+
+    const primaryUrl = `${API_ORIGIN}/api/upload/media`;
+    console.log(
+      'Uploading media via VPS API (primary):',
+      primaryUrl,
+      'name=',
+      req.file.originalname,
+      'category=',
+      category
+    );
+
+    let response;
+    let result;
+
+    try {
+      const form = new FormData();
+      form.append('file', makeBlob(), req.file.originalname || 'upload.bin');
+      form.append('title', title);
+      form.append('category', category);
+
+      response = await fetch(primaryUrl, { method: 'POST', body: form });
+      const text = await response.text();
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch {
+        result = { raw: text };
+      }
+
+      // If primary endpoint clearly fails, fall back to legacy /api/upload/image
+      if (!response.ok && (response.status === 400 || response.status === 404)) {
+        console.warn(
+          'Primary /api/upload/media failed with status',
+          response.status,
+          'response=',
+          result
+        );
+
+        const legacyUrl = `${API_ORIGIN}/api/upload/image`;
+        console.log(
+          'Falling back to legacy image upload endpoint:',
+          legacyUrl
+        );
+
+        const legacyForm = new FormData();
+        legacyForm.append(
+          'image',
+          makeBlob(),
+          req.file.originalname || 'upload.bin'
+        );
+        legacyForm.append('alt', title);
+        legacyForm.append('section', category);
+
+        response = await fetch(legacyUrl, { method: 'POST', body: legacyForm });
+        const legacyText = await response.text();
+        try {
+          result = legacyText ? JSON.parse(legacyText) : {};
+        } catch {
+          result = { raw: legacyText };
+        }
+      }
+    } catch (innerErr) {
+      console.error('Media upload proxy internal error:', innerErr);
+      return res.status(500).json({ error: 'Failed to upload media' });
+    }
+
+    return res.status(response.status).json(result);
   } catch (err) {
     console.error('Media upload proxy error:', err);
     res.status(500).json({ error: 'Failed to upload media' });

@@ -26,7 +26,6 @@ const ImageManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Load images on component mount
   React.useEffect(() => {
     loadImages();
   }, []);
@@ -39,9 +38,9 @@ const ImageManagement = () => {
       });
       
       if (response.ok) {
-        const allImages = await response.json();
-        
-        // Group images by section
+        const raw = await response.json();
+        const allImages = Array.isArray(raw) ? raw : (raw.images || []);
+
         const groupedImages = {
           hero: [],
           about: [],
@@ -56,14 +55,18 @@ const ImageManagement = () => {
         };
         
         allImages.forEach(image => {
-          const section = image.section || 'general';
+          const section = image.section || image.category || 'general';
           if (groupedImages[section]) {
+            const url = image.url || (image.path ? `${apiUrl}${image.path}` : '');
+            const sizeBytes = image.size || image.file_size || 0;
+            const typeSource = image.mimetype || image.file_type || '';
+            const type = typeSource ? (typeSource.split('/')[1] || typeSource) : 'unknown';
             groupedImages[section].push({
               id: image.id,
-              name: image.name,
-              url: `${apiUrl}${image.path}`,
-              size: `${(image.size / 1024).toFixed(0)} KB`,
-              type: image.mimetype?.split('/')[1] || 'unknown',
+              name: image.name || image.alt || '',
+              url,
+              size: sizeBytes ? `${(sizeBytes / 1024).toFixed(0)} KB` : '—',
+              type,
               isBranding: section === 'branding',
               isLogo: section === 'logos',
               isFavicon: section === 'favicons'
@@ -114,12 +117,18 @@ const ImageManagement = () => {
 
         if (response.ok) {
           const result = await response.json();
+          const img = result.image || result;
+          const url = img.url || (img.path ? `${apiUrl}${img.path}` : '');
+          const sizeBytes = img.size || img.file_size || file.size;
+          const typeSource = img.mimetype || img.file_type || file.type || '';
+          const type = typeSource ? (typeSource.split('/')[1] || typeSource) : 'unknown';
+
           const newImage = {
-            id: result.image.id,
-            name: result.image.name,
-            url: `${apiUrl}${result.image.path}`,
-            size: `${(result.image.size / 1024).toFixed(0)} KB`,
-            type: result.image.mimetype?.split('/')[1] || 'unknown',
+            id: img.id,
+            name: img.name || file.name,
+            url,
+            size: sizeBytes ? `${(sizeBytes / 1024).toFixed(0)} KB` : '—',
+            type,
             isNew: true
           };
 
@@ -139,7 +148,6 @@ const ImageManagement = () => {
     } finally {
       setIsUploading(false);
       
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }

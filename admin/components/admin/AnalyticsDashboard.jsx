@@ -75,8 +75,23 @@ const AnalyticsDashboard = () => {
     try {
       const response = await fetchWithRefresh(`${apiUrl}/api/metrics`);
       if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
+        const text = await response.text().catch(() => '');
+        if (text && text.trim().startsWith('<')) {
+          throw new Error(`Metrics endpoint returned HTML (status ${response.status})`);
+        }
+        let err = {};
+        try {
+          err = JSON.parse(text || '{}');
+        } catch {
+        }
         throw new Error(err.error || `Failed to load metrics (${response.status})`);
+      }
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text().catch(() => '');
+        throw new Error(text && text.trim().startsWith('<')
+          ? 'Metrics endpoint returned HTML instead of JSON'
+          : 'Metrics endpoint did not return JSON data');
       }
       const data = await response.json();
       setMetrics(data);

@@ -4,14 +4,14 @@ import { Button } from '../ui/button';
 import { useToast } from '../ui/use-toast';
 import { useContent } from '../../contexts/ContentContext';
 
-const MediaLibrary = () => {
+const MediaLibrary = ({ initialTab = 'all' }) => {
   const [mediaItems, setMediaItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(initialTab || 'all');
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -26,6 +26,10 @@ const MediaLibrary = () => {
   const fileInputRef = useRef(null);
   const { toast } = useToast();
   const { apiUrl } = useContent();
+
+  useEffect(() => {
+    setSelectedCategory(initialTab || 'all');
+  }, [initialTab]);
 
   const categories = [
     { id: 'all', name: 'All Media' },
@@ -77,8 +81,9 @@ const MediaLibrary = () => {
         throw new Error(err.error || `Failed to load media items (${response.status})`);
       }
       const data = await response.json();
-      setMediaItems(data);
-      setFilteredItems(data);
+      const normalized = Array.isArray(data) ? data : (data.media || data.items || []);
+      setMediaItems(normalized);
+      setFilteredItems(normalized);
     } catch (e) {
       setError(e.message);
       toast({
@@ -91,6 +96,22 @@ const MediaLibrary = () => {
     }
   };
 
+  const isImage = (item) => {
+    if (!item) return false;
+    const type = (item.file_type || '').toLowerCase();
+    if (type.startsWith('image/')) return true;
+    const url = (item.file_path || item.url || '').toLowerCase();
+    return /\.(jpg|jpeg|png|gif|webp|avif|svg)$/.test(url);
+  };
+
+  const isVideo = (item) => {
+    if (!item) return false;
+    const type = (item.file_type || '').toLowerCase();
+    if (type.startsWith('video/')) return true;
+    const url = (item.file_path || item.url || '').toLowerCase();
+    return /\.(mp4|mov|webm|mkv|avi)$/.test(url);
+  };
+
   useEffect(() => {
     fetchMediaItems();
   }, [apiUrl]);
@@ -100,20 +121,26 @@ const MediaLibrary = () => {
     
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(item => 
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.caption.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.alt_text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.tags && item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
-      );
+      const q = searchTerm.toLowerCase();
+      filtered = filtered.filter(item => {
+        const title = (item.title || '').toLowerCase();
+        const caption = (item.caption || '').toLowerCase();
+        const alt = (item.alt_text || '').toLowerCase();
+        const tags = Array.isArray(item.tags) ? item.tags : [];
+        return (
+          title.includes(q) ||
+          caption.includes(q) ||
+          alt.includes(q) ||
+          tags.some(tag => (tag || '').toLowerCase().includes(q))
+        );
+      });
     }
     
-    // Apply category filter
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(item => 
         item.category === selectedCategory || 
-        (selectedCategory === 'images' && item.file_type.startsWith('image/')) ||
-        (selectedCategory === 'videos' && item.file_type.startsWith('video/'))
+        (selectedCategory === 'images' && isImage(item)) ||
+        (selectedCategory === 'videos' && isVideo(item))
       );
     }
     
@@ -231,8 +258,9 @@ const MediaLibrary = () => {
   };
 
   const getFileIcon = (fileType) => {
-    if (fileType.startsWith('image/')) return <ImageIcon className="w-8 h-8 text-blue-500" />;
-    if (fileType.startsWith('video/')) return <Video className="w-8 h-8 text-red-500" />;
+    const type = (fileType || '').toLowerCase();
+    if (type.startsWith('image/')) return <ImageIcon className="w-8 h-8 text-blue-500" />;
+    if (type.startsWith('video/')) return <Video className="w-8 h-8 text-red-500" />;
     return <File className="w-8 h-8 text-gray-500" />;
   };
 
@@ -366,7 +394,7 @@ const MediaLibrary = () => {
             {filteredItems.map((item) => (
               <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                 <div className="aspect-square bg-gray-50 flex items-center justify-center relative">
-                  {item.file_type.startsWith('image/') ? (
+                  {isImage(item) ? (
                     <img 
                       src={item.file_path} 
                       alt={item.alt_text || item.title} 
@@ -402,8 +430,8 @@ const MediaLibrary = () => {
                   <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
                     <span>{formatFileSize(item.file_size)}</span>
                     <span className="capitalize">
-                      {item.file_type.startsWith('image/') ? 'Image' : 
-                       item.file_type.startsWith('video/') ? 'Video' : 'File'}
+                      {isImage(item) ? 'Image' : 
+                       isVideo(item) ? 'Video' : 'File'}
                     </span>
                   </div>
                   {item.category && (
@@ -435,7 +463,7 @@ const MediaLibrary = () => {
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center">
-                        {item.file_type.startsWith('image/') ? (
+                        {isImage(item) ? (
                           <img 
                             src={item.file_path} 
                             alt={item.alt_text || item.title} 
@@ -451,8 +479,8 @@ const MediaLibrary = () => {
                       <div className="text-sm text-gray-500">{item.original_name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
-                      {item.file_type.startsWith('image/') ? 'Image' : 
-                       item.file_type.startsWith('video/') ? 'Video' : 'File'}
+                      {isImage(item) ? 'Image' : 
+                       isVideo(item) ? 'Video' : 'File'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatFileSize(item.file_size)}

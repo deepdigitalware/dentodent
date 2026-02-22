@@ -116,7 +116,8 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
   const handleArrayChange = (arrayName, index, field, value) => {
     // Special handling for blogPosts
     if (arrayName === 'blogPosts') {
-      const newArray = [...editingContent];
+      const current = Array.isArray(editingContent) ? editingContent : [];
+      const newArray = [...current];
       
       // Handle simple array of strings (like keywords)
       if (Array.isArray(field)) {
@@ -135,7 +136,8 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
       
       setEditingContent(newArray);
     } else {
-      const newArray = [...editingContent[arrayName]];
+      const baseArray = Array.isArray(editingContent[arrayName]) ? editingContent[arrayName] : [];
+      const newArray = [...baseArray];
       
       // Handle simple array of strings (like specialties, education, achievements)
       if (typeof field === 'number') {
@@ -159,14 +161,16 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
   const addArrayItem = (arrayName, template) => {
     // Special handling for blogPosts
     if (arrayName === 'blogPosts') {
+      const current = Array.isArray(editingContent) ? editingContent : [];
       setEditingContent([
-        ...editingContent,
+        ...current,
         template
       ]);
     } else {
+      const current = Array.isArray(editingContent[arrayName]) ? editingContent[arrayName] : [];
       setEditingContent({
         ...editingContent,
-        [arrayName]: [...editingContent[arrayName], template]
+        [arrayName]: [...current, template]
       });
     }
   };
@@ -174,10 +178,12 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
   const removeArrayItem = (arrayName, index) => {
     // Special handling for blogPosts
     if (arrayName === 'blogPosts') {
-      const newArray = editingContent.filter((_, i) => i !== index);
+      const current = Array.isArray(editingContent) ? editingContent : [];
+      const newArray = current.filter((_, i) => i !== index);
       setEditingContent(newArray);
     } else {
-      const newArray = editingContent[arrayName].filter((_, i) => i !== index);
+      const baseArray = Array.isArray(editingContent[arrayName]) ? editingContent[arrayName] : [];
+      const newArray = baseArray.filter((_, i) => i !== index);
       setEditingContent({
         ...editingContent,
         [arrayName]: newArray
@@ -386,7 +392,7 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
           <label className="block text-sm font-medium text-gray-700">Services</label>
           {isEditing && (
             <Button
-              onClick={() => addArrayItem('services', { name: '', description: '', icon: '🦷' })}
+              onClick={() => addArrayItem('services', { name: '', description: '', icon: '🦷', imageUrl: '' })}
               className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm"
             >
               <Plus className="w-4 h-4 mr-1" />
@@ -424,6 +430,15 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
                 className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={!isEditing}
               />
+              <div className="md:col-span-3">
+                <ImagePicker
+                  label="Service Image"
+                  value={service.imageUrl || ''}
+                  onChange={(url) => handleArrayChange('services', index, 'imageUrl', url)}
+                  section="services"
+                  disabled={!isEditing}
+                />
+              </div>
               <textarea
                 placeholder="Description"
                 value={service.description || ''}

@@ -23,13 +23,19 @@ const Testimonials = () => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Use API data, no fallbacks
-  const testimonialsData = content.reviews?.items?.map(review => ({
+  // Use normalized reviews array from content
+  const reviewsSource = Array.isArray(content.reviews)
+    ? content.reviews
+    : Array.isArray(content.reviews?.items)
+      ? content.reviews.items
+      : [];
+
+  const testimonialsData = reviewsSource.map(review => ({
     name: review.name,
     rating: review.rating,
-    text: review.message,
+    text: review.message || review.comment,
     date: review.date
-  })) || [];
+  }));
 
   const cardsPerSlide = isDesktop ? 3 : 1;
   const totalSlides = Math.ceil(testimonialsData.length / cardsPerSlide);

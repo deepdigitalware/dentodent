@@ -16,10 +16,12 @@ const Stars = ({ rating = 0 }) => {
 const Reviews = () => {
   const { content } = useContent();
   
-  // Use API-only data
-  const reviewsData = Array.isArray(content.reviews?.items)
-    ? content.reviews.items
-    : [];
+  // Use normalized reviews array from API/content context
+  const reviewsData = Array.isArray(content.reviews)
+    ? content.reviews
+    : Array.isArray(content.reviews?.items)
+      ? content.reviews.items
+      : [];
 
   return (
     <section id="reviews" className="py-20 bg-gradient-to-br from-blue-50 to-gray-50">
@@ -60,7 +62,7 @@ const Reviews = () => {
                 <h3 className="text-lg font-semibold">{review.name}</h3>
                 <Stars rating={review.rating} />
               </div>
-              <p className="text-gray-700 mb-4">{review.message}</p>
+              <p className="text-gray-700 mb-4">{review.message || review.comment}</p>
               {review.date && (
                 <p className="text-xs text-gray-500">
                   {new Date(review.date).toLocaleDateString('en-US', {

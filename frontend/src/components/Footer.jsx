@@ -74,7 +74,7 @@ const Footer = ({ onNavigate }) => {
 
   // Fallback values for footer content
   const year = new Date().getFullYear();
-  const footerText = content.footer.text || `© ${year} Dent O Dent Dental Clinic. All Rights Reserved.`;
+  const footerText = content.footer.text || content.footer.copyright || `© ${year} Dent O Dent Dental Clinic. All Rights Reserved.`;
   const clinicName = content.footer.clinicName || "Dent O Dent";
   const poweredByText = "Powered by";
 

@@ -31,35 +31,66 @@ const BannerManagement = () => {
   const { toast } = useToast();
   const { apiUrl } = useContent();
 
+  const getUploadBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+      const protocol = window.location.protocol;
+      const hostname = window.location.hostname;
+      if (hostname.includes('dentodentdentalclinic.com')) {
+        return `${protocol}//api.dentodentdentalclinic.com`;
+      }
+    }
+    return apiUrl;
+  };
+
   const fetchWithRefresh = async (url, options = {}) => {
     const token = localStorage.getItem('admin_token');
     const refreshToken = localStorage.getItem('admin_refresh_token');
+
+    const isFormData =
+      options &&
+      options.body &&
+      typeof FormData !== 'undefined' &&
+      options.body instanceof FormData;
+
+    const baseHeaders = {
+      ...(options.headers || {}),
+      Authorization: token ? `Bearer ${token}` : undefined,
+    };
+
+    if (!isFormData && !baseHeaders['Content-Type']) {
+      baseHeaders['Content-Type'] = 'application/json';
+    }
+
     const opts = {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-        Authorization: token ? `Bearer ${token}` : undefined,
-      },
+      headers: baseHeaders,
     };
+
     let res = await fetch(url, opts);
-    if (res.status === 401 || res.status === 403) {
-      if (refreshToken) {
-        const r = await fetch(`${apiUrl}/api/token/refresh`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refreshToken })
-        });
-        if (r.ok) {
-          const data = await r.json();
-          if (data.token) {
-            localStorage.setItem('admin_token', data.token);
-            opts.headers.Authorization = `Bearer ${data.token}`;
-            res = await fetch(url, opts);
-          }
+
+    if ((res.status === 401 || res.status === 403) && refreshToken) {
+      const r = await fetch(`${apiUrl}/api/token/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (r.ok) {
+        const data = await r.json();
+        if (data.token) {
+          localStorage.setItem('admin_token', data.token);
+          const retryOpts = {
+            ...opts,
+            headers: {
+              ...(opts.headers || {}),
+              Authorization: `Bearer ${data.token}`,
+            },
+          };
+          res = await fetch(url, retryOpts);
         }
       }
     }
+
     return res;
   };
 
@@ -108,11 +139,11 @@ const BannerManagement = () => {
 
     try {
       const formDataUpload = new FormData();
-      formDataUpload.append('file', file);
-      formDataUpload.append('title', file.name);
-      formDataUpload.append('category', 'banners');
+      formDataUpload.append('image', file);
+      formDataUpload.append('alt', file.name);
+      formDataUpload.append('section', 'banners');
 
-      const response = await fetchWithRefresh(`${apiUrl}/api/upload/media`, {
+      const response = await fetchWithRefresh(`${apiUrl}/api/upload/image`, {
         method: 'POST',
         body: formDataUpload
       });
@@ -123,13 +154,18 @@ const BannerManagement = () => {
       }
 
       const data = await response.json();
-              
-      // Set the image URL in the form data
+
+      const fileUrl =
+        data.media?.file_path ||
+        data.media?.url ||
+        data.image?.file_path ||
+        data.image?.url;
+
       if (isMobile) {
-        setFormData(prev => ({ ...prev, mobile_image_url: data.media?.file_path || data.image?.file_path }));
+        setFormData(prev => ({ ...prev, mobile_image_url: fileUrl }));
         setPreviewMobileImage(URL.createObjectURL(file));
       } else {
-        setFormData(prev => ({ ...prev, image_url: data.media?.file_path || data.image?.file_path }));
+        setFormData(prev => ({ ...prev, image_url: fileUrl }));
         setPreviewImage(URL.createObjectURL(file));
       }
 

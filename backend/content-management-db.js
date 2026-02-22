@@ -7,6 +7,7 @@ import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import fs from 'fs';
+import nodemailer from 'nodemailer';
 
 // Get __dirname equivalent in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -652,48 +653,63 @@ app.delete('/api/images/:id', async (req, res) => {
   }
 });
 
-// Banner API endpoints
-
-// Metrics endpoint
 app.get('/api/metrics', async (req, res) => {
   try {
     console.log('Fetching metrics from database');
-    
-    // Get content sections count
+
     const contentResult = await pool.query('SELECT COUNT(*) as count FROM content_sections');
     const contentCount = parseInt(contentResult.rows[0].count);
-    
-    // Get images count
+
     const imagesResult = await pool.query('SELECT COUNT(*) as count FROM images');
     const imagesCount = parseInt(imagesResult.rows[0].count);
-    
-    // Get media items count
+
     const mediaResult = await pool.query('SELECT COUNT(*) as count FROM media_items');
     const mediaCount = parseInt(mediaResult.rows[0].count);
-    
-    // Get banners count
+
     const bannersResult = await pool.query('SELECT COUNT(*) as count FROM banners');
     const bannersCount = parseInt(bannersResult.rows[0].count);
-    
-    // Sample metrics data
+
+    const contactResult = await pool.query(
+      "SELECT COUNT(*) as count FROM form_submissions WHERE form_type = 'contact'"
+    );
+    const contactForms = parseInt(contactResult.rows[0].count);
+
+    const appointmentResult = await pool.query(
+      "SELECT COUNT(*) as count FROM form_submissions WHERE form_type = 'appointment'"
+    );
+    const appointments = parseInt(appointmentResult.rows[0].count);
+
+    const submissionsResult = await pool.query(
+      'SELECT COUNT(*) as count FROM form_submissions'
+    );
+    const formsSubmissions = parseInt(submissionsResult.rows[0].count);
+
+    const recentResult = await pool.query(
+      'SELECT form_type, submission, submitted_at FROM form_submissions ORDER BY submitted_at DESC LIMIT 10'
+    );
+
+    const recentActivities = recentResult.rows.map(row => ({
+      type: row.form_type,
+      time: row.submitted_at,
+      summary:
+        row.form_type === 'appointment'
+          ? `${row.submission?.firstName || ''} ${row.submission?.lastName || ''} requested ${row.submission?.service || ''}`.trim()
+          : `${row.submission?.name || ''} sent a message`.trim()
+    }));
+
     const metrics = {
-      totalVisitors: 1240,
-      pageViews: 3420,
-      contactForms: 24,
-      appointments: 18,
-      imagesCount: imagesCount,
+      totalVisitors: 0,
+      pageViews: 0,
+      contactForms,
+      appointments,
+      imagesCount,
       contentSections: contentCount,
       mediaItems: mediaCount,
       banners: bannersCount,
-      formsSubmissions: 42,
-      recentActivities: [
-        { action: 'Updated', section: 'Hero Section', created_at: new Date().toISOString() },
-        { action: 'Added', section: 'New Banner', created_at: new Date(Date.now() - 3600000).toISOString() },
-        { action: 'Modified', section: 'Services Content', created_at: new Date(Date.now() - 7200000).toISOString() },
-        { action: 'Uploaded', section: 'Gallery Images', created_at: new Date(Date.now() - 10800000).toISOString() }
-      ]
+      formsSubmissions,
+      recentActivities
     };
-    
+
     console.log('Metrics fetched successfully');
     res.json(metrics);
   } catch (err) {
@@ -701,6 +717,172 @@ app.get('/api/metrics', async (req, res) => {
     res.status(500).json({ error: 'Failed to load metrics' });
   }
 });
+
+const emailRecipients = (() => {
+  const raw = process.env.EMAIL_RECIPIENTS;
+  if (raw && typeof raw === 'string') {
+    return raw.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [
+    'deepversestudio@gmail.com',
+    'drsetketuchakraborty@gmail.com'
+  ];
+})();
+
+const getTransporter = () => {
+  if ((process.env.EMAIL_PROVIDER === 'gmail') || (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD)) {
+    return nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.GMAIL_USER || process.env.SMTP_USER,
+        pass: process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS
+      }
+    });
+  }
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    return nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: Boolean(process.env.SMTP_SECURE === 'true'),
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      }
+    });
+  }
+  return null;
+};
+
+const sendSubmissionEmail = async (type, submission) => {
+  const transporter = getTransporter();
+  const fromEmail = process.env.FROM_EMAIL || 'no-reply@dentodent.local';
+  const subject = type === 'appointment' 
+    ? `New Appointment Request — ${submission?.service || ''}`
+    : `New Contact Message — ${submission?.name || ''}`;
+  const lines = Object.entries(submission || {}).map(([k, v]) => `<li><strong>${k}</strong>: ${String(v ?? '')}</li>`).join('');
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6">
+      <h2>${subject}</h2>
+      <p>You received a new ${type} form submission from the website.</p>
+      <ul>${lines}</ul>
+      <hr />
+      <p>Sent automatically from Dent 'O' Dent website.</p>
+    </div>
+  `;
+  const text = `${subject}\n\n` + Object.entries(submission || {}).map(([k,v]) => `${k}: ${String(v ?? '')}`).join('\n');
+  
+  if (!transporter) {
+    console.warn('[Forms] SMTP not configured. Skipping email send. Configure SMTP_HOST, SMTP_USER, SMTP_PASS.');
+    return { sent: false, reason: 'smtp_not_configured' };
+  }
+  try {
+    const info = await transporter.sendMail({
+      from: fromEmail,
+      to: emailRecipients.join(','),
+      subject,
+      text,
+      html
+    });
+    return { sent: true, messageId: info.messageId };
+  } catch (e) {
+    console.error('[Forms] Email send failed:', e);
+    return { sent: false, reason: 'send_failed', error: String(e?.message || e) };
+  }
+};
+
+app.get('/api/forms/schema/:type', async (req, res) => {
+  try {
+    const { type } = req.params;
+    const result = await pool.query(
+      'SELECT schema FROM form_schemas WHERE form_type = $1',
+      [type]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Schema not found' });
+    }
+
+    res.json(result.rows[0].schema);
+  } catch (err) {
+    console.error('Form schema fetch error:', err);
+    res.status(500).json({ error: 'Failed to load form schema' });
+  }
+});
+
+app.put('/api/forms/schema/:type', async (req, res) => {
+  try {
+    const { type } = req.params;
+    const { schema } = req.body || {};
+
+    if (!schema || typeof schema !== 'object') {
+      return res.status(400).json({ error: 'Invalid schema' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO form_schemas (form_type, schema, updated_at)
+       VALUES ($1, $2, NOW())
+       ON CONFLICT (form_type)
+       DO UPDATE SET schema = $2, updated_at = NOW()
+       RETURNING schema`,
+      [type, schema]
+    );
+
+    res.json({ success: true, schema: result.rows[0].schema });
+  } catch (err) {
+    console.error('Form schema update error:', err);
+    res.status(500).json({ error: 'Failed to save form schema' });
+  }
+});
+
+app.get('/api/forms/submissions/:type', async (req, res) => {
+  try {
+    const { type } = req.params;
+    const result = await pool.query(
+      'SELECT id, form_type, submission, submitted_at FROM form_submissions WHERE form_type = $1 ORDER BY submitted_at DESC',
+      [type]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Form submissions fetch error:', err);
+    res.status(500).json({ error: 'Failed to load form submissions' });
+  }
+});
+
+app.post('/api/forms/submit/:type', async (req, res) => {
+  try {
+    const { type } = req.params;
+    const { submission } = req.body || {};
+
+    if (!submission || typeof submission !== 'object') {
+      return res.status(400).json({ error: 'Invalid submission' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO form_submissions (form_type, submission, submitted_at)
+       VALUES ($1, $2, NOW())
+       RETURNING id, form_type, submission, submitted_at`,
+      [type, submission]
+    );
+
+    const row = result.rows[0];
+
+    const mailResult = await sendSubmissionEmail(type, submission);
+    const status = mailResult.sent ? 201 : 202;
+
+    res.status(status).json({
+      success: true,
+      submission: row,
+      email: mailResult
+    });
+  } catch (err) {
+    console.error('Form submission error:', err);
+    res.status(500).json({ error: 'Failed to submit form' });
+  }
+});
+
+// Banner API endpoints
 
 // Get all banners
 app.get('/api/banners', async (req, res) => {
@@ -955,6 +1137,24 @@ async function initializeDatabase() {
         updated_at TIMESTAMP DEFAULT NOW()
       )
     `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS form_schemas (
+        id SERIAL PRIMARY KEY,
+        form_type VARCHAR(100) NOT NULL UNIQUE,
+        schema JSONB NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS form_submissions (
+        id SERIAL PRIMARY KEY,
+        form_type VARCHAR(100) NOT NULL,
+        submission JSONB NOT NULL,
+        submitted_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
     
     // Insert sample data if tables are empty
     const contentCount = await pool.query('SELECT COUNT(*) FROM content_sections');
@@ -1117,6 +1317,10 @@ async function startServer() {
       console.log(`  POST /api/banners`);
       console.log(`  PUT  /api/banners/:id`);
       console.log(`  DELETE /api/banners/:id`);
+      console.log(`  GET  /api/forms/schema/:type`);
+      console.log(`  PUT  /api/forms/schema/:type`);
+      console.log(`  GET  /api/forms/submissions/:type`);
+      console.log(`  POST /api/forms/submit/:type`);
     });
   } catch (err) {
     console.error('Failed to start server:', err);
