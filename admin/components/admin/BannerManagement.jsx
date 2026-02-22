@@ -139,11 +139,11 @@ const BannerManagement = () => {
 
     try {
       const formDataUpload = new FormData();
-      formDataUpload.append('image', file);
-      formDataUpload.append('alt', file.name);
-      formDataUpload.append('section', 'banners');
+      formDataUpload.append('file', file);
+      formDataUpload.append('title', file.name);
+      formDataUpload.append('category', 'banners');
 
-      const response = await fetchWithRefresh(`${apiUrl}/api/upload/image`, {
+      const response = await fetchWithRefresh(`${apiUrl}/api/upload/media`, {
         method: 'POST',
         body: formDataUpload
       });
@@ -155,11 +155,16 @@ const BannerManagement = () => {
 
       const data = await response.json();
 
+      const media =
+        data.media ||
+        data.image ||
+        data;
+
       const fileUrl =
-        data.media?.file_path ||
-        data.media?.url ||
-        data.image?.file_path ||
-        data.image?.url;
+        media?.file_path ||
+        media?.url ||
+        media?.path ||
+        '';
 
       if (isMobile) {
         setFormData(prev => ({ ...prev, mobile_image_url: fileUrl }));

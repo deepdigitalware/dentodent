@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Star, Award, Users, Clock } from 'lucide-react';
 import smileIcon from '@/assets/icons/smile.svg';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
 import { useI18n } from '@/lib/i18n.jsx';
 import { useContent } from '@/contexts/ContentContext';
 
@@ -11,16 +10,8 @@ const Hero = () => {
   const { content } = useContent();
   
   const handleBooking = () => {
-    // Scroll to appointment section or open appointment modal
-    const appointmentSection = document.getElementById('appointment');
-    if (appointmentSection) {
-      appointmentSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // If no appointment section on page, show toast with contact info
-      toast({
-        title: "🦷 Book Appointment",
-        description: "Please call us at +91 6290093271 or WhatsApp us to book your appointment."
-      });
+    if (typeof window !== 'undefined') {
+      window.location.href = '/appointment';
     }
   };
 

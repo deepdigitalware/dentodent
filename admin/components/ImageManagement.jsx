@@ -113,10 +113,11 @@ const ImageManagement = () => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const formData = new FormData();
-        formData.append('image', file);
-        formData.append('section', activeCategory);
+        formData.append('file', file);
+        formData.append('title', file.name);
+        formData.append('category', activeCategory);
 
-        const response = await fetch(`${apiUrl}/api/upload/image`, {
+        const response = await fetch(`${apiUrl}/api/upload/media`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -126,13 +127,19 @@ const ImageManagement = () => {
 
         if (response.ok) {
           const result = await response.json();
-          const imageData = result.image;
+          const media = result.media || result.image || result;
+          const path = media.file_path || media.path || media.url || '';
+          const url = path.startsWith('http') ? path : `${apiUrl}${path}`;
+          const sizeBytes = media.file_size || media.size || file.size;
+          const fileType = media.file_type || media.mimetype || file.type || '';
+          const type = fileType ? (fileType.split('/')[1] || fileType) : 'unknown';
+
           const newImage = {
-            id: imageData.id,
-            name: imageData.alt || imageData.url.split('/').pop(),
-            url: `${apiUrl}${imageData.url}`,
-            size: `${(imageData.file_size ? imageData.file_size / 1024 : 0).toFixed(0)} KB`,
-            type: imageData.file_type?.split('/')[1] || imageData.category || 'unknown',
+            id: media.id,
+            name: media.alt || media.name || media.title || file.name,
+            url,
+            size: `${(sizeBytes ? sizeBytes / 1024 : 0).toFixed(0)} KB`,
+            type,
             isNew: true
           };
 

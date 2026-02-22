@@ -41,20 +41,25 @@ const ImagePicker = ({ value, onChange, section = 'general', label = 'Image', di
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('image', file);
-    formData.append('section', section);
+    formData.append('file', file);
+    formData.append('title', file.name);
+    formData.append('category', section);
 
     setIsUploading(true);
     try {
-      const response = await fetch(`${apiUrl}/api/upload/image`, {
+      const response = await fetch(`${apiUrl}/api/upload/media`, {
         method: 'POST',
         body: formData,
       });
 
       if (response.ok) {
-        const newImage = await response.json();
+        const result = await response.json();
+        const media = result.media || result.image || result;
+        const path = media.file_path || media.path || media.url || '';
+        const url = path.startsWith('http') ? path : `${apiUrl}${path}`;
+        const newImage = { ...media, url };
         setImages([newImage, ...images]);
-        onChange(newImage.url); // Auto-select the uploaded image
+        onChange(url);
         setIsOpen(false);
         toast.success('Image uploaded successfully');
       } else {

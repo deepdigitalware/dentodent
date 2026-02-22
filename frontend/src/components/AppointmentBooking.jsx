@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, Phone, Mail, MapPin, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, User, Phone, Mail, MapPin, CheckCircle, AlertCircle, ArrowRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { useContent } from '@/contexts/ContentContext';
+import siteLogo from '@/assets/icons/logo.svg';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const AppointmentBooking = () => {
   const { content, apiUrl } = useContent();
@@ -138,6 +140,96 @@ const AppointmentBooking = () => {
     }));
   };
 
+  const handleDownloadSummary = () => {
+    if (typeof window === 'undefined') return;
+    const selectedService = services.find(s => s.name === formData.service);
+    const w = window.open('', '_blank', 'width=800,height=1000');
+    if (!w) return;
+    const createdAt = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+    const summaryRows = [
+      ['Service', selectedService?.name || 'Not selected'],
+      ['Urgency', formData.urgency === 'urgent' ? 'Urgent Care' : 'Routine Checkup'],
+      ['Preferred Date', formData.preferredDate || 'Not selected'],
+      ['Preferred Time', formData.preferredTime || 'Not selected'],
+      ['Alternative Date', formData.alternativeDate || 'Not provided'],
+      ['Alternative Time', formData.alternativeTime || 'Not provided'],
+      ['Patient Name', `${formData.firstName} ${formData.lastName}`.trim() || 'Not provided'],
+      ['Email', formData.email || 'Not provided'],
+      ['Phone', formData.phone || 'Not provided'],
+      ['Date of Birth', formData.dateOfBirth || 'Not provided'],
+      ['Gender', formData.gender || 'Not provided'],
+      ['Previous Patient', formData.previousPatient ? 'Yes' : 'No'],
+      ['Insurance Provider', formData.insuranceProvider || 'Not provided'],
+      ['Symptoms / Concerns', formData.symptoms || 'Not provided'],
+      ['Additional Notes', formData.notes || 'Not provided']
+    ];
+    const rowsHtml = summaryRows.map(
+      ([label, value]) =>
+        `<tr><td class="label">${label}</td><td class="value">${String(value).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td></tr>`
+    ).join('');
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <title>Dent 'O' Dent Appointment Summary</title>
+        <style>
+          body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 32px; background: #f3f4f6; }
+          .card { max-width: 800px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 32px 40px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12); }
+          .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+          .brand { display: flex; align-items: center; gap: 12px; }
+          .brand-title { font-size: 22px; font-weight: 700; letter-spacing: 0.03em; color: #0f172a; }
+          .brand-sub { font-size: 12px; text-transform: uppercase; color: #64748b; letter-spacing: 0.14em; }
+          .badge { padding: 6px 12px; border-radius: 999px; background: linear-gradient(to right, #0ea5e9, #22c55e); color: white; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; }
+          .title { font-size: 24px; font-weight: 700; margin-bottom: 4px; color: #0f172a; }
+          .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+          tr:nth-child(even) { background: #f9fafb; }
+          td { padding: 10px 12px; vertical-align: top; font-size: 13px; }
+          .label { width: 32%; font-weight: 600; color: #4b5563; }
+          .value { color: #111827; }
+          .footer { margin-top: 28px; font-size: 11px; color: #6b7280; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+          .footer span { display: block; }
+          .accent { color: #0ea5e9; font-weight: 600; }
+          .logo { height: 40px; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="header">
+            <div class="brand">
+              <img src="${siteLogo}" alt="Dent 'O' Dent Dental Clinic" class="logo" />
+              <div>
+                <div class="brand-title">DENT 'O' DENT</div>
+                <div class="brand-sub">DENTAL CLINIC • SALT LAKE</div>
+              </div>
+            </div>
+            <div class="badge">Appointment Summary</div>
+          </div>
+          <div>
+            <div class="title">Appointment Details</div>
+            <div class="subtitle">Summary of your requested dental appointment at Dent 'O' Dent.</div>
+            <table>${rowsHtml}</table>
+          </div>
+          <div class="footer">
+            <span>Generated on <strong>${createdAt}</strong></span>
+            <span class="accent">This document is for patient reference and does not confirm a final appointment slot until verified by our clinic.</span>
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            window.focus();
+            window.print();
+          };
+        </script>
+      </body>
+      </html>
+    `;
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+  };
+
   const handleNext = () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
@@ -178,45 +270,14 @@ const AppointmentBooking = () => {
       if (!res.ok) throw new Error('Failed to submit appointment');
       toast({
         title: "✅ Appointment Booked!",
-        description: "Your appointment has been successfully scheduled. You will receive a confirmation SMS and email shortly."
+        description: "Your appointment request has been sent. Our team will confirm your final time shortly."
       });
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
     } catch (e) {
       toast({ title: "Error", description: e.message });
     }
-    
-    // Reset form after successful submission
-    setFormData({
-      // Step 1: Service Selection
-      service: '',
-      urgency: 'routine',
-      
-      // Step 2: Date & Time
-      preferredDate: '',
-      preferredTime: '',
-      alternativeDate: '',
-      alternativeTime: '',
-      
-      // Step 3: Patient Information
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      dateOfBirth: '',
-      gender: '',
-      
-      // Step 4: Additional Information
-      previousPatient: false,
-      insuranceProvider: '',
-      symptoms: '',
-      notes: '',
-      
-      // Step 5: Confirmation
-      termsAccepted: false,
-      privacyAccepted: false
-    });
-    
-    // Reset to first step
-    setCurrentStep(1);
   };
 
   const renderStepIndicator = () => (
@@ -347,11 +408,11 @@ const AppointmentBooking = () => {
             key={service.id}
             whileHover={{ scale: 1.02 }}
             className={`p-4 md:p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-              formData.service === service.id
+              formData.service === (service.id || service.name)
                 ? 'border-blue-500 bg-blue-50 shadow-lg'
                 : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
             }`}
-            onClick={() => handleInputChange('service', service.name)}
+            onClick={() => handleInputChange('service', service.id || service.name)}
           >
             <div className="flex items-start space-x-3 md:space-x-4">
               <div className="text-2xl md:text-3xl flex-shrink-0">{service.icon}</div>
@@ -371,25 +432,34 @@ const AppointmentBooking = () => {
       <div>
         <h4 className="text-lg font-semibold text-gray-800 mb-4">Urgency Level</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-          {urgencyLevels.map((level) => (
-            <div
-              key={level.id}
-              className={`p-3 md:p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
-                formData.urgency === level.id
-                  ? `border-${level.color}-500 bg-${level.color}-50`
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-              onClick={() => handleInputChange('urgency', level.id)}
-            >
-              <div className="flex items-center space-x-2 md:space-x-3">
-                <div className={`w-3 h-3 rounded-full bg-${level.color}-500 flex-shrink-0`}></div>
-                <div className="min-w-0">
-                  <h5 className="font-medium text-gray-800 text-sm md:text-base">{level.label}</h5>
-                  <p className="text-xs md:text-sm text-gray-600">{level.description}</p>
+          {urgencyLevels.map((level) => {
+            const isActive = formData.urgency === level.id;
+            return (
+              <div
+                key={level.id}
+                className={`p-3 md:p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
+                  isActive
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => handleInputChange('urgency', level.id)}
+              >
+                <div className="flex items-center space-x-2 md:space-x-3">
+                  <div
+                    className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                      isActive ? 'bg-emerald-500' : 'bg-gray-300'
+                    }`}
+                  ></div>
+                  <div className="min-w-0">
+                    <h5 className="font-medium text-gray-800 text-sm md:text-base">
+                      {level.label}
+                    </h5>
+                    <p className="text-xs md:text-sm text-gray-600">{level.description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -642,6 +712,17 @@ const AppointmentBooking = () => {
               <span className="font-medium text-blue-600">{selectedService?.price || '—'}</span>
             </div>
           </div>
+          <div className="mt-6">
+            <Button
+              type="button"
+              onClick={handleDownloadSummary}
+              variant="outline"
+              className="flex items-center px-4 py-2 border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF Summary
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -786,21 +867,17 @@ const AppointmentBooking = () => {
         >
           <h3 className="text-2xl font-bold mb-4">Need Help Booking?</h3>
           <p className="text-lg mb-6 opacity-90">
-            Our friendly staff is here to help you schedule your appointment.
+            Chat with our team on WhatsApp for instant appointment assistance.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <div className="flex items-center space-x-2">
-              <Phone className="w-5 h-5" />
-              <span>+91 6290093271</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Mail className="w-5 h-5" />
-              <span>appointments@dentodent.com</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="w-5 h-5" />
-              <span>Mon-Sat: 9AM-8PM</span>
-            </div>
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              onClick={() => window.open('https://wa.me/916290093271?text=Hi%20Dent%20O%20Dent%2C%20I%20would%20like%20to%20book%20a%20dental%20appointment.', '_blank')}
+              className="flex items-center gap-2 bg-white text-emerald-600 hover:bg-gray-100 px-6 py-3 rounded-full font-semibold shadow-lg"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              <span>Chat on WhatsApp</span>
+            </Button>
           </div>
         </motion.div>
       </div>

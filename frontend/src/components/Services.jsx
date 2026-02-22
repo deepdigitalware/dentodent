@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
 import { useContent } from '@/contexts/ContentContext';
 
 const Services = () => {
@@ -11,15 +10,9 @@ const Services = () => {
     ? content.services.services
     : [];
 
-  const handleLearnMore = (serviceName) => {
-    const appointmentSection = document.getElementById('appointment');
-    if (appointmentSection) {
-      appointmentSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      toast({
-        title: `🦷 ${serviceName}`,
-        description: `Please call us at +91 6290093271 or WhatsApp us to book your ${serviceName.toLowerCase()} appointment.`
-      });
+  const handleLearnMore = () => {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/appointment';
     }
   };
 
@@ -88,7 +81,7 @@ const Services = () => {
                 </ul>
 
                 <Button
-                  onClick={() => handleLearnMore(service.title)}
+                  onClick={handleLearnMore}
                   className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center justify-center"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
@@ -113,17 +106,7 @@ const Services = () => {
               the perfect smile you've always wanted.
             </p>
             <Button
-              onClick={() => {
-                const appointmentSection = document.getElementById('appointment');
-                if (appointmentSection) {
-                  appointmentSection.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                  toast({
-                    title: "📅 Book Consultation",
-                    description: "Please call us at +91 6290093271 or WhatsApp us to book your consultation."
-                  });
-                }
-              }}
+              onClick={handleLearnMore}
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Book a Free Appointment

@@ -1247,9 +1247,85 @@ async function initializeDatabase() {
               linkLabel: "",
               order: 3,
               active: true
-            }          ]
+            }
+          ]
         })
-      ]);    }
+      ]);
+
+      await pool.query(`
+        INSERT INTO content_sections (section_id, content_data)
+        VALUES ($1, $2)
+      `, [
+        'blogPosts',
+        JSON.stringify({
+          posts: [
+            {
+              id: 1,
+              slug: "welcome-to-dentodent",
+              title: "Welcome to Dent 'O' Dent Dental Clinic",
+              category: "clinic-news",
+              date: new Date().toISOString().split('T')[0],
+              excerpt: "Discover how our team keeps your smile healthy and bright.",
+              cover: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800",
+              author: "Dent 'O' Dent Team",
+              featured: true,
+              readTime: "4 min",
+              tags: ["clinic", "welcome"]
+            }
+          ]
+        })
+      ]);
+
+      await pool.query(`
+        INSERT INTO content_sections (section_id, content_data)
+        VALUES ($1, $2)
+      `, [
+        'reviews',
+        JSON.stringify({
+          title: "What Our Patients Say",
+          subtitle: "Real stories from our happy patients",
+          items: [
+            {
+              name: "Sarah M.",
+              rating: 5,
+              message: "The team is incredibly kind and professional. Best dental experience I've ever had.",
+              date: new Date().toISOString().split('T')[0]
+            },
+            {
+              name: "James K.",
+              rating: 5,
+              message: "Clean clinic, modern equipment, and a dentist who explains everything clearly.",
+              date: new Date().toISOString().split('T')[0]
+            }
+          ]
+        })
+      ]);
+
+      await pool.query(`
+        INSERT INTO content_sections (section_id, content_data)
+        VALUES ($1, $2)
+      `, [
+        'treatments',
+        JSON.stringify({
+          title: "Featured Treatments",
+          subtitle: "Comprehensive care for every smile",
+          items: [
+            {
+              title: "Teeth Whitening",
+              slug: "teeth-whitening",
+              imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600",
+              description: "Safe, effective whitening treatments to brighten your smile."
+            },
+            {
+              title: "Invisalign",
+              slug: "invisalign-aligners",
+              imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600",
+              description: "Discreet clear aligners to straighten your teeth comfortably."
+            }
+          ]
+        })
+      ]);
+    }
     
     // Insert sample images if table is empty
     const imageCount = await pool.query('SELECT COUNT(*) FROM images');
