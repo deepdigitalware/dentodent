@@ -323,13 +323,23 @@ export const ContentProvider = ({ children }) => {
 
             const safeContent = {
               ...base,
-              hero: normalizeObject(base.hero),
-              about: normalizeObject(base.about),
-              services: normalizeObject(base.services),
+            hero: normalizeObject(base.hero),
+            about: normalizeObject(base.about),
+            services: (() => {
+              const section = normalizeObject(base.services);
+              const items = normalizeArray(section.services || section.items || base.services);
+              if (items.length > 0) return { ...section, services: items };
+              return initialContent.services;
+            })(),
               contact: normalizeObject(base.contact),
               doctor: normalizeObject(base.doctor),
               blog: normalizeObject(base.blog),
-              faq: normalizeObject(base.faq),
+            faq: (() => {
+              const section = normalizeObject(base.faq);
+              const items = normalizeArray(section.items || base.faq);
+              if (items.length > 0) return { ...section, items };
+              return initialContent.faq;
+            })(),
               appointment: normalizeObject(base.appointment),
               slider: normalizeObject(base.slider),
               cta: normalizeObject(base.cta),
@@ -340,11 +350,15 @@ export const ContentProvider = ({ children }) => {
               map: normalizeObject(base.map),
               testimonials: normalizeArray(base.testimonials),
               gallery: normalizeArray(base.gallery),
-              blogPosts: normalizeArray(base.blogPosts),
-              treatments: (() => {
+            blogPosts: (() => {
+              const arr = normalizeArray(base.blogPosts);
+              return arr && arr.length > 0 ? arr : initialContent.blogPosts;
+            })(),
+            treatments: (() => {
                 const section = normalizeObject(base.treatments);
                 const items = normalizeArray(section.items || base.treatments);
-                return { ...section, items };
+              if (items.length > 0) return { ...section, items };
+              return initialContent.treatments;
               })(),
               reviews: (() => {
                 const section = normalizeObject(base.reviews);

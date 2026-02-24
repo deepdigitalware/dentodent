@@ -72,9 +72,12 @@ const Testimonials = () => {
         }
       }
 
+      const rawRating = Number.isFinite(Number(review.rating)) ? Number(review.rating) : 5;
+      const clampedRating = Math.max(0, Math.min(5, Math.round(rawRating)));
+
       return {
         name: review.name || 'Patient',
-        rating: Number.isFinite(Number(review.rating)) ? Number(review.rating) : 5,
+        rating: clampedRating,
         text: review.message || review.comment || '',
         date: formattedDate
       };

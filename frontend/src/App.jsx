@@ -58,7 +58,7 @@ const initChatwoot = () => {
       style.innerHTML = `
         .woot-launcher,
         .woot-widget-bubble {
-          bottom: 180px !important;
+          bottom: 220px !important;
           right: 24px !important;
           z-index: 60 !important;
           background-color: transparent !important;
