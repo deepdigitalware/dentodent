@@ -141,7 +141,17 @@ const Hero = () => {
             >
               {content.hero.stats && content.hero.stats.map ? content.hero.stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  {React.createElement(getIconComponent(stat.icon), { className: "w-5 h-5 md:w-8 md:h-8 text-blue-600 mx-auto mb-1 md:mb-2" })}
+                  {stat.iconImageUrl ? (
+                    <img
+                      src={stat.iconImageUrl}
+                      alt="Icon"
+                      className="w-5 h-5 md:w-8 md:h-8 mx-auto mb-1 md:mb-2"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      loading="lazy"
+                    />
+                  ) : (
+                    React.createElement(getIconComponent(stat.icon), { className: "w-5 h-5 md:w-8 md:h-8 text-blue-600 mx-auto mb-1 md:mb-2" })
+                  )}
                   <div className="text-lg md:text-2xl font-bold text-gray-800">{stat.number}</div>
                   <div className="text-xs md:text-sm text-gray-600">{stat.label}</div>
                 </div>
@@ -160,8 +170,8 @@ const Hero = () => {
               <div className="relative z-10">
                 <img 
                   className="w-full h-auto rounded-2xl md:rounded-3xl shadow-2xl card-3d"
-                  alt="Modern dental clinic interior with advanced equipment"
-                  src="https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81" 
+                  alt={content.hero.imageAlt || "Modern dental clinic interior with advanced equipment"}
+                  src={content.hero.image || content.hero.imageUrl || "https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81"} 
                   loading="eager" />
               </div>
             )}

@@ -14,13 +14,26 @@ const ImagePicker = ({ value, onChange, section = 'general', label = 'Image', di
   const [searchTerm, setSearchTerm] = useState('');
   const fileInputRef = useRef(null);
 
+  const assetsBase = (() => {
+    try {
+      if (!apiUrl) return '';
+      if (apiUrl.includes('admin.')) return apiUrl.replace('admin.', 'api.');
+      return apiUrl;
+    } catch { return apiUrl; }
+  })();
+
   const fetchImages = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`${apiUrl}/api/images`);
       if (response.ok) {
         const data = await response.json();
-        setImages(data);
+        const normalized = Array.isArray(data) ? data.map(img => {
+          const u = img.url || img.path || '';
+          const full = typeof u === 'string' && u.startsWith('http') ? u : `${assetsBase}${u}`;
+          return { ...img, url: full };
+        }) : [];
+        setImages(normalized);
       }
     } catch (error) {
       console.error('Error fetching images:', error);
@@ -56,7 +69,7 @@ const ImagePicker = ({ value, onChange, section = 'general', label = 'Image', di
         const result = await response.json();
         const media = result.media || result.image || result;
         const path = media.file_path || media.path || media.url || '';
-        const url = path.startsWith('http') ? path : `${apiUrl}${path}`;
+        const url = path.startsWith('http') ? path : `${assetsBase}${path}`;
         const newImage = { ...media, url };
         setImages([newImage, ...images]);
         onChange(url);

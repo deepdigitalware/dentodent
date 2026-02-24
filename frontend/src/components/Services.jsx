@@ -57,9 +57,9 @@ const Services = () => {
               viewport={{ once: true, amount: 0.1 }}
               className="relative rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden card-3d group h-64 sm:h-72 md:h-80"
             >
-              {service.image ? (
+              {(service.imageUrl || service.image) ? (
                 <img
-                  src={service.image}
+                  src={service.imageUrl || service.image}
                   alt={`${service.title} header`}
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -69,6 +69,15 @@ const Services = () => {
                 <div className={`absolute inset-0 bg-gradient-to-r ${service.color || 'from-blue-600 to-cyan-600'}`}></div>
               )}
               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
+              {service.iconImageUrl && (
+                <img
+                  src={service.iconImageUrl}
+                  alt="Icon"
+                  className="absolute top-3 left-3 w-10 h-10 rounded-md shadow-md bg-white/80 p-1"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  loading="lazy"
+                />
+              )}
               <div className="absolute inset-x-0 bottom-0 h-28 sm:h-32 md:h-36 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
 
               <div className="relative z-10 h-full flex flex-col justify-end p-4 sm:p-5 md:p-6 text-white">

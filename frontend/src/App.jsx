@@ -35,6 +35,27 @@ import AdminRoute from '@/components/admin/AdminRoute';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import { useContent } from '@/contexts/ContentContext';
 import siteLogo from '@/assets/icons/logo.svg';
+ 
+// Chatwoot widget integration
+const initChatwoot = () => {
+  if (typeof window === 'undefined') return;
+  if (window.chatwootSDK) return;
+  const BASE_URL = 'https://chatwoot.deepverse.cloud';
+  const g = document.createElement('script');
+  const s = document.getElementsByTagName('script')[0];
+  g.src = `${BASE_URL}/packs/js/sdk.js`;
+  g.async = true;
+  s.parentNode.insertBefore(g, s);
+  g.onload = function () {
+    if (window.chatwootSDK && !window._chatwootInitialized) {
+      window._chatwootInitialized = true;
+      window.chatwootSDK.run({
+        websiteToken: '4gFLWccH7v1ggNZbx321t3PZ',
+        baseUrl: BASE_URL
+      });
+    }
+  };
+};
 
 function App() {
   const [isAdminRoute, setIsAdminRoute] = useState(false);
@@ -259,6 +280,7 @@ function App() {
 
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('pushstate', handlePushState);
+    initChatwoot();
     
     return () => {
       window.removeEventListener('popstate', handlePopState);

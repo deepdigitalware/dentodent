@@ -301,6 +301,15 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
               className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={!isEditing}
             />
+            <div className="md:col-span-3">
+              <ImagePicker
+                label="Custom Icon Image (optional)"
+                value={stat.iconImageUrl || ''}
+                onChange={(url) => handleArrayChange('stats', index, 'iconImageUrl', url)}
+                section="icons"
+                disabled={!isEditing}
+              />
+            </div>
           </div>
         ))}
         {isEditing && (
@@ -446,6 +455,15 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
                 className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={!isEditing}
               />
+              <div className="md:col-span-3">
+                <ImagePicker
+                  label="Icon Image (optional)"
+                  value={service.iconImageUrl || ''}
+                  onChange={(url) => handleArrayChange('services', index, 'iconImageUrl', url)}
+                  section="icons"
+                  disabled={!isEditing}
+                />
+              </div>
               <div className="md:col-span-3">
                 <ImagePicker
                   label="Service Image"
