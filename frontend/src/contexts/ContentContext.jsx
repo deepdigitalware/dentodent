@@ -113,8 +113,12 @@ const getApiUrl = () => {
   if (typeof window !== 'undefined') {
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
-    // For dentodent domain, use api subdomain
+    // For dentodent domain, use api subdomain for backend data
     if (hostname.includes('dentodent')) {
+      // If we are on admin or frontend, we should point to api subdomain for data
+      if (hostname.startsWith('admin.') || hostname === 'dentodentdentalclinic.com' || hostname === 'www.dentodentdentalclinic.com') {
+        return `${protocol}//api.dentodentdentalclinic.com`;
+      }
       return `${protocol}//${hostname}`;
     }
     // For localhost, use same-origin base to leverage local proxy (/api -> VPS)
@@ -218,7 +222,10 @@ export const ContentProvider = ({ children }) => {
             map: normalizeObject(base.map),
             testimonials: normalizeArray(base.testimonials),
             gallery: normalizeArray(base.gallery),
-            blogPosts: normalizeArray(base.blogPosts),
+            blogPosts: (() => {
+              const arr = normalizeArray(base.blogPosts);
+              return arr && arr.length > 0 ? arr : initialContent.blogPosts;
+            })(),
             treatments: (() => {
               const section = normalizeObject(base.treatments);
               const items = normalizeArray(section.items || base.treatments);

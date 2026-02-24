@@ -18,8 +18,8 @@ export default function BlogPost({ slug }) {
   }
 
   const canonicalUrl = (typeof window !== 'undefined')
-    ? `${window.location.origin}/blog-${post.slug}`
-    : `https://dentodentdentalclinic.com/blog-${post.slug}`;
+    ? `${window.location.origin}/blog/${post.slug}`
+    : `https://dentodentdentalclinic.com/blog/${post.slug}`;
 
   const isRemote = typeof post.cover === 'string' && post.cover.startsWith('http');
   const coverMain = isRemote ? `${post.cover}?w=1200&h=630&fit=crop` : post.cover;

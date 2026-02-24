@@ -314,7 +314,9 @@ const Testimonials = () => {
               onClick={handleBookAppointment}
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center mx-auto gap-2"
             >
-              <WhatsAppIcon className="w-5 h-5" />
+              <span className="bg-blue-600 text-white rounded-full p-1.5">
+                <WhatsAppIcon className="w-4 h-4" />
+              </span>
               <span>Book a Free Appointment</span>
             </Button>
           </div>

@@ -56,13 +56,15 @@ const initChatwoot = () => {
       });
       const style = document.createElement('style');
       style.innerHTML = `
-        .woot-launcher {
-          bottom: 110px !important;
+        .woot-launcher,
+        .woot-widget-bubble {
+          bottom: 140px !important;
           right: 24px !important;
           z-index: 60 !important;
           background-color: transparent !important;
         }
-        .woot-launcher {
+        .woot-launcher,
+        .woot-widget-bubble {
           background-image: url('${chatwootIcon}');
           background-repeat: no-repeat;
           background-size: cover;

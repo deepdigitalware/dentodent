@@ -6,7 +6,7 @@ import { useContent } from '@/contexts/ContentContext';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const Services = () => {
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
   const servicesData = (Array.isArray(content.services?.services)
     ? content.services.services
     : []).filter(
@@ -60,7 +60,10 @@ const Services = () => {
             >
               {(service.imageUrl || service.image) ? (
                 <img
-                  src={service.imageUrl || service.image}
+                  src={(function() {
+                    const u = service.imageUrl || service.image;
+                    return (typeof u === 'string' && u.startsWith('/assets')) ? `${apiUrl}${u}` : u;
+                  })()}
                   alt={`${service.title} header`}
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -72,7 +75,10 @@ const Services = () => {
               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
               {service.iconImageUrl && (
                 <img
-                  src={service.iconImageUrl}
+                  src={(function() {
+                    const u = service.iconImageUrl;
+                    return (typeof u === 'string' && u.startsWith('/assets')) ? `${apiUrl}${u}` : u;
+                  })()}
                   alt="Icon"
                   className="absolute top-3 left-3 w-10 h-10 rounded-md shadow-md bg-white/80 p-1"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -116,7 +122,9 @@ const Services = () => {
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <span className="flex items-center gap-2">
-                <WhatsAppIcon className="w-5 h-5" />
+                <span className="bg-blue-600 text-white rounded-full p-1.5">
+                  <WhatsAppIcon className="w-4 h-4" />
+                </span>
                 <span>Book a Free Appointment</span>
               </span>
             </Button>

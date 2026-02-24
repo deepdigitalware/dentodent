@@ -6,7 +6,7 @@ import { useContent } from '@/contexts/ContentContext';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const Doctor = () => {
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
   const doctor = content?.doctor || {};
   const name = doctor.name || 'Dr. Setketu Chakraborty';
   const subtitle = doctor.title || 'Bachelor of Dental Surgery';
@@ -75,7 +75,10 @@ const Doctor = () => {
               <img 
                 className="w-full h-64 md:h-80 lg:h-96 object-cover rounded-2xl md:rounded-3xl shadow-2xl card-3d" 
                 alt={`${name} - Professional dental surgeon`}
-               src={photoUrl} 
+               src={(function() {
+                 const u = photoUrl;
+                 return (typeof u === 'string' && u.startsWith('/assets')) ? `${apiUrl}${u}` : u;
+               })()} 
                loading="eager" />
             </div>
             
