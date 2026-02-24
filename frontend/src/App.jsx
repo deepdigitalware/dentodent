@@ -58,7 +58,7 @@ const initChatwoot = () => {
       style.innerHTML = `
         .woot-launcher,
         .woot-widget-bubble {
-          bottom: 140px !important;
+          bottom: 180px !important;
           right: 24px !important;
           z-index: 60 !important;
           background-color: transparent !important;
@@ -68,6 +68,13 @@ const initChatwoot = () => {
           background-image: url('${chatwootIcon}');
           background-repeat: no-repeat;
           background-size: cover;
+        }
+        @media (max-width: 640px) {
+          .woot-launcher,
+          .woot-widget-bubble {
+            bottom: 150px !important;
+            right: 16px !important;
+          }
         }
       `;
       document.head.appendChild(style);

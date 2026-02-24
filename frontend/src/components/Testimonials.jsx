@@ -82,7 +82,8 @@ const Testimonials = () => {
     .filter((item) => item.text);
 
   const cardsPerSlide = isDesktop ? 3 : 1;
-  const totalSlides = Math.ceil(testimonialsData.length / cardsPerSlide);
+  const rawTotal = Math.ceil((Array.isArray(testimonialsData) ? testimonialsData.length : 0) / (cardsPerSlide || 1));
+  const totalSlides = Number.isFinite(rawTotal) && rawTotal > 0 ? rawTotal : 1;
 
   // Auto-play functionality with reduced frequency for better performance
   useEffect(() => {

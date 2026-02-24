@@ -6,13 +6,48 @@ const initialContent = {
   header: {},
   hero: {},
   about: {},
-  services: {},
+  services: {
+    title: 'Our Treatments',
+    subtitle: 'Comprehensive dental care for the whole family',
+    services: [
+      {
+        title: 'Teeth Cleaning',
+        description: 'Professional cleaning to remove plaque and tartar.',
+        price: '₹800',
+        duration: '45-60 minutes',
+        imageUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=1200&auto=format&fit=crop'
+      },
+      {
+        title: 'Dental Implants',
+        description: 'Replace missing teeth with natural-looking implants.',
+        price: '₹25,000+',
+        duration: '2-3 visits',
+        imageUrl: 'https://images.unsplash.com/photo-1609840172440-4100665f7f83?w=1200&auto=format&fit=crop'
+      },
+      {
+        title: 'Painless Root Canal',
+        description: 'Single or two-visit rotary root canal procedure.',
+        price: '₹3,500+',
+        duration: '1-2 visits',
+        imageUrl: 'https://images.unsplash.com/photo-1572635196236-6f0c9b47f36a?w=1200&auto=format&fit=crop'
+      }
+    ]
+  },
   contact: {},
   doctor: {},
   testimonials: {},
   gallery: {},
   blog: {},
-  faq: {},
+  faq: {
+    title: 'Frequently Asked Questions',
+    subtitle: 'Answers to the most common questions we receive',
+    items: [
+      { id: 'faq-1', question: 'Is root canal treatment painful?', answer: 'With modern anaesthesia and rotary instruments, most patients report only mild discomfort and no significant pain during the procedure.' },
+      { id: 'faq-2', question: 'How long do dental implants last?', answer: 'Dental implants can last many years when properly maintained, often 10+ years. Good oral hygiene and regular checkups improve longevity.' },
+      { id: 'faq-3', question: 'Do you offer clear aligners?', answer: 'Yes, we provide clear aligners for discreet teeth straightening, with digital planning and regular monitoring.' },
+      { id: 'faq-4', question: 'Is teeth whitening safe?', answer: 'Professional dental whitening supervised by a dentist is safe and effective. We assess enamel condition and sensitivity before treatment.' }
+    ]
+  },
   appointment: {},
   slider: {},
   cta: {},
@@ -64,7 +99,26 @@ const initialContent = {
       featured: false
     }
   ],
-  treatments: [],
+  treatments: {
+    items: [
+      {
+        title: 'Smile Makeover',
+        slug: 'smile-makeover',
+        description: 'Personalized cosmetic plan using veneers, bonding, and crowns.',
+        price: '₹15,000+',
+        duration: '2-3 visits',
+        imageUrl: 'https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1200&auto=format&fit=crop'
+      },
+      {
+        title: 'Braces',
+        slug: 'braces',
+        description: 'Metal, ceramic & self-ligating options for all ages.',
+        price: '₹20,000+',
+        duration: '12-18 months',
+        imageUrl: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200&auto=format&fit=crop'
+      }
+    ]
+  },
   reviews: {
     title: 'What Our Patients Say',
     subtitle: 'Real experiences from patients treated at Dent "O" Dent',
