@@ -35,6 +35,7 @@ import AdminRoute from '@/components/admin/AdminRoute';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import { useContent } from '@/contexts/ContentContext';
 import siteLogo from '@/assets/icons/logo.svg';
+import chatwootIcon from '@/assets/icons/chatwoot.svg';
  
 // Chatwoot widget integration
 const initChatwoot = () => {
@@ -53,6 +54,21 @@ const initChatwoot = () => {
         websiteToken: '4gFLWccH7v1ggNZbx321t3PZ',
         baseUrl: BASE_URL
       });
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .woot-launcher {
+          bottom: 110px !important;
+          right: 24px !important;
+          z-index: 60 !important;
+          background-color: transparent !important;
+        }
+        .woot-launcher {
+          background-image: url('${chatwootIcon}');
+          background-repeat: no-repeat;
+          background-size: cover;
+        }
+      `;
+      document.head.appendChild(style);
     }
   };
 };
