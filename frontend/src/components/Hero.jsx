@@ -1,13 +1,14 @@
 import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
-import { Star, Award, Users, Clock } from 'lucide-react';
+import { Star, Award, Users, Clock, Phone } from 'lucide-react';
 import smileIcon from '@/assets/icons/smile.svg';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n.jsx';
 import { useContent } from '@/contexts/ContentContext';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const Hero = () => {
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
   
   const handleBooking = () => {
     if (typeof window !== 'undefined') {
@@ -121,14 +122,20 @@ const Hero = () => {
                 onClick={handleBooking}
                 className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-base md:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 pulse-glow"
               >
-                Book a Free Appointment
+                <span className="flex items-center gap-2">
+                  <WhatsAppIcon className="w-5 h-5" />
+                  <span>Book a Free Appointment</span>
+                </span>
               </Button>
               <Button
                 onClick={handleCall}
                 variant="outline"
                 className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-base md:text-lg transition-all duration-300"
               >
-                Call Now
+                <span className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  <span>Call Now</span>
+                </span>
               </Button>
             </motion.div>
 
@@ -171,7 +178,11 @@ const Hero = () => {
                 <img 
                   className="w-full h-auto rounded-2xl md:rounded-3xl shadow-2xl card-3d"
                   alt={content.hero.imageAlt || "Modern dental clinic interior with advanced equipment"}
-                  src={content.hero.image || content.hero.imageUrl || "https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81"} 
+                  src={(function() {
+                    const u = content.hero.image || content.hero.imageUrl;
+                    if (!u) return "https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81";
+                    return u.startsWith('/assets') ? `${apiUrl}${u}` : u;
+                  })()} 
                   loading="eager" />
               </div>
             )}

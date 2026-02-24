@@ -255,15 +255,19 @@ function App() {
     // Check current route
     const checkRoute = () => {
       const path = window.location.pathname;
-      
+      const parts = path.split('/').filter(Boolean);
       if (path.includes('/admin')) {
         setIsAdminRoute(true);
         setCurrentPage('admin');
       } else {
         setIsAdminRoute(false);
-        // Extract page from path
-        const page = path.replace('/', '') || 'home';
-        setCurrentPage(page);
+        // Support /blog-{slug} and /blog/{slug}
+        if (parts[0] === 'blog' && parts[1]) {
+          setCurrentPage(`blog-${parts[1]}`);
+        } else {
+          const page = path.replace('/', '') || 'home';
+          setCurrentPage(page);
+        }
       }
     };
 

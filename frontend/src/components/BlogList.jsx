@@ -23,7 +23,7 @@ export default function BlogList({ onNavigate }) {
             return (
               <a
                 key={p.slug}
-                href={`/blog-${p.slug}`}
+                href={`/blog/${p.slug}`}
                 onClick={(e) => {
                   if (onNavigate) {
                     e.preventDefault();

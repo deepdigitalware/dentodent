@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { GraduationCap, Award, Users, Clock, Star, Heart, Calendar, Phone } from 'lucide-react';
+import { GraduationCap, Award, Users, Clock, Star, Heart, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useContent } from '@/contexts/ContentContext';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const Doctor = () => {
   const { content } = useContent();
@@ -153,7 +154,7 @@ const Doctor = () => {
                 onClick={handleConsultation}
                 className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex-1 flex items-center justify-center"
               >
-                <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                <WhatsAppIcon className="w-5 h-5 mr-2" />
                 <span className="whitespace-nowrap">Book a Free Appointment</span>
               </Button>
               <Button
