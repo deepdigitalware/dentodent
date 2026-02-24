@@ -21,11 +21,22 @@ export default function BlogList({ onNavigate }) {
             const isRemote = typeof p.cover === 'string' && p.cover.startsWith('http');
             const coverUrl = isRemote ? `${p.cover}?w=600&h=360&fit=crop` : p.cover;
             return (
-              <article key={p.slug} className="bg-white rounded-xl shadow p-4">
+              <a
+                key={p.slug}
+                href={`/blog-${p.slug}`}
+                onClick={(e) => {
+                  if (onNavigate) {
+                    e.preventDefault();
+                    onNavigate(`blog-${p.slug}`);
+                  }
+                }}
+                className="bg-white rounded-xl shadow p-4 block hover:shadow-lg transition-shadow"
+              >
                 <img src={coverUrl} alt={p.title} className="rounded-lg mb-4" />
                 <h2 className="text-xl font-semibold">{p.title}</h2>
                 <p className="text-gray-600 text-sm mt-2">{p.excerpt}</p>
-              </article>
+                <span className="mt-3 inline-block text-blue-600 font-medium">Read Article →</span>
+              </a>
             );
           })}
         </div>

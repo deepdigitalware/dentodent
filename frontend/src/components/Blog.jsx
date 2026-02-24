@@ -154,68 +154,64 @@ const Blog = () => {
               {featuredPosts && featuredPosts.length > 0 ? (
                 featuredPosts.map((post, index) => (
                   post ? (
-                    <motion.article
-                      key={post.id}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden card-3d group"
-                    >
-                      <div className="relative">
-                        <img
-                          src={post.cover}
-                          alt={post.title}
-                          className="w-full h-48 object-cover"
-                          loading="lazy"
-                          onError={(e) => {
-                            e.target.src = 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=800';
-                          }}
-                        />
-                        <div className="absolute top-4 left-4">
-                          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                            Featured
-                          </span>
-                        </div>
-                        {/* Removed like button */}
-                      </div>
-
-                      <div className="p-6">
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="w-4 h-4" />
-                            <span>{post.date ? new Date(post.date).toLocaleDateString() : 'Unknown date'}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="w-4 h-4" />
-                            <span>{post.readTime || 'Unknown'}</span>
-                          </div>
-                        </div>
-
-                        <h4 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors">
-                          {post.title}
-                        </h4>
-                        <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
-
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {post.tags && Array.isArray(post.tags) && post.tags.slice(0, 2).map((tag, tagIndex) => (
-                            <span
-                              key={tagIndex}
-                              className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"
-                            >
-                              {tag}
+                    <a href={`/blog-${post.slug}`} key={post.id} className="block">
+                      <motion.article
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        viewport={{ once: true }}
+                        className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden card-3d group"
+                      >
+                        <div className="relative">
+                          <img
+                            src={post.cover}
+                            alt={post.title}
+                            className="w-full h-48 object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.target.src = 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=800';
+                            }}
+                          />
+                          <div className="absolute top-4 left-4">
+                            <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                              Featured
                             </span>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2 text-sm text-gray-500">
-                            <User className="w-4 h-4" />
-                            <span>{post.author || 'Unknown author'}</span>
                           </div>
                         </div>
-                      </div>
-                    </motion.article>
+                        <div className="p-6">
+                          <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>{post.date ? new Date(post.date).toLocaleDateString() : 'Unknown date'}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <Clock className="w-4 h-4" />
+                              <span>{post.readTime || 'Unknown'}</span>
+                            </div>
+                          </div>
+                          <h4 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors">
+                            {post.title}
+                          </h4>
+                          <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {post.tags && Array.isArray(post.tags) && post.tags.slice(0, 2).map((tag, tagIndex) => (
+                              <span
+                                key={tagIndex}
+                                className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2 text-sm text-gray-500">
+                              <User className="w-4 h-4" />
+                              <span>{post.author || 'Unknown author'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.article>
+                    </a>
                   ) : null
                 ))
               ) : (
@@ -244,58 +240,53 @@ const Blog = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {regularPosts.map((post, index) => (
                 post ? (
-                  <motion.article
-                    key={post.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden card-3d group"
-                  >
-                    <div className="relative">
-                      <img
-                        src={post.cover}
-                        alt={post.title}
-                        className="w-full h-48 object-cover"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=800';
-                        }}
-                      />
-                      {/* Removed like button */}
-                    </div>
-
-                    <div className="p-6">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>{post.date ? new Date(post.date).toLocaleDateString() : 'Unknown date'}</span>
+                  <a href={`/blog-${post.slug}`} key={post.id} className="block">
+                    <motion.article
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden card-3d group"
+                    >
+                      <div className="relative">
+                        <img
+                          src={post.cover}
+                          alt={post.title}
+                          className="w-full h-48 object-cover"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=800';
+                          }}
+                        />
+                      </div>
+                      <div className="p-6">
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>{post.date ? new Date(post.date).toLocaleDateString() : 'Unknown date'}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Clock className="w-4 h-4" />
+                            <span>{post.readTime || 'Unknown'}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
-                          <span>{post.readTime || 'Unknown'}</span>
+                        <h4 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors">
+                          {post.title}
+                        </h4>
+                        <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {post.tags && Array.isArray(post.tags) && post.tags.slice(0, 2).map((tag, tagIndex) => (
+                            <span
+                              key={tagIndex}
+                              className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"
+                            >
+                              {tag}
+                            </span>
+                          ))}
                         </div>
                       </div>
-
-                      <h4 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors">
-                        {post.title}
-                      </h4>
-                      <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
-
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {post.tags && Array.isArray(post.tags) && post.tags.slice(0, 2).map((tag, tagIndex) => (
-                          <span
-                            key={tagIndex}
-                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Removed likes, views, share, and Read More actions */}
-                    </div>
-                  </motion.article>
+                    </motion.article>
+                  </a>
                 ) : null
               ))}
             </div>

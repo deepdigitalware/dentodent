@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useContent } from '@/contexts/ContentContext';
-import whatsappGlyph from '@/assets/icons/whatsapp-glyph.png';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const Testimonials = () => {
   const { content } = useContent();
@@ -314,7 +314,7 @@ const Testimonials = () => {
               onClick={handleBookAppointment}
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center mx-auto gap-2"
             >
-              <img src={whatsappGlyph} alt="WhatsApp" className="w-5 h-5" />
+              <WhatsAppIcon className="w-5 h-5" />
               <span>Book a Free Appointment</span>
             </Button>
           </div>

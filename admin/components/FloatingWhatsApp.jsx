@@ -1,5 +1,5 @@
 import React from 'react';
-import whatsappIcon from '@/assets/icons/whatsapp-glyph.svg';
+import whatsappIcon from 'shared-assets/whatsapp.svg';
 
 const FloatingWhatsApp = () => {
   const openWhatsApp = () => {

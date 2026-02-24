@@ -34,6 +34,7 @@ import CookiePolicy from '@/components/CookiePolicy';
 import AdminRoute from '@/components/admin/AdminRoute';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import { useContent } from '@/contexts/ContentContext';
+import siteLogo from '@/assets/icons/logo.svg';
 
 function App() {
   const [isAdminRoute, setIsAdminRoute] = useState(false);
@@ -397,7 +398,7 @@ function App() {
           />
           <meta name="robots" content={seoRobots} />
           <link rel="canonical" href={canonicalUrl} />
-          {header.faviconUrl && <link rel="icon" href={header.faviconUrl} />}
+          <link rel="icon" href={header.faviconUrl || siteLogo} />
 
           <meta property="og:type" content="website" />
           <meta property="og:title" content={header.ogTitle || seoTitle} />
