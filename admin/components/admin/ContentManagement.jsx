@@ -85,6 +85,13 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
       return { ...base, items, stats };
     }
 
+    if (tabId === 'certificates') {
+      const items = Array.isArray(base.items)
+        ? base.items
+        : (Array.isArray(rawValue) ? rawValue : []);
+      return { ...base, items };
+    }
+
     return base;
   };
 
@@ -102,7 +109,10 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
     { id: 'treatments', label: 'Treatments', icon: '🧪' },
     { id: 'map', label: 'Map & Location', icon: '🗺️' },
     { id: 'doctor', label: 'Doctor Profile', icon: '👨‍⚕️' },
+    { id: 'certificates', label: 'Certificates Slider', icon: '🏅' },
     { id: 'gallery', label: 'Gallery', icon: '🖼️' },
+    { id: 'blog', label: 'Blog Section', icon: '📝' },
+    { id: 'blogPosts', label: 'Blog Articles', icon: '📰' },
     { id: 'privacyPolicy', label: 'Privacy Policy', icon: '🔒' },
     { id: 'termsOfService', label: 'Terms of Service', icon: '⚖️' },
     { id: 'contact', label: 'Contact', icon: '📞' },
@@ -1810,6 +1820,86 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
     </div>
   );
 
+  const renderCertificatesEditor = () => (
+    <div className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Section Title</label>
+        <input
+          type="text"
+          value={editingContent.title || ''}
+          onChange={(e) => handleInputChange('title', e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          disabled={!isEditing}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
+        <input
+          type="text"
+          value={editingContent.subtitle || ''}
+          onChange={(e) => handleInputChange('subtitle', e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          disabled={!isEditing}
+        />
+      </div>
+
+      <div className="flex justify-between items-center mb-4">
+        <label className="block text-sm font-medium text-gray-700">Certificate Slides</label>
+        {isEditing && (
+          <Button
+            onClick={() => addArrayItem('items', { title: '', description: '', imageUrl: '' })}
+            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Add Certificate
+          </Button>
+        )}
+      </div>
+
+      {(editingContent.items || []).map((item, index) => (
+        <div key={index} className="p-4 border border-gray-200 rounded-lg mb-3">
+          <div className="flex justify-between items-start mb-3">
+            <h4 className="font-medium text-gray-800">Certificate {index + 1}</h4>
+            {isEditing && (
+              <Button onClick={() => removeArrayItem('items', index)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 text-xs">
+                <X className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input
+              type="text"
+              placeholder="Title"
+              value={item.title || ''}
+              onChange={(e) => handleArrayChange('items', index, 'title', e.target.value)}
+              className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={!isEditing}
+            />
+            <textarea
+              placeholder="Description"
+              value={item.description || ''}
+              onChange={(e) => handleArrayChange('items', index, 'description', e.target.value)}
+              className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows="2"
+              disabled={!isEditing}
+            />
+            <div className="md:col-span-2">
+              <ImagePicker
+                label="Certificate Image"
+                value={item.imageUrl || ''}
+                onChange={(url) => handleArrayChange('items', index, 'imageUrl', url)}
+                section="certificates"
+                disabled={!isEditing}
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   const renderReviewsEditor = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-4">
@@ -1920,6 +2010,8 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
         return renderContactEditor();
       case 'doctor':
         return renderDoctorEditor();
+      case 'certificates':
+        return renderCertificatesEditor();
       case 'testimonials':
         return renderTestimonialsEditor();
       case 'gallery':

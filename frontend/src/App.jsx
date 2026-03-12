@@ -15,6 +15,7 @@ import TeethWhitening from '@/components/services/TeethWhitening';
 import SmileMakeover from '@/components/services/SmileMakeover';
 import PediatricDentistry from '@/components/services/PediatricDentistry';
 import Doctor from '@/components/Doctor';
+import CertificatesSlider from '@/components/CertificatesSlider';
 import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
@@ -452,6 +453,7 @@ function App() {
             <About />
             <Services />
             <Doctor />
+            <CertificatesSlider />
             <Testimonials />
             <Gallery />
             <Blog />

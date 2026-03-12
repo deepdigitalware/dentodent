@@ -143,6 +143,27 @@ const initialContent = {
       }
     ]
   },
+  certificates: {
+    title: 'Our Certifications & Recognition',
+    subtitle: 'Verified credentials and certifications that reflect our commitment to safe, ethical, and modern dental care.',
+    items: [
+      {
+        title: 'Clinical Excellence Certificate',
+        description: 'Recognized for high standards in patient safety and clinical protocols.',
+        imageUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&auto=format&fit=crop'
+      },
+      {
+        title: 'Advanced Implantology Training',
+        description: 'Completion of advanced implant planning and restoration workflow training.',
+        imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&auto=format&fit=crop'
+      },
+      {
+        title: 'Digital Dentistry Certification',
+        description: 'Certified usage of digital diagnostics and treatment planning systems.',
+        imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&auto=format&fit=crop'
+      }
+    ]
+  },
   map: {}
 };
 
@@ -274,6 +295,11 @@ export const ContentProvider = ({ children }) => {
             privacyPolicy: normalizeObject(base.privacyPolicy),
             termsOfService: normalizeObject(base.termsOfService),
             map: normalizeObject(base.map),
+            certificates: (() => {
+              const section = normalizeObject(base.certificates);
+              const items = normalizeArray(section.items || base.certificates);
+              return { ...initialContent.certificates, ...section, items: items.length > 0 ? items : initialContent.certificates.items };
+            })(),
             testimonials: normalizeArray(base.testimonials),
             gallery: normalizeArray(base.gallery),
             blogPosts: (() => {
@@ -348,6 +374,11 @@ export const ContentProvider = ({ children }) => {
               privacyPolicy: normalizeObject(base.privacyPolicy),
               termsOfService: normalizeObject(base.termsOfService),
               map: normalizeObject(base.map),
+              certificates: (() => {
+                const section = normalizeObject(base.certificates);
+                const items = normalizeArray(section.items || base.certificates);
+                return { ...initialContent.certificates, ...section, items: items.length > 0 ? items : initialContent.certificates.items };
+              })(),
               testimonials: normalizeArray(base.testimonials),
               gallery: normalizeArray(base.gallery),
             blogPosts: (() => {

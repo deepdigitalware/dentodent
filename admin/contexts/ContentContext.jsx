@@ -77,6 +77,7 @@ export const ContentProvider = ({ children }) => {
     slider: {},
     cta: {},
     patient: {},
+    certificates: {},
     footer: {},
     blogPosts: [],
     treatments: [],
@@ -248,6 +249,11 @@ export const ContentProvider = ({ children }) => {
             slider: normalizeObject(base.slider),
             cta: normalizeObject(base.cta),
             patient: normalizeObject(base.patient),
+            certificates: (() => {
+              const section = normalizeObject(base.certificates);
+              const items = normalizeArray(section.items || base.certificates);
+              return { ...section, items };
+            })(),
             footer: normalizeObject(base.footer),
             map: normalizeObject(base.map),
             testimonials: (() => {
@@ -350,6 +356,11 @@ export const ContentProvider = ({ children }) => {
               slider: normalizeObject(base.slider),
               cta: normalizeObject(base.cta),
               patient: normalizeObject(base.patient),
+              certificates: (() => {
+                const section = normalizeObject(base.certificates);
+                const items = normalizeArray(section.items || base.certificates);
+                return { ...section, items };
+              })(),
               footer: normalizeObject(base.footer),
               map: normalizeObject(base.map),
               testimonials: (() => {

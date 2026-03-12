@@ -259,6 +259,8 @@ const AdminPanel = () => {
         { id: 'pages', label: 'Pages', icon: FileText },
         { id: 'team', label: 'Team Members', icon: Users },
         { id: 'treatments', label: 'Treatments', icon: Activity },
+        { id: 'certificates', label: 'Certificates Slider', icon: Activity },
+        { id: 'blog', label: 'Blog Articles', icon: FileText },
         { id: 'header', label: 'Header', icon: Layout },
         { id: 'footer', label: 'Footer', icon: Layout }
       ]
@@ -403,6 +405,10 @@ const AdminPanel = () => {
         return <ContentManagement initialTab="doctor" hideNavigation />;
       case 'treatments':
         return <ContentManagement initialTab="treatments" hideNavigation />;
+      case 'certificates':
+        return <ContentManagement initialTab="certificates" hideNavigation />;
+      case 'blog':
+        return <ContentManagement initialTab="blogPosts" hideNavigation />;
       case 'library':
         return <MediaLibrary />;
       case 'banners':
