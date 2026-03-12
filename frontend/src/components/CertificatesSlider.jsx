@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Award } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContent } from '@/contexts/ContentContext';
 
 const fallbackSection = {
@@ -38,6 +38,8 @@ const CertificatesSlider = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerSlide, setCardsPerSlide] = useState(3);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [mouseStartX, setMouseStartX] = useState(null);
   const totalSlides = Math.max(1, Math.ceil(items.length / cardsPerSlide));
 
   useEffect(() => {
@@ -67,12 +69,46 @@ const CertificatesSlider = () => {
     if (totalSlides <= 1) return undefined;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % totalSlides);
-    }, 5500);
+    }, 2000);
     return () => clearInterval(timer);
   }, [totalSlides]);
 
   const next = () => setCurrentIndex((prev) => (prev + 1) % totalSlides);
   const prev = () => setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
+
+  const handleTouchStart = (e) => {
+    if (!e.touches || e.touches.length === 0) return;
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX === null || !e.changedTouches || e.changedTouches.length === 0) {
+      setTouchStartX(null);
+      return;
+    }
+
+    const endX = e.changedTouches[0].clientX;
+    const distance = endX - touchStartX;
+    if (distance > 50) prev();
+    if (distance < -50) next();
+    setTouchStartX(null);
+  };
+
+  const handleMouseDown = (e) => {
+    setMouseStartX(e.clientX);
+  };
+
+  const handleMouseUp = (e) => {
+    if (mouseStartX === null) return;
+    const distance = e.clientX - mouseStartX;
+    if (distance > 50) prev();
+    if (distance < -50) next();
+    setMouseStartX(null);
+  };
+
+  const handleMouseLeave = () => {
+    setMouseStartX(null);
+  };
 
   return (
     <section id="certificates" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -112,7 +148,14 @@ const CertificatesSlider = () => {
             </>
           )}
 
-          <div className="overflow-hidden rounded-2xl">
+          <div
+            className="overflow-hidden rounded-2xl"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+          >
             <motion.div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -124,15 +167,14 @@ const CertificatesSlider = () => {
                   <div key={slideIndex} className="w-full flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                     {group.map((item, idx) => (
                       <article key={`${slideIndex}-${idx}`} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100/70">
-                        <div className="relative h-52 md:h-56">
-                          <img src={item.imageUrl} alt={item.title || 'Certificate'} className="w-full h-full object-cover" loading="lazy" />
-                          <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-blue-700 text-white flex items-center justify-center shadow-lg border-4 border-white">
-                            <Award className="w-6 h-6" />
-                          </div>
-                        </div>
-                        <div className="pt-8 pb-6 px-5 md:px-6 text-center">
-                          <h3 className="text-lg md:text-xl font-bold text-blue-900 mb-2 leading-snug">{item.title}</h3>
-                          <p className="text-sm md:text-base text-gray-600 leading-relaxed">{item.description}</p>
+                        <div className="aspect-video w-full">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.title || 'Certificate'}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            draggable="false"
+                          />
                         </div>
                       </article>
                     ))}
