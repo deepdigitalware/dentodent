@@ -93,12 +93,13 @@ function App() {
     if (!raw) return fallback;
     if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw;
     if (raw.startsWith('/assets/icons/')) {
-      if (raw === '/assets/icons/favicon.svg') return '/assets/icons/logo.svg';
       return raw;
     }
     if (raw.startsWith('/assets')) return `${apiUrl}${raw}`;
     return raw;
   };
+
+  const faviconHref = resolveAssetUrl(header.faviconUrl, siteLogo);
 
   // Canonical URL for current route
   const canonicalUrl = (typeof window !== 'undefined')
@@ -486,9 +487,14 @@ function App() {
           />
           <meta name="robots" content={seoRobots} />
           <link rel="canonical" href={canonicalUrl} />
-          <link rel="icon" href={resolveAssetUrl(header.faviconUrl, siteLogo)} />
+          <meta name="theme-color" content="#2563eb" />
+          <link rel="icon" type="image/svg+xml" href={faviconHref} />
+          <link rel="icon" type="image/png" href={faviconHref} />
+          <link rel="shortcut icon" href={faviconHref} />
+          <link rel="apple-touch-icon" href={faviconHref} />
 
           <meta property="og:type" content="website" />
+          <meta property="og:site_name" content={header.siteTitle || "Dent 'O' Dent"} />
           <meta property="og:title" content={header.ogTitle || seoTitle} />
           <meta property="og:description" content={header.ogDescription || seoDescription} />
           <meta property="og:url" content={canonicalUrl} />
@@ -505,7 +511,7 @@ function App() {
             </script>
           ))}
         </Helmet>
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 overflow-x-hidden pt-24 md:pt-28">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 overflow-x-hidden pt-28 md:pt-32">
           <Header onNavigate={navigateToPage} />
           {renderPage()}
           <Footer onNavigate={navigateToPage} />

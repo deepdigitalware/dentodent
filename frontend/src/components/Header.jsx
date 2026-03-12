@@ -143,7 +143,7 @@ const Header = ({ onNavigate }) => {
                 <img
                   src={resolveAssetUrl(header.logoUrl, siteLogo)}
                   alt={(header.siteTitle || 'Site') + ' Logo'}
-                  className="h-12 md:h-14 object-contain"
+                  className="h-14 md:h-16 lg:h-20 object-contain"
                   loading="eager"
                 />
               </motion.div>

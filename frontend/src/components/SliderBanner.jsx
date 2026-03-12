@@ -6,6 +6,8 @@ const SliderBanner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   // Fetch banners from the new API endpoint
   useEffect(() => {
@@ -119,7 +121,7 @@ const SliderBanner = () => {
   // Show loading state
   if (loading) {
     return (
-      <section className="relative w-full h-96 md:h-screen overflow-hidden bg-gray-200 animate-pulse">
+      <section className="relative w-full h-[46vh] sm:h-[56vh] md:h-[72vh] lg:h-screen overflow-hidden bg-gray-200 animate-pulse">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-gray-500">Loading slider...</div>
         </div>
@@ -133,10 +135,48 @@ const SliderBanner = () => {
   }
 
   const handleSlideClick = () => {
+    if (isSwiping) return;
     const slide = slides[currentSlide];
     if (slide?.linkUrl) {
       window.open(slide.linkUrl, '_blank');
     }
+  };
+
+  const handleTouchStart = (e) => {
+    if (!e.touches || e.touches.length === 0) return;
+    setTouchStartX(e.touches[0].clientX);
+    setIsSwiping(false);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!e.touches || e.touches.length === 0 || touchStartX === null) return;
+    const currentX = e.touches[0].clientX;
+    if (Math.abs(currentX - touchStartX) > 12) {
+      setIsSwiping(true);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX === null || !e.changedTouches || e.changedTouches.length === 0) {
+      setTouchStartX(null);
+      return;
+    }
+
+    const endX = e.changedTouches[0].clientX;
+    const distance = endX - touchStartX;
+    const threshold = 50;
+
+    if (distance > threshold) {
+      prevSlide();
+      setIsSwiping(true);
+    } else if (distance < -threshold) {
+      nextSlide();
+      setIsSwiping(true);
+    }
+
+    setTouchStartX(null);
+    // Small timeout prevents post-swipe tap from opening slide link.
+    setTimeout(() => setIsSwiping(false), 120);
   };
 
   const handleCtaClick = (e) => {
@@ -151,8 +191,11 @@ const SliderBanner = () => {
 
   return (
     <section
-      className="relative w-full min-h-screen overflow-hidden z-10 pt-0 md:pt-0 cursor-pointer"
+      className="relative w-full h-[46vh] sm:h-[56vh] md:h-[72vh] lg:h-screen overflow-hidden z-10 pt-0 md:pt-0 cursor-pointer touch-pan-y"
       onClick={handleSlideClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Slides - no fade, instant switch */}
       <div 
@@ -162,7 +205,10 @@ const SliderBanner = () => {
 
       {/* Navigation Arrows - hidden on mobile for better UX */}
       <button
-        onClick={prevSlide}
+        onClick={(e) => {
+          e.stopPropagation();
+          prevSlide();
+        }}
         className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 md:p-3 rounded-full transition-all duration-300 backdrop-blur-sm hidden md:block"
         aria-label="Previous slide"
       >
@@ -172,7 +218,10 @@ const SliderBanner = () => {
       </button>
 
       <button
-        onClick={nextSlide}
+        onClick={(e) => {
+          e.stopPropagation();
+          nextSlide();
+        }}
         className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 md:p-3 rounded-full transition-all duration-300 backdrop-blur-sm hidden md:block"
         aria-label="Next slide"
       >
@@ -186,7 +235,10 @@ const SliderBanner = () => {
         {slides.map((_, index) => (
           <button
             key={index}
-            onClick={() => goToSlide(index)}
+            onClick={(e) => {
+              e.stopPropagation();
+              goToSlide(index);
+            }}
             className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
               index === currentSlide 
                 ? 'bg-white scale-125' 
