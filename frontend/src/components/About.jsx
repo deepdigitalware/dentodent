@@ -72,7 +72,7 @@ const About = () => {
   const { t } = useI18n();
 
   return (
-    <section id="about" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50" ref={sectionRef}>
+    <section id="about" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-start">
           {/* Left Content */}
@@ -82,7 +82,7 @@ const About = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl lg:text-5xl font-display font-bold mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-display font-bold mb-4 md:mb-6">
               {content.about.title}
             </h2>
             <p className="text-lg text-gray-600 mb-5 leading-relaxed">

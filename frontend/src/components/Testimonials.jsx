@@ -57,8 +57,17 @@ const Testimonials = () => {
   })();
 
   const testimonialsData = normalizedReviews
+    .slice()
+    .sort((a, b) => {
+      const getTime = (entry) => {
+        const candidate = entry?.timestamp || entry?.createdAt || entry?.updatedAt || entry?.date;
+        const parsed = candidate ? new Date(candidate).getTime() : NaN;
+        return Number.isFinite(parsed) ? parsed : 0;
+      };
+      return getTime(b) - getTime(a);
+    })
     .map((review) => {
-      const rawDate = review.date;
+      const rawDate = review.date || review.createdAt || review.timestamp;
       let formattedDate = rawDate;
 
       if (rawDate) {
@@ -151,7 +160,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-16 md:py-20 pb-20 md:pb-24 bg-white">
+    <section className="py-16 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -272,9 +281,9 @@ const Testimonials = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
+                className={`w-[7px] h-[7px] md:w-3 md:h-3 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? 'bg-blue-600 scale-125'
+                    ? 'bg-blue-600 md:scale-125'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
                 aria-label={`Go to testimonial slide ${index + 1}`}

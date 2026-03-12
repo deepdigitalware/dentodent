@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useContent } from '@/contexts/ContentContext';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const FALLBACK_GALLERY_IMAGES = [
   {
@@ -104,6 +105,12 @@ const Gallery = () => {
   const filteredImages = activeFilter === 'all' 
     ? galleryImages 
     : galleryImages.filter(img => img.category === activeFilter);
+
+  const handleBookConsultation = () => {
+    if (typeof window !== 'undefined') {
+      window.open('https://wa.me/916290093271', '_blank');
+    }
+  };
 
   return (
     <section id="gallery" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -242,9 +249,13 @@ const Gallery = () => {
               the perfect smile you've always wanted.
             </p>
             <Button
+              onClick={handleBookConsultation}
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Book Your Consultation
+              <span className="flex items-center gap-2">
+                <WhatsAppIcon className="w-5 h-5" />
+                <span>Book Your Consultation</span>
+              </span>
             </Button>
           </div>
         </motion.div>
