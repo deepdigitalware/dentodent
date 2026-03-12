@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContent } from '@/contexts/ContentContext';
 
@@ -50,7 +49,7 @@ const CertificatesSlider = () => {
       } else if (width < 1024) {
         setCardsPerSlide(2);
       } else {
-        setCardsPerSlide(3);
+        setCardsPerSlide(2);
       }
     };
 
@@ -113,21 +112,6 @@ const CertificatesSlider = () => {
   return (
     <section id="certificates" className="py-16 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true, amount: 0.1 }}
-          className="text-center mb-12 md:mb-16"
-        >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-display font-bold mb-4 md:mb-6">
-            {section?.title || fallbackSection.title}
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            {section?.subtitle || fallbackSection.subtitle}
-          </p>
-        </motion.div>
-
         <div className="relative">
           {totalSlides > 1 && (
             <>
@@ -164,7 +148,7 @@ const CertificatesSlider = () => {
                 const start = slideIndex * cardsPerSlide;
                 const group = items.slice(start, start + cardsPerSlide);
                 return (
-                  <div key={slideIndex} className="w-full flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+                  <div key={slideIndex} className="w-full flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
                     {group.map((item, idx) => (
                       <article key={`${slideIndex}-${idx}`} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100/70">
                         <div className="aspect-video w-full">
