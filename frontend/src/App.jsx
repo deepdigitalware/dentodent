@@ -375,22 +375,72 @@ function App() {
       const whatsappButton = document.querySelector('button[aria-label="Chat on WhatsApp"]');
       if (!whatsappButton) return;
 
-      const waStyle = window.getComputedStyle(whatsappButton);
-      const waRight = parseFloat(waStyle.right) || 24;
-      const waBottom = parseFloat(waStyle.bottom) || 24;
-      const waHeight = whatsappButton.getBoundingClientRect().height || 64;
-      const targetBottom = waBottom + waHeight + 15;
-
       const chatbotNodes = document.querySelectorAll(
         'iframe[src*="jotfor.ms/agent"], iframe[src*="cdn.jotfor.ms/agent"], div[id*="jotform-agent"], div[class*="jotform-agent"], div[id*="jfAgent"], div[class*="jfAgent"]'
       );
 
-      chatbotNodes.forEach((node) => {
-        const anchor = findFixedAnchor(node);
-        anchor.style.right = `${waRight}px`;
-        anchor.style.bottom = `${targetBottom}px`;
-        anchor.style.zIndex = '60';
-      });
+      const chatbotAnchors = Array.from(chatbotNodes)
+        .map(findFixedAnchor)
+        .filter((el, idx, arr) => el && arr.indexOf(el) === idx);
+
+      // Fallback: some chatbot launchers are injected with dynamic class names.
+      // Detect likely bottom-right circular launchers and place them above WhatsApp.
+      if (chatbotAnchors.length === 0) {
+        const fixedCandidates = Array.from(document.querySelectorAll('body *')).filter((el) => {
+          if (!(el instanceof HTMLElement)) return false;
+          if (el === whatsappButton || whatsappButton.contains(el) || el.contains(whatsappButton)) return false;
+          const style = window.getComputedStyle(el);
+          if (style.position !== 'fixed') return false;
+          const right = parseFloat(style.right);
+          const bottom = parseFloat(style.bottom);
+          if (!Number.isFinite(right) || !Number.isFinite(bottom)) return false;
+          if (right > 80 || bottom > 130) return false;
+          const rect = el.getBoundingClientRect();
+          const sizeLikeLauncher = rect.width >= 36 && rect.width <= 96 && rect.height >= 36 && rect.height <= 96;
+          if (!sizeLikeLauncher) return false;
+          return true;
+        });
+
+        fixedCandidates.forEach((el) => chatbotAnchors.push(el));
+      }
+
+      if (chatbotAnchors.length === 0) return;
+
+      const primaryLauncher = chatbotAnchors
+        .filter((el) => el !== whatsappButton && !whatsappButton.contains(el) && !el.contains(whatsappButton))
+        .sort((a, b) => {
+          const sa = window.getComputedStyle(a);
+          const sb = window.getComputedStyle(b);
+          const ra = parseFloat(sa.right) || 999;
+          const rb = parseFloat(sb.right) || 999;
+          const ba = parseFloat(sa.bottom) || 999;
+          const bb = parseFloat(sb.bottom) || 999;
+          return (ra + ba) - (rb + bb);
+        })[0];
+
+      if (!primaryLauncher) return;
+
+      const launcherStyle = window.getComputedStyle(primaryLauncher);
+      const launcherRect = primaryLauncher.getBoundingClientRect();
+      const chatRight = parseFloat(launcherStyle.right) || Math.max(0, window.innerWidth - launcherRect.right);
+      const chatBottom = parseFloat(launcherStyle.bottom) || Math.max(0, window.innerHeight - launcherRect.bottom);
+      const launcherSize = Math.max(40, Math.min(96, Math.round(Math.max(launcherRect.width, launcherRect.height))));
+
+      primaryLauncher.style.zIndex = '60';
+
+      // Keep WhatsApp exactly below chatbot launcher with the same size and 15px gap.
+      whatsappButton.style.width = `${launcherSize}px`;
+      whatsappButton.style.height = `${launcherSize}px`;
+      whatsappButton.style.right = `${chatRight}px`;
+      whatsappButton.style.bottom = `${Math.max(12, chatBottom - launcherSize - 15)}px`;
+      whatsappButton.style.zIndex = '59';
+
+      const waIcon = whatsappButton.querySelector('[role="img"]');
+      if (waIcon) {
+        const iconSize = Math.max(18, Math.round(launcherSize * 0.5));
+        waIcon.style.width = `${iconSize}px`;
+        waIcon.style.height = `${iconSize}px`;
+      }
     };
 
     const observer = new MutationObserver(() => {
