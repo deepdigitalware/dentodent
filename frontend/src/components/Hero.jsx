@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Award, Users, Clock, Phone } from 'lucide-react';
 import smileIcon from '@/assets/icons/smile.svg';
@@ -7,8 +7,67 @@ import { useI18n } from '@/lib/i18n.jsx';
 import { useContent } from '@/contexts/ContentContext';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 
+const FALLBACK_HERO_IMAGE = 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?auto=format&fit=crop&w=1400&q=80';
+
+const parseStatNumber = (value) => {
+  const raw = String(value || '').trim();
+  const match = raw.match(/\d+/g);
+  if (!match) return { number: 0, suffix: '' };
+  const number = Number(match.join(''));
+  const suffix = raw.replace(match.join(''), '');
+  return { number: Number.isFinite(number) ? number : 0, suffix };
+};
+
+const StatCounter = ({ value }) => {
+  const { number, suffix } = useMemo(() => parseStatNumber(value), [value]);
+  const [displayValue, setDisplayValue] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    if (hasStarted) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setHasStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    const node = document.getElementById(`hero-stat-${String(value).replace(/\W+/g, '')}`);
+    if (node) observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [hasStarted, value]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+    const duration = 1500;
+    const startTime = performance.now();
+
+    const step = (now) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayValue(Math.round(number * eased));
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  }, [hasStarted, number]);
+
+  return (
+    <span id={`hero-stat-${String(value).replace(/\W+/g, '')}`}>
+      {displayValue.toLocaleString()}{suffix}
+    </span>
+  );
+};
+
 const Hero = () => {
   const { content, apiUrl } = useContent();
+  const [heroImageSrc, setHeroImageSrc] = useState(FALLBACK_HERO_IMAGE);
   
   const handleBooking = () => {
     if (typeof window !== 'undefined') {
@@ -23,6 +82,21 @@ const Hero = () => {
 
   const splineUrl = import.meta.env.VITE_SPLINE_URL; // Optional Spline embed
   const { t } = useI18n();
+
+  useEffect(() => {
+    const candidate = content?.hero?.image || content?.hero?.imageUrl;
+    if (!candidate) {
+      setHeroImageSrc(FALLBACK_HERO_IMAGE);
+      return;
+    }
+
+    if (candidate.startsWith('/assets')) {
+      setHeroImageSrc(`${apiUrl}${candidate}`);
+      return;
+    }
+
+    setHeroImageSrc(candidate);
+  }, [apiUrl, content?.hero?.image, content?.hero?.imageUrl]);
 
   // Icon mapping function
   const getIconComponent = (iconName) => {
@@ -62,7 +136,7 @@ const Hero = () => {
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute top-20 left-10"
         >
-          <img src={smileIcon} alt="Decorative" className="w-16 h-16" loading="lazy" />
+          <img src={smileIcon} alt="" className="w-16 h-16" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
         </motion.div>
         <motion.div
           aria-hidden="true"
@@ -71,7 +145,7 @@ const Hero = () => {
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
           className="absolute top-40 right-20"
         >
-          <img src={smileIcon} alt="Decorative" className="w-12 h-12" loading="lazy" />
+          <img src={smileIcon} alt="" className="w-12 h-12" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
         </motion.div>
         <motion.div
           aria-hidden="true"
@@ -80,7 +154,7 @@ const Hero = () => {
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
           className="absolute bottom-40 left-20"
         >
-          <img src={smileIcon} alt="Decorative" className="w-20 h-20" loading="lazy" />
+          <img src={smileIcon} alt="" className="w-20 h-20" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
         </motion.div>
       </div>
 
@@ -97,10 +171,10 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-4 md:mb-6"
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight mb-4 md:mb-6"
             >
-              {content.hero.title}
-              <span className="gradient-text block">{content.hero.subtitle}</span>
+              <span className="block lg:whitespace-nowrap">{content.hero.title}</span>
+              <span className="gradient-text block lg:whitespace-nowrap">{content.hero.subtitle}</span>
             </motion.h1>
 
             <motion.p
@@ -159,7 +233,9 @@ const Hero = () => {
                   ) : (
                     React.createElement(getIconComponent(stat.icon), { className: "w-5 h-5 md:w-8 md:h-8 text-blue-600 mx-auto mb-1 md:mb-2" })
                   )}
-                  <div className="text-lg md:text-2xl font-bold text-gray-800">{stat.number}</div>
+                  <div className="text-lg md:text-2xl font-bold text-gray-800">
+                    <StatCounter value={stat.number} />
+                  </div>
                   <div className="text-xs md:text-sm text-gray-600">{stat.label}</div>
                 </div>
               )) : null}
@@ -178,11 +254,12 @@ const Hero = () => {
                 <img 
                   className="w-full h-auto rounded-2xl md:rounded-3xl shadow-2xl card-3d"
                   alt={content.hero.imageAlt || "Modern dental clinic interior with advanced equipment"}
-                  src={(function() {
-                    const u = content.hero.image || content.hero.imageUrl;
-                    if (!u) return "https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81";
-                    return u.startsWith('/assets') ? `${apiUrl}${u}` : u;
-                  })()} 
+                  src={heroImageSrc}
+                  onError={(e) => {
+                    if (e.currentTarget.src !== FALLBACK_HERO_IMAGE) {
+                      setHeroImageSrc(FALLBACK_HERO_IMAGE);
+                    }
+                  }}
                   loading="eager" />
               </div>
             )}

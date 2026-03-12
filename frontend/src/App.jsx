@@ -86,7 +86,7 @@ function App() {
   const [isAdminRoute, setIsAdminRoute] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoading, setIsLoading] = useState(false);
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
   const header = content?.header || {};
 
   // Canonical URL for current route
@@ -316,6 +316,32 @@ function App() {
       window.removeEventListener('pushstate', handlePushState);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isAdminRoute || currentPage === 'admin') return;
+    if (!apiUrl) return;
+
+    const pagePath = window.location.pathname || '/';
+    let sessionId = localStorage.getItem('dod-session-id');
+    if (!sessionId) {
+      sessionId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem('dod-session-id', sessionId);
+    }
+
+    fetch(`${apiUrl}/api/analytics/page-view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        path: pagePath,
+        title: document.title || '',
+        referrer: document.referrer || '',
+        sessionId
+      })
+    }).catch(() => {
+      // Best-effort telemetry; ignore failures.
+    });
+  }, [apiUrl, currentPage, isAdminRoute]);
 
   // Handle admin route navigation
   useEffect(() => {

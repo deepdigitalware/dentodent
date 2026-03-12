@@ -242,7 +242,7 @@ const AdminPanel = () => {
     setShowLogoutConfirm(false);
   };
 
-  // Advanced menu structure with nested items
+  // Keep only actively supported modules to avoid duplicate/unused sidebar entries.
   const menuStructure = [
     {
       id: 'dashboard',
@@ -263,20 +263,21 @@ const AdminPanel = () => {
         { id: 'team', label: 'Team Members', icon: Users },
         { id: 'services', label: 'Dental Services', icon: Stethoscope },
         { id: 'treatments', label: 'Treatments', icon: Activity },
-        { id: 'reviews', label: 'Reviews', icon: Star }
+        { id: 'reviews', label: 'Reviews', icon: Star },
+        { id: 'header', label: 'Header', icon: Layout },
+        { id: 'footer', label: 'Footer', icon: Layout }
       ]
     },
     {
       id: 'media',
-      label: 'Media Library',
+      label: 'Media',
       icon: Image,
       roles: ['admin', 'editor', 'staff'],
       children: [
         { id: 'library', label: 'Media Library', icon: Image },
         { id: 'banners', label: 'Banners', icon: Image },
         { id: 'carousels', label: 'Carousels', icon: Grid },
-        { id: 'galleries', label: 'Galleries', icon: Camera },
-        { id: 'videos', label: 'Video Management', icon: Film }
+        { id: 'galleries', label: 'Gallery Content', icon: Camera }
       ]
     },
     {
@@ -285,33 +286,7 @@ const AdminPanel = () => {
       icon: Navigation,
       roles: ['admin', 'editor'],
       children: [
-        { id: 'menus', label: 'Menu Management', icon: Menu },
-        { id: 'mega-menu', label: 'Mega Menu', icon: Layers },
-        { id: 'mobile-nav', label: 'Mobile Navigation', icon: Smartphone }
-      ]
-    },
-    {
-      id: 'design',
-      label: 'Design & Layout',
-      icon: Layout,
-      roles: ['admin', 'editor'],
-      children: [
-        { id: 'header', label: 'Header', icon: Layout },
-        { id: 'footer', label: 'Footer', icon: Layout },
-        { id: 'sections', label: 'Content Sections', icon: Grid },
-        { id: 'responsive', label: 'Responsive Design', icon: Monitor },
-        { id: 'css', label: 'CSS Management', icon: Code }
-      ]
-    },
-    {
-      id: 'users',
-      label: 'Users & Patients',
-      icon: Users,
-      roles: ['admin'],
-      children: [
-        { id: 'user-list', label: 'All Users', icon: User },
-        { id: 'user-roles', label: 'User Roles', icon: Shield },
-        { id: 'activity', label: 'Activity Logs', icon: Activity }
+        { id: 'menus', label: 'Menu Management', icon: Menu }
       ]
     },
     {
@@ -320,9 +295,7 @@ const AdminPanel = () => {
       icon: Calendar,
       roles: ['admin', 'staff'],
       children: [
-        { id: 'schedule', label: 'Schedule', icon: Calendar },
-        { id: 'bookings', label: 'Bookings', icon: BookOpen },
-        { id: 'availability', label: 'Availability', icon: Clock }
+        { id: 'schedule', label: 'Schedule', icon: Calendar }
       ]
     },
     {
@@ -332,8 +305,7 @@ const AdminPanel = () => {
       roles: ['admin', 'editor'],
       children: [
         { id: 'form-list', label: 'Form Management', icon: Mail },
-        { id: 'submissions', label: 'Submissions', icon: Inbox },
-        { id: 'notifications', label: 'Notifications', icon: Bell }
+        { id: 'submissions', label: 'Submissions', icon: Inbox }
       ]
     },
     {
@@ -343,8 +315,7 @@ const AdminPanel = () => {
       roles: ['admin'],
       children: [
         { id: 'reports', label: 'Reports', icon: BarChart3 },
-        { id: 'traffic', label: 'Traffic Analytics', icon: TrendingUp },
-        { id: 'seo', label: 'SEO Tools', icon: Search }
+        { id: 'traffic', label: 'Traffic Analytics', icon: TrendingUp }
       ]
     },
     {
@@ -356,7 +327,6 @@ const AdminPanel = () => {
         { id: 'general', label: 'General Settings', icon: Settings },
         { id: 'seo-settings', label: 'SEO Settings', icon: Search },
         { id: 'social', label: 'Social Media', icon: Share2 },
-        { id: 'security', label: 'Security', icon: Shield },
         { id: 'backup', label: 'Backup & Migration', icon: Database }
       ]
     }

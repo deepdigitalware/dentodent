@@ -8,6 +8,24 @@ import siteLogo from '@/assets/icons/logo.svg';
 
 const Footer = ({ onNavigate }) => {
   const { content } = useContent();
+  const normalizeLink = (item, fallbackMode = 'route') => {
+    if (item && typeof item === 'object') {
+      const label = item.label || item.text || item.name || item.target || '';
+      return {
+        label,
+        mode: item.mode || fallbackMode,
+        target: item.target || label
+      };
+    }
+
+    const label = String(item || '').trim();
+    return {
+      label,
+      mode: fallbackMode,
+      target: label
+    };
+  };
+
   const handleSocialClick = (platform) => {
     toast({
       title: `📱 ${platform}`,
@@ -15,12 +33,29 @@ const Footer = ({ onNavigate }) => {
     });
   };
 
-  const handleLinkClick = (link) => {
+  const handleLinkClick = (linkItem) => {
+    const link = normalizeLink(linkItem);
+    if (!link.label) return;
+
+    if (link.mode === 'external' && /^https?:\/\//.test(String(link.target || ''))) {
+      window.open(link.target, '_blank');
+      return;
+    }
+
+    if (link.mode === 'scroll') {
+      const id = String(link.target || '').trim();
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+    }
+
     if (onNavigate) {
-      onNavigate(link.toLowerCase().replace(/\s+/g, '-'));
+      onNavigate(String(link.target || link.label).toLowerCase().replace(/\s+/g, '-'));
     } else {
       toast({
-        title: `🔗 ${link}`,
+        title: `🔗 ${link.label}`,
         description: "🚧 This feature isn't implemented yet—but don't worry! You can request it in your next prompt! 🚀"
       });
     }
@@ -164,16 +199,20 @@ const Footer = ({ onNavigate }) => {
           >
             <span className="text-lg md:text-xl font-semibold">{t('footer_quick_links')}</span>
             <ul className="space-y-2 md:space-y-3">
-              {quickLinks.map((link, index) => (
+              {quickLinks.map((item, index) => {
+                const link = normalizeLink(item, 'route');
+                if (!link.label) return null;
+                return (
                 <li key={index}>
                   <button
                     onClick={() => handleLinkClick(link)}
                     className="text-gray-300 hover:text-white transition-colors duration-200 text-sm md:text-base"
                   >
-                    {link}
+                    {link.label}
                   </button>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </motion.div>
 
@@ -244,15 +283,19 @@ const Footer = ({ onNavigate }) => {
               <span className="hover:text-white cursor-pointer transition-colors duration-200" onClick={handleDeepverseClick}>Deepverse</span>
             </p>
             <div className="flex flex-wrap gap-4 md:gap-6 text-xs md:text-sm justify-center">
-              {legalLinks.map((link) => (
+              {legalLinks.map((item, index) => {
+                const link = normalizeLink(item, 'route');
+                if (!link.label) return null;
+                return (
                 <button
-                  key={link}
+                  key={`${link.label}-${index}`}
                   onClick={() => handleLinkClick(link)}
                   className="text-gray-400 hover:text-white transition-colors duration-200"
                 >
-                  {link}
+                  {link.label}
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
         </motion.div>

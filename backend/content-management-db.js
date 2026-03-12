@@ -653,6 +653,88 @@ app.delete('/api/images/:id', async (req, res) => {
   }
 });
 
+app.post('/api/analytics/page-view', async (req, res) => {
+  try {
+    const { path: pagePath, title, referrer, sessionId } = req.body || {};
+    if (!pagePath || typeof pagePath !== 'string') {
+      return res.status(400).json({ error: 'path is required' });
+    }
+
+    const userAgent = req.headers['user-agent'] || '';
+    const forwarded = req.headers['x-forwarded-for'];
+    const ipAddress = Array.isArray(forwarded)
+      ? forwarded[0]
+      : (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : (req.socket?.remoteAddress || ''));
+
+    await pool.query(
+      `INSERT INTO page_views (path, title, session_id, referrer, user_agent, ip_address, viewed_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+      [pagePath.trim(), title || '', sessionId || '', referrer || '', userAgent, ipAddress]
+    );
+
+    res.status(201).json({ success: true });
+  } catch (err) {
+    console.error('Page view insert error:', err);
+    res.status(500).json({ error: 'Failed to record page view' });
+  }
+});
+
+app.get('/api/analytics/summary', async (req, res) => {
+  try {
+    const range = String(req.query.range || '7d').toLowerCase();
+    const match = range.match(/^(\d+)d$/);
+    const days = match ? Math.max(1, Math.min(365, Number(match[1]))) : 7;
+
+    const trafficResult = await pool.query(
+      `SELECT TO_CHAR(DATE_TRUNC('day', viewed_at), 'YYYY-MM-DD') AS date,
+              COUNT(*)::int AS page_views,
+              COUNT(DISTINCT NULLIF(session_id, ''))::int AS visitors
+       FROM page_views
+       WHERE viewed_at >= NOW() - ($1::text || ' days')::interval
+       GROUP BY 1
+       ORDER BY 1 ASC`,
+      [String(days)]
+    );
+
+    const topPagesResult = await pool.query(
+      `SELECT path AS page, COUNT(*)::int AS views
+       FROM page_views
+       WHERE viewed_at >= NOW() - ($1::text || ' days')::interval
+       GROUP BY path
+       ORDER BY views DESC
+       LIMIT 10`,
+      [String(days)]
+    );
+
+    const totalsResult = await pool.query(
+      `SELECT COUNT(*)::int AS page_views,
+              COUNT(DISTINCT NULLIF(session_id, ''))::int AS visitors
+       FROM page_views
+       WHERE viewed_at >= NOW() - ($1::text || ' days')::interval`,
+      [String(days)]
+    );
+
+    const totals = totalsResult.rows[0] || { page_views: 0, visitors: 0 };
+    const sessions = Number(totals.visitors || 0);
+    const views = Number(totals.page_views || 0);
+    const pagesPerSession = sessions > 0 ? Number((views / sessions).toFixed(2)) : 0;
+
+    res.json({
+      range: `${days}d`,
+      totals: {
+        pageViews: views,
+        visitors: sessions,
+        pagesPerSession
+      },
+      traffic: trafficResult.rows,
+      topPages: topPagesResult.rows
+    });
+  } catch (err) {
+    console.error('Analytics summary error:', err);
+    res.status(500).json({ error: 'Failed to load analytics summary' });
+  }
+});
+
 app.get('/api/metrics', async (req, res) => {
   try {
     console.log('Fetching metrics from database');
@@ -684,6 +766,16 @@ app.get('/api/metrics', async (req, res) => {
     );
     const formsSubmissions = parseInt(submissionsResult.rows[0].count);
 
+    const pageViewsResult = await pool.query(
+      'SELECT COUNT(*) as count FROM page_views'
+    );
+    const pageViews = parseInt(pageViewsResult.rows[0].count);
+
+    const visitorsResult = await pool.query(
+      "SELECT COUNT(DISTINCT NULLIF(session_id, '')) as count FROM page_views"
+    );
+    const totalVisitors = parseInt(visitorsResult.rows[0].count);
+
     const recentResult = await pool.query(
       'SELECT form_type, submission, submitted_at FROM form_submissions ORDER BY submitted_at DESC LIMIT 10'
     );
@@ -698,8 +790,8 @@ app.get('/api/metrics', async (req, res) => {
     }));
 
     const metrics = {
-      totalVisitors: 0,
-      pageViews: 0,
+      totalVisitors,
+      pageViews,
       contactForms,
       appointments,
       imagesCount,
@@ -1154,6 +1246,27 @@ async function initializeDatabase() {
         submission JSONB NOT NULL,
         submitted_at TIMESTAMP DEFAULT NOW()
       )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS page_views (
+        id SERIAL PRIMARY KEY,
+        path TEXT NOT NULL,
+        title TEXT,
+        session_id VARCHAR(120),
+        referrer TEXT,
+        user_agent TEXT,
+        ip_address TEXT,
+        viewed_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_page_views_viewed_at ON page_views(viewed_at)
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_page_views_path ON page_views(path)
     `);
     
     // Insert sample data if tables are empty

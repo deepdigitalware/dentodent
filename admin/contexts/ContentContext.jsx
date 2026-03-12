@@ -13,8 +13,8 @@ const getApiUrl = () => {
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
       const port = window.location.port;
-      if (hostname.includes('admin')) {
-        return `${window.location.protocol}//${hostname}${port ? `:${port}` : ''}`;
+      if (hostname.startsWith('admin.') || hostname.includes('admin')) {
+        return `${window.location.protocol}//api.dentodentdentalclinic.com`;
       }
     }
   } catch {}
@@ -24,6 +24,9 @@ const getApiUrl = () => {
     const hostname = window.location.hostname;
     const port = window.location.port;
     if (hostname.includes('dentodent')) {
+      if (hostname.startsWith('admin.') || hostname === 'dentodentdentalclinic.com' || hostname === 'www.dentodentdentalclinic.com') {
+        return `${protocol}//api.dentodentdentalclinic.com`;
+      }
       return `${protocol}//${hostname}`;
     }
     if (hostname === 'localhost' || hostname === '127.0.0.1') {

@@ -109,24 +109,22 @@ const AnalyticsDashboard = () => {
 
   const fetchAnalytics = async () => {
     try {
-      // Mock data for demonstration
-      setTrafficData([
-        { date: '2025-11-01', visitors: 120, pageViews: 340 },
-        { date: '2025-11-02', visitors: 180, pageViews: 420 },
-        { date: '2025-11-03', visitors: 150, pageViews: 380 },
-        { date: '2025-11-04', visitors: 210, pageViews: 520 },
-        { date: '2025-11-05', visitors: 190, pageViews: 480 },
-        { date: '2025-11-06', visitors: 240, pageViews: 610 },
-        { date: '2025-11-07', visitors: 220, pageViews: 550 }
-      ]);
-      
-      setTopPages([
-        { page: '/home', views: 1240 },
-        { page: '/services', views: 890 },
-        { page: '/about', views: 720 },
-        { page: '/contact', views: 650 },
-        { page: '/blog', views: 580 }
-      ]);
+      const response = await fetchWithRefresh(`${apiUrl}/api/analytics/summary?range=${encodeURIComponent(dateRange)}`);
+      if (!response.ok) {
+        throw new Error(`Failed to load analytics summary (${response.status})`);
+      }
+
+      const data = await response.json();
+      setTrafficData(Array.isArray(data.traffic) ? data.traffic : []);
+      setTopPages(Array.isArray(data.topPages) ? data.topPages : []);
+
+      if (data.totals) {
+        setMetrics((prev) => ({
+          ...prev,
+          pageViews: Number(data.totals.pageViews || prev.pageViews || 0),
+          totalVisitors: Number(data.totals.visitors || prev.totalVisitors || 0)
+        }));
+      }
     } catch (e) {
       toast({
         title: "Error",
@@ -139,7 +137,7 @@ const AnalyticsDashboard = () => {
   useEffect(() => {
     fetchMetrics();
     fetchAnalytics();
-  }, [apiUrl]);
+  }, [apiUrl, dateRange]);
 
   const handleRefresh = () => {
     fetchMetrics();
@@ -243,10 +241,24 @@ const AnalyticsDashboard = () => {
             {loading ? (
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             ) : (
-              <div className="text-center">
-                <BarChart3 className="w-16 h-16 text-gray-300 mx-auto" />
-                <p className="mt-2 text-gray-500">Traffic chart visualization would be implemented here</p>
-              </div>
+              trafficData.length === 0 ? (
+                <div className="text-center">
+                  <BarChart3 className="w-16 h-16 text-gray-300 mx-auto" />
+                  <p className="mt-2 text-gray-500">No traffic data recorded yet</p>
+                </div>
+              ) : (
+                <div className="w-full h-full overflow-auto">
+                  <div className="space-y-2">
+                    {trafficData.map((row, idx) => (
+                      <div key={`${row.date}-${idx}`} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
+                        <span className="text-sm text-gray-700">{row.date}</span>
+                        <div className="text-sm text-gray-600">Visitors: <span className="font-medium text-gray-900">{Number(row.visitors || 0).toLocaleString()}</span></div>
+                        <div className="text-sm text-gray-600">Views: <span className="font-medium text-gray-900">{Number(row.page_views || 0).toLocaleString()}</span></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
             )}
           </div>
         </div>
@@ -265,7 +277,7 @@ const AnalyticsDashboard = () => {
                   <div className="h-4 bg-gray-200 rounded w-10"></div>
                 </div>
               ))
-            ) : (
+            ) : topPages.length > 0 ? (
               topPages.map((page, index) => (
                 <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
                   <div className="flex items-center space-x-3">
@@ -274,9 +286,14 @@ const AnalyticsDashboard = () => {
                     </div>
                     <span className="text-sm font-medium text-gray-900">{page.page}</span>
                   </div>
-                  <span className="text-sm text-gray-600">{page.views.toLocaleString()}</span>
+                  <span className="text-sm text-gray-600">{Number(page.views || 0).toLocaleString()}</span>
                 </div>
               ))
+            ) : (
+              <div className="text-center py-8">
+                <FileText className="w-12 h-12 text-gray-300 mx-auto" />
+                <p className="mt-2 text-gray-500">No top-page data yet</p>
+              </div>
             )}
           </div>
         </div>
