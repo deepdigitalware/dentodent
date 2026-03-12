@@ -37,6 +37,23 @@ const AnalyticsDashboard = () => {
   const { toast } = useToast();
   const { apiUrl } = useContent();
 
+  const formatActivityTime = (activity) => {
+    const raw = activity?.created_at || activity?.time || activity?.submitted_at;
+    if (!raw) return 'Unknown time';
+    const dt = new Date(raw);
+    if (Number.isNaN(dt.getTime())) return 'Unknown time';
+    return dt.toLocaleString();
+  };
+
+  const getActivityTitle = (activity) => {
+    if (activity?.action) {
+      return `${activity.action}${activity.section ? `: ${activity.section}` : ''}`;
+    }
+    if (activity?.summary) return activity.summary;
+    if (activity?.type) return `${activity.type} submission`;
+    return 'Activity';
+  };
+
   const fetchWithRefresh = async (url, options = {}) => {
     const token = localStorage.getItem('admin_token');
     const refreshToken = localStorage.getItem('admin_refresh_token');
@@ -319,10 +336,10 @@ const AnalyticsDashboard = () => {
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      {activity.action}{activity.section ? `: ${activity.section}` : ''}
+                      {getActivityTitle(activity)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {new Date(activity.created_at).toLocaleString()}
+                      {formatActivityTime(activity)}
                     </p>
                   </div>
                 </div>

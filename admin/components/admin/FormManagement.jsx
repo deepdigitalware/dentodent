@@ -43,24 +43,62 @@ const FormManagement = () => {
     return { enabled, fields };
   };
 
+  const fetchSchemaWithFallback = async (candidates) => {
+    for (const type of candidates) {
+      const res = await fetchWithRefresh(`${apiUrl}/api/forms/schema/${type}`);
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        if (data) return { found: true, type, schema: data, status: res.status };
+      }
+      if (res.status !== 404) {
+        return { found: false, type, schema: null, status: res.status };
+      }
+    }
+    return { found: false, type: candidates[0], schema: null, status: 404 };
+  };
+
+  const initializeSchemaIfMissing = async (type, schema) => {
+    try {
+      await fetchWithRefresh(`${apiUrl}/api/forms/schema/${type}`, {
+        method: 'PUT',
+        body: JSON.stringify({ schema })
+      });
+    } catch {
+      // Best effort only
+    }
+  };
+
   const loadSchemas = async () => {
     setLoading(true);
     setError('');
     try {
-      const [contactRes, appointmentRes] = await Promise.all([
-        fetchWithRefresh(`${apiUrl}/api/forms/schema/contact`),
-        fetchWithRefresh(`${apiUrl}/api/forms/schema/appointment`)
+      const [contactResult, appointmentResult] = await Promise.all([
+        fetchSchemaWithFallback(['contact', 'contact-form']),
+        fetchSchemaWithFallback(['appointment', 'appointment-form'])
       ]);
 
       const nextForms = { ...forms };
-      if (contactRes.ok) {
-        const contactSchema = await contactRes.json();
-        nextForms.contact = normalizeSchema(contactSchema);
+      let loadedCount = 0;
+
+      if (contactResult.found && contactResult.schema) {
+        nextForms.contact = normalizeSchema(contactResult.schema);
+        loadedCount += 1;
       }
-      if (appointmentRes.ok) {
-        const appointmentSchema = await appointmentRes.json();
-        nextForms.appointment = normalizeSchema(appointmentSchema);
+
+      if (appointmentResult.found && appointmentResult.schema) {
+        nextForms.appointment = normalizeSchema(appointmentResult.schema);
+        loadedCount += 1;
       }
+
+      if (loadedCount === 0) {
+        setError('');
+        // Initialize missing schema rows so future loads resolve without 404.
+        await Promise.all([
+          initializeSchemaIfMissing('contact', nextForms.contact),
+          initializeSchemaIfMissing('appointment', nextForms.appointment)
+        ]);
+      }
+
       setForms(nextForms);
     } catch (e) {
       setError('Failed to load form schemas');

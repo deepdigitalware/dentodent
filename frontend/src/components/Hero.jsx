@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Star, Award, Users, Clock, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import smileIcon from '@/assets/icons/smile.svg';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n.jsx';
@@ -8,62 +8,6 @@ import { useContent } from '@/contexts/ContentContext';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const FALLBACK_HERO_IMAGE = 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?auto=format&fit=crop&w=1400&q=80';
-
-const parseStatNumber = (value) => {
-  const raw = String(value || '').trim();
-  const match = raw.match(/\d+/g);
-  if (!match) return { number: 0, suffix: '' };
-  const number = Number(match.join(''));
-  const suffix = raw.replace(match.join(''), '');
-  return { number: Number.isFinite(number) ? number : 0, suffix };
-};
-
-const StatCounter = ({ value }) => {
-  const { number, suffix } = useMemo(() => parseStatNumber(value), [value]);
-  const [displayValue, setDisplayValue] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
-
-  useEffect(() => {
-    if (hasStarted) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setHasStarted(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.35 }
-    );
-
-    const node = document.getElementById(`hero-stat-${String(value).replace(/\W+/g, '')}`);
-    if (node) observer.observe(node);
-
-    return () => observer.disconnect();
-  }, [hasStarted, value]);
-
-  useEffect(() => {
-    if (!hasStarted) return;
-    const duration = 1500;
-    const startTime = performance.now();
-
-    const step = (now) => {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplayValue(Math.round(number * eased));
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
-    };
-
-    requestAnimationFrame(step);
-  }, [hasStarted, number]);
-
-  return (
-    <span id={`hero-stat-${String(value).replace(/\W+/g, '')}`}>
-      {displayValue.toLocaleString()}{suffix}
-    </span>
-  );
-};
 
 const Hero = () => {
   const { content, apiUrl } = useContent();
@@ -97,17 +41,6 @@ const Hero = () => {
 
     setHeroImageSrc(candidate);
   }, [apiUrl, content?.hero?.image, content?.hero?.imageUrl]);
-
-  // Icon mapping function
-  const getIconComponent = (iconName) => {
-    const iconMap = {
-      'Users': Users,
-      'Award': Award,
-      'Star': Star,
-      'Clock': Clock
-    };
-    return iconMap[iconName] || Users; // Default to Users icon if not found
-  };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-32">
@@ -159,7 +92,7 @@ const Hero = () => {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-14 items-center">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -171,10 +104,10 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight mb-4 md:mb-6"
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight mb-4 md:mb-6 break-words"
             >
-              <span className="block lg:whitespace-nowrap">{content.hero.title}</span>
-              <span className="gradient-text block lg:whitespace-nowrap">{content.hero.subtitle}</span>
+              <span className="block">{content.hero.title}</span>
+              <span className="gradient-text block">{content.hero.subtitle}</span>
             </motion.h1>
 
             <motion.p
@@ -213,33 +146,6 @@ const Hero = () => {
               </Button>
             </motion.div>
 
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-6"
-            >
-              {content.hero.stats && content.hero.stats.map ? content.hero.stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  {stat.iconImageUrl ? (
-                    <img
-                      src={stat.iconImageUrl}
-                      alt="Icon"
-                      className="w-5 h-5 md:w-8 md:h-8 mx-auto mb-1 md:mb-2"
-                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      loading="lazy"
-                    />
-                  ) : (
-                    React.createElement(getIconComponent(stat.icon), { className: "w-5 h-5 md:w-8 md:h-8 text-blue-600 mx-auto mb-1 md:mb-2" })
-                  )}
-                  <div className="text-lg md:text-2xl font-bold text-gray-800">
-                    <StatCounter value={stat.number} />
-                  </div>
-                  <div className="text-xs md:text-sm text-gray-600">{stat.label}</div>
-                </div>
-              )) : null}
-            </motion.div>
           </motion.div>
 
           {/* Right Content - 3D Dental Image or Scene */}
@@ -247,7 +153,7 @@ const Hero = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative"
+            className="relative w-full max-w-xl md:ml-auto"
           >
             {!splineUrl && (
               <div className="relative z-10">
