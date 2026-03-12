@@ -375,6 +375,13 @@ function App() {
       const whatsappButton = document.querySelector('button[aria-label="Chat on WhatsApp"]');
       if (!whatsappButton) return;
 
+      const waStyle = window.getComputedStyle(whatsappButton);
+      const waRight = parseFloat(waStyle.right) || 24;
+      const waBottom = parseFloat(waStyle.bottom) || 24;
+      const waRect = whatsappButton.getBoundingClientRect();
+      const waSize = Math.max(40, Math.round(Math.max(waRect.width, waRect.height) || 56));
+      const targetBottom = waBottom + waSize + 15;
+
       const chatbotNodes = document.querySelectorAll(
         'iframe[src*="jotfor.ms/agent"], iframe[src*="cdn.jotfor.ms/agent"], div[id*="jotform-agent"], div[class*="jotform-agent"], div[id*="jfAgent"], div[class*="jfAgent"]'
       );
@@ -394,9 +401,9 @@ function App() {
           const right = parseFloat(style.right);
           const bottom = parseFloat(style.bottom);
           if (!Number.isFinite(right) || !Number.isFinite(bottom)) return false;
-          if (right > 80 || bottom > 130) return false;
+          if (right > 90 || bottom > 180) return false;
           const rect = el.getBoundingClientRect();
-          const sizeLikeLauncher = rect.width >= 36 && rect.width <= 96 && rect.height >= 36 && rect.height <= 96;
+          const sizeLikeLauncher = rect.width >= 28 && rect.width <= 120 && rect.height >= 28 && rect.height <= 120;
           if (!sizeLikeLauncher) return false;
           return true;
         });
@@ -409,30 +416,35 @@ function App() {
       const primaryLauncher = chatbotAnchors
         .filter((el) => el !== whatsappButton && !whatsappButton.contains(el) && !el.contains(whatsappButton))
         .sort((a, b) => {
-          const sa = window.getComputedStyle(a);
-          const sb = window.getComputedStyle(b);
-          const ra = parseFloat(sa.right) || 999;
-          const rb = parseFloat(sb.right) || 999;
-          const ba = parseFloat(sa.bottom) || 999;
-          const bb = parseFloat(sb.bottom) || 999;
-          return (ra + ba) - (rb + bb);
+          const ar = a.getBoundingClientRect();
+          const br = b.getBoundingClientRect();
+          return (window.innerWidth - ar.right + (window.innerHeight - ar.bottom)) - (window.innerWidth - br.right + (window.innerHeight - br.bottom));
         })[0];
 
       if (!primaryLauncher) return;
 
       const launcherStyle = window.getComputedStyle(primaryLauncher);
-      const launcherRect = primaryLauncher.getBoundingClientRect();
-      const chatRight = parseFloat(launcherStyle.right) || Math.max(0, window.innerWidth - launcherRect.right);
-      const chatBottom = parseFloat(launcherStyle.bottom) || Math.max(0, window.innerHeight - launcherRect.bottom);
-      const launcherSize = Math.max(40, Math.min(96, Math.round(Math.max(launcherRect.width, launcherRect.height))));
+      const chatRight = parseFloat(launcherStyle.right);
 
+      primaryLauncher.style.position = 'fixed';
+      if (Number.isFinite(chatRight)) {
+        primaryLauncher.style.right = `${chatRight}px`;
+      }
+      primaryLauncher.style.bottom = `${targetBottom}px`;
       primaryLauncher.style.zIndex = '60';
 
-      // Keep WhatsApp exactly below chatbot launcher with the same size and 15px gap.
+      const launcherRect = primaryLauncher.getBoundingClientRect();
+      const launcherSize = Math.max(36, Math.round(Math.max(launcherRect.width, launcherRect.height) || waSize));
+      const launcherCenterX = launcherRect.left + (launcherRect.width / 2);
+      const whatsappLeft = Math.max(8, Math.round(launcherCenterX - launcherSize / 2));
+      const whatsappBottom = Math.max(12, Math.round(window.innerHeight - launcherRect.bottom - 15 - launcherSize));
+
+      // Keep WhatsApp exactly below chatbot centerline.
       whatsappButton.style.width = `${launcherSize}px`;
       whatsappButton.style.height = `${launcherSize}px`;
-      whatsappButton.style.right = `${chatRight}px`;
-      whatsappButton.style.bottom = `${Math.max(12, chatBottom - launcherSize - 15)}px`;
+      whatsappButton.style.left = `${whatsappLeft}px`;
+      whatsappButton.style.right = 'auto';
+      whatsappButton.style.bottom = `${whatsappBottom}px`;
       whatsappButton.style.zIndex = '59';
 
       const waIcon = whatsappButton.querySelector('[role="img"]');
