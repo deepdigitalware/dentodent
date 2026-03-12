@@ -122,9 +122,7 @@ const Services = () => {
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <span className="flex items-center gap-2">
-                <span className="bg-blue-600 text-white rounded-full p-1.5">
-                  <WhatsAppIcon className="w-4 h-4" />
-                </span>
+                <WhatsAppIcon className="w-4 h-4 text-teal-500" />
                 <span>Book a Free Appointment</span>
               </span>
             </Button>
