@@ -518,7 +518,7 @@ function App() {
             div[id*="jfAgent"],
             div[class*="jfAgent"] {
               right: 24px !important;
-              bottom: 104px !important;
+              bottom: 103px !important;
               z-index: 60 !important;
             }
 
@@ -529,8 +529,8 @@ function App() {
               div[class*="jotform-agent"],
               div[id*="jfAgent"],
               div[class*="jfAgent"] {
-                right: 16px !important;
-                bottom: 96px !important;
+                right: 24px !important;
+                bottom: 103px !important;
               }
             }
           `}</style>

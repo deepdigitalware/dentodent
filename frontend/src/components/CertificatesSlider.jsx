@@ -47,7 +47,7 @@ const CertificatesSlider = () => {
       if (width < 640) {
         setCardsPerSlide(1);
       } else if (width < 1024) {
-        setCardsPerSlide(2);
+        setCardsPerSlide(1);
       } else {
         setCardsPerSlide(2);
       }
@@ -151,7 +151,7 @@ const CertificatesSlider = () => {
                   <div key={slideIndex} className="w-full flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
                     {group.map((item, idx) => (
                       <article key={`${slideIndex}-${idx}`} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100/70">
-                        <div className="aspect-video w-full">
+                        <div className="aspect-[4/5] w-full">
                           <img
                             src={item.imageUrl}
                             alt={item.title || 'Certificate'}
