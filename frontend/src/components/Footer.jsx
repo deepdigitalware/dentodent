@@ -118,10 +118,10 @@ const Footer = ({ onNavigate }) => {
   // Fallback values for footer content
   const year = new Date().getFullYear();
   const clinicName = content.footer.clinicName || "Dent O Dent";
-  const copyrightText = content.footer.copyright || `© ${year} ${clinicName}. All Rights Reserved.`;
-  const footerText = content.footer.text && content.footer.text !== 'All Rights Reserved.'
-    ? content.footer.text
-    : copyrightText;
+  const copyrightText = (typeof content.footer.copyright === 'string' && content.footer.copyright.includes('©'))
+    ? content.footer.copyright
+    : `© ${year} ${clinicName}. All Rights Reserved.`;
+  const footerText = copyrightText;
   const poweredByText = "Powered by";
 
   return (
@@ -140,7 +140,7 @@ const Footer = ({ onNavigate }) => {
               <img
                 src={resolveAssetUrl(content?.header?.logoUrl, siteLogo)}
                 alt="Clinic Logo"
-                className="h-14 md:h-20 lg:h-24 w-auto object-contain"
+                className="w-44 md:w-52 lg:w-56 h-auto object-contain"
                 style={{ filter: 'brightness(0) invert(1)' }}
               />
             </div>
