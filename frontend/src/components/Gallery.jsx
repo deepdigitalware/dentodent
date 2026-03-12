@@ -51,7 +51,7 @@ const FALLBACK_GALLERY_IMAGES = [
 const Gallery = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
-  const { apiUrl } = useContent();
+  const { apiUrl, content } = useContent();
   const [apiImages, setApiImages] = useState([]);
   const [isLoadingApi, setIsLoadingApi] = useState(true);
 
@@ -87,8 +87,45 @@ const Gallery = () => {
     return () => { cancelled = true; };
   }, [apiUrl]);
 
-  // Use API images when available, otherwise fall back to default demo images
-  const galleryImages = apiImages.length > 0 ? apiImages : FALLBACK_GALLERY_IMAGES;
+  const contentImages = (() => {
+    const section = content?.gallery;
+    const raw = Array.isArray(section?.images)
+      ? section.images
+      : (Array.isArray(section?.items) ? section.items : []);
+
+    return raw
+      .map((img, i) => {
+        if (typeof img === 'string') {
+          return {
+            id: `content-${i}`,
+            src: img,
+            alt: 'Gallery image',
+            category: 'gallery',
+            title: 'Gallery',
+            description: 'Clinic gallery image',
+            likes: 0,
+            isLiked: false
+          };
+        }
+
+        return {
+          id: img.id || img._id || `content-${i}`,
+          src: img.url || img.path || img.imageUrl || img.image || img.link,
+          alt: img.alt || img.name || img.title || 'Gallery image',
+          category: img.category || 'gallery',
+          title: img.title || img.name || 'Gallery',
+          description: img.description || 'Clinic gallery image',
+          likes: img.likes || 0,
+          isLiked: false
+        };
+      })
+      .filter((x) => !!x.src);
+  })();
+
+  // Priority: content edited from admin -> media API -> static fallback.
+  const galleryImages = contentImages.length > 0
+    ? contentImages
+    : (apiImages.length > 0 ? apiImages : FALLBACK_GALLERY_IMAGES);
 
   // Build categories dynamically from available images
   const toLabel = (id) => id.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
