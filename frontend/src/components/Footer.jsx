@@ -7,7 +7,15 @@ import { useContent } from '@/contexts/ContentContext';
 import siteLogo from '@/assets/icons/logo.svg';
 
 const Footer = ({ onNavigate }) => {
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
+  const resolveAssetUrl = (value, fallback = '') => {
+    const raw = String(value || '').trim();
+    if (!raw) return fallback;
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+    if (raw.startsWith('/assets/icons/')) return raw;
+    if (raw.startsWith('/assets')) return `${apiUrl}${raw}`;
+    return raw;
+  };
   const normalizeLink = (item, fallbackMode = 'route') => {
     if (item && typeof item === 'object') {
       const label = item.label || item.text || item.name || item.target || '';
@@ -127,7 +135,7 @@ const Footer = ({ onNavigate }) => {
           >
             <div className="flex items-center">
               <img
-                src={content?.header?.logoUrl || siteLogo}
+                src={resolveAssetUrl(content?.header?.logoUrl, siteLogo)}
                 alt="Clinic Logo"
                 className="h-12 md:h-16 object-contain"
                 style={{ filter: 'brightness(0) invert(1)' }}

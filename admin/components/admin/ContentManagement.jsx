@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Save, Edit3, Eye, Upload, X, Plus, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,16 +18,81 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
 
   const [editingContent, setEditingContent] = useState({});
 
+  const normalizeSliderSlides = (section) => {
+    const slides = Array.isArray(section?.slides) ? section.slides : [];
+    if (slides.length > 0) return slides;
+
+    const items = Array.isArray(section?.items) ? section.items : [];
+    if (items.length > 0) {
+      return items.map((item, index) => ({
+        imageUrl: item.imageUrl || item.image || '',
+        title: item.title || '',
+        subtitle: item.subtitle || '',
+        linkUrl: item.linkUrl || '',
+        linkLabel: item.linkLabel || '',
+        order: Number.isFinite(item.order) ? item.order : index,
+        active: item.active !== false
+      }));
+    }
+
+    const images = Array.isArray(section?.images) ? section.images : [];
+    if (images.length > 0) {
+      return images.map((url, index) => ({
+        imageUrl: url || '',
+        title: section?.title || '',
+        subtitle: section?.subtitle || '',
+        linkUrl: '',
+        linkLabel: '',
+        order: index,
+        active: true
+      }));
+    }
+
+    return [];
+  };
+
+  const normalizeSectionContent = (tabId, rawValue) => {
+    if (tabId === 'blogPosts') {
+      return Array.isArray(rawValue) ? rawValue : [];
+    }
+
+    const base = (rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue)) ? rawValue : {};
+
+    if (tabId === 'slider') {
+      const slides = normalizeSliderSlides(base);
+      return {
+        ...base,
+        slides,
+        items: Array.isArray(base.items) ? base.items : slides,
+        images: Array.isArray(base.images) ? base.images : slides.map((s) => s.imageUrl).filter(Boolean)
+      };
+    }
+
+    if (tabId === 'gallery') {
+      const images = Array.isArray(base.images)
+        ? base.images
+        : (Array.isArray(base.items)
+          ? base.items.map((item) => item?.image || item?.imageUrl || item).filter(Boolean)
+          : []);
+      return { ...base, images };
+    }
+
+    if (tabId === 'testimonials') {
+      const items = Array.isArray(base.items)
+        ? base.items
+        : (Array.isArray(rawValue) ? rawValue : []);
+      const stats = Array.isArray(base.stats) ? base.stats : [];
+      return { ...base, items, stats };
+    }
+
+    return base;
+  };
+
   useEffect(() => {
     // Initialize localContent with content from context
     setLocalContent(content);
-    
-    // For blogPosts, we need to handle it as a special case since it's an array
-    if (activeTab === 'blogPosts') {
-      setEditingContent(content[activeTab] || []);
-    } else {
-      setEditingContent(content[activeTab] || {});
-    }
+
+    setEditingContent(normalizeSectionContent(activeTab, content[activeTab]));
   }, [activeTab, content]);
 
   const tabs = [
@@ -59,8 +124,22 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
     if (hideNavigation) return null;
     
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 overflow-x-auto">
-        <div className="flex space-x-2 min-w-max">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500">Quick section jump</p>
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {tabs.map((tab) => (
+                <option key={tab.id} value={tab.id}>{tab.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -75,24 +154,53 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
               <span className="font-medium whitespace-nowrap">{tab.label}</span>
             </button>
           ))}
+          </div>
         </div>
       </div>
     );
   };
 
-  const handleSave = () => {
-    // For blogPosts, we need to handle it as a special case
-    if (activeTab === 'blogPosts') {
-      updateContent(activeTab, editingContent);
-    } else {
-      updateContent(activeTab, editingContent);
+  const handleSave = async () => {
+    let payload = editingContent;
+
+    if (activeTab === 'slider') {
+      const normalized = normalizeSectionContent('slider', editingContent);
+      const slides = normalizeSliderSlides(normalized).map((slide, index) => ({
+        imageUrl: slide.imageUrl || '',
+        title: slide.title || '',
+        subtitle: slide.subtitle || '',
+        linkUrl: slide.linkUrl || '',
+        linkLabel: slide.linkLabel || '',
+        order: Number.isFinite(slide.order) ? slide.order : index,
+        active: slide.active !== false
+      }));
+
+      payload = {
+        ...normalized,
+        slides,
+        // Keep legacy compatibility with any consumer still reading items/images.
+        items: slides,
+        images: slides.map((s) => s.imageUrl).filter(Boolean)
+      };
     }
+
+    const result = await updateContent(activeTab, payload);
+    if (result?.success === false) {
+      toast.error(result.error || 'Failed to save content');
+      return;
+    }
+
+    setLocalContent((prev) => ({
+      ...prev,
+      [activeTab]: payload
+    }));
+    setEditingContent(normalizeSectionContent(activeTab, payload));
     setIsEditing(false);
     toast.success('Content updated successfully!');
   };
 
   const handleCancel = () => {
-    setEditingContent(localContent[activeTab] || (activeTab === 'blogPosts' ? [] : {}));
+    setEditingContent(normalizeSectionContent(activeTab, localContent[activeTab]));
     setIsEditing(false);
   };
 

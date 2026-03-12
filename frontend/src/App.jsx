@@ -88,6 +88,17 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const { content, apiUrl } = useContent();
   const header = content?.header || {};
+  const resolveAssetUrl = (value, fallback = '') => {
+    const raw = String(value || '').trim();
+    if (!raw) return fallback;
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+    if (raw.startsWith('/assets/icons/')) {
+      if (raw === '/assets/icons/favicon.svg') return '/assets/icons/logo.svg';
+      return raw;
+    }
+    if (raw.startsWith('/assets')) return `${apiUrl}${raw}`;
+    return raw;
+  };
 
   // Canonical URL for current route
   const canonicalUrl = (typeof window !== 'undefined')
@@ -475,18 +486,18 @@ function App() {
           />
           <meta name="robots" content={seoRobots} />
           <link rel="canonical" href={canonicalUrl} />
-          <link rel="icon" href={header.faviconUrl || siteLogo} />
+          <link rel="icon" href={resolveAssetUrl(header.faviconUrl, siteLogo)} />
 
           <meta property="og:type" content="website" />
           <meta property="og:title" content={header.ogTitle || seoTitle} />
           <meta property="og:description" content={header.ogDescription || seoDescription} />
           <meta property="og:url" content={canonicalUrl} />
-          <meta property="og:image" content={header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
+          <meta property="og:image" content={resolveAssetUrl(header.ogImage, 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop')} />
 
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={header.twitterTitle || seoTitle} />
           <meta name="twitter:description" content={header.twitterDescription || seoDescription} />
-          <meta name="twitter:image" content={header.twitterImage || header.ogImage || 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop'} />
+          <meta name="twitter:image" content={resolveAssetUrl(header.twitterImage || header.ogImage, 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop')} />
 
           {structuredData.map((entry, index) => (
             <script key={index} type="application/ld+json">

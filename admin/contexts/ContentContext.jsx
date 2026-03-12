@@ -250,8 +250,17 @@ export const ContentProvider = ({ children }) => {
             patient: normalizeObject(base.patient),
             footer: normalizeObject(base.footer),
             map: normalizeObject(base.map),
-            testimonials: normalizeArray(base.testimonials),
-            gallery: normalizeArray(base.gallery),
+            testimonials: (() => {
+              const section = normalizeObject(base.testimonials);
+              const items = normalizeArray(section.items || base.testimonials);
+              const stats = normalizeArray(section.stats);
+              return { ...section, items, stats };
+            })(),
+            gallery: (() => {
+              const section = normalizeObject(base.gallery);
+              const images = normalizeArray(section.images || section.items || base.gallery);
+              return { ...section, images };
+            })(),
             blogPosts: normalizeArray(base.blogPosts),
             treatments: (() => {
               const section = normalizeObject(base.treatments);
@@ -343,8 +352,17 @@ export const ContentProvider = ({ children }) => {
               patient: normalizeObject(base.patient),
               footer: normalizeObject(base.footer),
               map: normalizeObject(base.map),
-              testimonials: normalizeArray(base.testimonials),
-              gallery: normalizeArray(base.gallery),
+              testimonials: (() => {
+                const section = normalizeObject(base.testimonials);
+                const items = normalizeArray(section.items || base.testimonials);
+                const stats = normalizeArray(section.stats);
+                return { ...section, items, stats };
+              })(),
+              gallery: (() => {
+                const section = normalizeObject(base.gallery);
+                const images = normalizeArray(section.images || section.items || base.gallery);
+                return { ...section, images };
+              })(),
               blogPosts: normalizeArray(base.blogPosts),
               treatments: (() => {
                 const section = normalizeObject(base.treatments);

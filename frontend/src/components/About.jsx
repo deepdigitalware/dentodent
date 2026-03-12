@@ -4,11 +4,55 @@ import { Shield, Heart, Award, Users } from 'lucide-react';
 import { useI18n } from '@/lib/i18n.jsx';
 import { useContent } from '@/contexts/ContentContext';
 
+const ICON_MAP = {
+  Shield,
+  Heart,
+  Award,
+  Users
+};
+
+const resolveAssetUrl = (value, apiUrl) => {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+  if (raw.startsWith('/assets/icons/')) return raw;
+  if (raw.startsWith('/assets')) return `${apiUrl}${raw}`;
+  return raw;
+};
+
+const normalizeFeature = (item, index) => {
+  if (typeof item === 'string') {
+    return {
+      title: item,
+      description: '',
+      iconName: index % 2 === 0 ? 'Shield' : 'Heart',
+      iconImageUrl: ''
+    };
+  }
+
+  if (item && typeof item === 'object') {
+    return {
+      title: item.title || item.label || item.name || `Feature ${index + 1}`,
+      description: item.description || item.text || '',
+      iconName: item.icon || item.iconName || 'Shield',
+      iconImageUrl: item.iconImageUrl || item.iconUrl || ''
+    };
+  }
+
+  return {
+    title: `Feature ${index + 1}`,
+    description: '',
+    iconName: 'Shield',
+    iconImageUrl: ''
+  };
+};
+
 const About = () => {
   const { content, apiUrl } = useContent();
   
-  // Use only API data
-  const features = Array.isArray(content.about?.features) ? content.about.features : [];
+  const features = Array.isArray(content.about?.features)
+    ? content.about.features.map((item, index) => normalizeFeature(item, index))
+    : [];
   
   // Fetch images assigned to the 'about' section from API
   const [aboutImages, setAboutImages] = React.useState([]);
@@ -23,7 +67,7 @@ const About = () => {
         const mapped = items
           .map((img, i) => ({
             id: img.id || img._id || i + 1,
-            src: img.url || img.path || img.imageUrl || img.link,
+            src: resolveAssetUrl(img.url || img.path || img.imageUrl || img.link, apiUrl),
             alt: img.title || img.name || 'About image',
           }))
           .filter(x => !!x.src);
@@ -73,7 +117,17 @@ const About = () => {
                   viewport={{ once: true }}
                   className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 card-3d"
                 >
-                  <feature.icon className="w-10 h-10 text-blue-600 mb-4" />
+                  {feature.iconImageUrl ? (
+                    <img
+                      src={resolveAssetUrl(feature.iconImageUrl, apiUrl)}
+                      alt=""
+                      className="w-10 h-10 mb-4"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      loading="lazy"
+                    />
+                  ) : (
+                    React.createElement(ICON_MAP[feature.iconName] || Shield, { className: 'w-10 h-10 text-blue-600 mb-4' })
+                  )}
                   <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
                   <p className="text-gray-600 text-sm">{feature.description}</p>
                 </motion.div>

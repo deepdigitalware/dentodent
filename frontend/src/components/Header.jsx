@@ -18,7 +18,16 @@ const Header = ({ onNavigate }) => {
   const [tickerIndex, setTickerIndex] = useState(0);
   
   const { t } = useI18n();
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
+
+  const resolveAssetUrl = (value, fallback = '') => {
+    const raw = String(value || '').trim();
+    if (!raw) return fallback;
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+    if (raw.startsWith('/assets/icons/')) return raw;
+    if (raw.startsWith('/assets')) return `${apiUrl}${raw}`;
+    return raw;
+  };
  
   const tickerSource = Array.isArray(content?.header?.ticker) ? content.header.ticker : [];
   const tickerItems = (tickerSource && tickerSource.length > 0) ? tickerSource : [
@@ -132,7 +141,7 @@ const Header = ({ onNavigate }) => {
             >
               <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-3">
                 <img
-                  src={header.logoUrl || siteLogo}
+                  src={resolveAssetUrl(header.logoUrl, siteLogo)}
                   alt={(header.siteTitle || 'Site') + ' Logo'}
                   className="h-12 md:h-14 object-contain"
                   loading="eager"
@@ -205,7 +214,7 @@ const Header = ({ onNavigate }) => {
                   className="flex items-center gap-2 absolute"
                 >
                   {tickerItems[tickerIndex % tickerItems.length]?.icon && (
-                    <img src={tickerItems[tickerIndex % tickerItems.length].icon} alt="Icon" className="w-4 h-4" />
+                    <img src={resolveAssetUrl(tickerItems[tickerIndex % tickerItems.length].icon)} alt="Icon" className="w-4 h-4" />
                   )}
                   <span className="font-medium">
                     {tickerItems[tickerIndex % tickerItems.length]?.text || ''}
@@ -232,7 +241,7 @@ const Header = ({ onNavigate }) => {
                   className="flex items-center gap-2 absolute"
                 >
                   {tickerItems[tickerIndex % tickerItems.length]?.icon && (
-                    <img src={tickerItems[tickerIndex % tickerItems.length].icon} alt="Icon" className="w-3 h-3" />
+                    <img src={resolveAssetUrl(tickerItems[tickerIndex % tickerItems.length].icon)} alt="Icon" className="w-3 h-3" />
                   )}
                   <span className="font-medium">
                     {tickerItems[tickerIndex % tickerItems.length]?.text || ''}

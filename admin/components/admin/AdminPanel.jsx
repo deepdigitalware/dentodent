@@ -368,7 +368,35 @@ const AdminPanel = () => {
       return {};
     }
   })();
-  const logoUrl = adminSettings?.site?.logo || adminSettings?.branding?.logo || adminSettings?.logoUrl || content?.header?.logoUrl || sharedLogo;
+
+  const resolveAssetUrl = (value, fallback = sharedLogo) => {
+    const raw = String(value || '').trim();
+    if (!raw) return fallback;
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+    if (raw.startsWith('/assets/uploads') || raw.startsWith('/uploads')) return `${apiUrl}${raw}`;
+    return raw;
+  };
+
+  const publicSiteUrl = (() => {
+    if (typeof window === 'undefined') return 'https://dentodentdentalclinic.com';
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `${protocol}//${hostname}:4000`;
+    }
+    if (hostname.startsWith('admin.')) {
+      return `${protocol}//${hostname.replace(/^admin\./, '')}`;
+    }
+    if (hostname.includes('dentodent')) {
+      return `${protocol}//dentodentdentalclinic.com`;
+    }
+    return 'https://dentodentdentalclinic.com';
+  })();
+
+  const logoUrl = resolveAssetUrl(
+    adminSettings?.site?.logo || adminSettings?.branding?.logo || adminSettings?.logoUrl || content?.header?.logoUrl,
+    sharedLogo
+  );
 
   const renderContent = () => {
     switch (activeTab) {
@@ -562,7 +590,7 @@ const AdminPanel = () => {
               {/* Sidebar Footer */}
               <div className="p-4 border-t border-gray-200 bg-white space-y-3">
                 <a 
-                  href="https://dentodentdentalclinic.com" 
+                  href={publicSiteUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center justify-center space-x-2 w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm"
@@ -629,7 +657,7 @@ const AdminPanel = () => {
             <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
 
             <Button
-              onClick={() => window.open('/', '_blank')}
+              onClick={() => window.open(publicSiteUrl, '_blank')}
               variant="ghost"
               size="sm"
               className="hidden md:flex items-center space-x-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50"
