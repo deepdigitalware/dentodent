@@ -108,9 +108,11 @@ function App() {
 
   const baseTitle = header.seoTitle || header.siteTitle || "Dent 'O' Dent - Premier Dental Clinic in Kolkata | Dr. Setketu Chakraborty";
   const baseDescription = header.seoDescription || 'Top-rated Dentist and Dental Clinic in Kolkata offering painless treatments: Dental Implants, Root Canal, Braces, Aligners, Smile Makeover, and Emergency Care. Book your appointment today!';
+  const baseKeywords = header.seoKeywords || 'Dentist Kolkata, Dental Clinic Kolkata, Best Dentist in Kolkata, Root Canal Treatment Kolkata, Painless Root Canal Kolkata, Dental Implants Kolkata, Full Mouth Implants Kolkata, Braces Treatment Kolkata, Ceramic Braces Kolkata, Invisible Braces Kolkata, Clear Aligners Kolkata, Invisalign Kolkata, Smile Makeover Kolkata, Teeth Whitening Kolkata, Cosmetic Dentistry Kolkata, Pediatric Dentist Kolkata, Child Dental Clinic Kolkata, Emergency Dentist Kolkata, 24x7 Dental Emergency Kolkata, Dent O Dent Dental Clinic';
   let seoTitle = baseTitle;
   let seoDescription = baseDescription;
   let seoRobots = 'index,follow';
+  let seoKeywords = baseKeywords;
 
   switch (currentPage) {
     case 'gallery':
@@ -483,7 +485,7 @@ function App() {
           <meta name="description" content={seoDescription} />
           <meta
             name="keywords"
-            content="Dentist Kolkata, Dental Clinic Kolkata, Best Dentist in Kolkata, Root Canal Treatment Kolkata, Painless Root Canal Kolkata, Dental Implants Kolkata, Full Mouth Implants Kolkata, Braces Treatment Kolkata, Ceramic Braces Kolkata, Invisible Braces Kolkata, Clear Aligners Kolkata, Invisalign Kolkata, Smile Makeover Kolkata, Teeth Whitening Kolkata, Cosmetic Dentistry Kolkata, Pediatric Dentist Kolkata, Child Dental Clinic Kolkata, Emergency Dentist Kolkata, 24x7 Dental Emergency Kolkata, Dent O Dent Dental Clinic"
+            content={seoKeywords}
           />
           <meta name="robots" content={seoRobots} />
           <link rel="canonical" href={canonicalUrl} />
