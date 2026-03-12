@@ -358,6 +358,57 @@ function App() {
     });
   }, [apiUrl, currentPage, isAdminRoute]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const findFixedAnchor = (node) => {
+      let cursor = node;
+      while (cursor && cursor !== document.body) {
+        const pos = window.getComputedStyle(cursor).position;
+        if (pos === 'fixed') return cursor;
+        cursor = cursor.parentElement;
+      }
+      return node;
+    };
+
+    const positionChatbotAboveWhatsApp = () => {
+      const whatsappButton = document.querySelector('button[aria-label="Chat on WhatsApp"]');
+      if (!whatsappButton) return;
+
+      const waStyle = window.getComputedStyle(whatsappButton);
+      const waRight = parseFloat(waStyle.right) || 24;
+      const waBottom = parseFloat(waStyle.bottom) || 24;
+      const waHeight = whatsappButton.getBoundingClientRect().height || 64;
+      const targetBottom = waBottom + waHeight + 15;
+
+      const chatbotNodes = document.querySelectorAll(
+        'iframe[src*="jotfor.ms/agent"], iframe[src*="cdn.jotfor.ms/agent"], div[id*="jotform-agent"], div[class*="jotform-agent"], div[id*="jfAgent"], div[class*="jfAgent"]'
+      );
+
+      chatbotNodes.forEach((node) => {
+        const anchor = findFixedAnchor(node);
+        anchor.style.right = `${waRight}px`;
+        anchor.style.bottom = `${targetBottom}px`;
+        anchor.style.zIndex = '60';
+      });
+    };
+
+    const observer = new MutationObserver(() => {
+      positionChatbotAboveWhatsApp();
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    const interval = setInterval(positionChatbotAboveWhatsApp, 1000);
+    window.addEventListener('resize', positionChatbotAboveWhatsApp, { passive: true });
+    positionChatbotAboveWhatsApp();
+
+    return () => {
+      observer.disconnect();
+      clearInterval(interval);
+      window.removeEventListener('resize', positionChatbotAboveWhatsApp);
+    };
+  }, []);
+
   // Handle admin route navigation
   useEffect(() => {
     const handleAdminAccess = (e) => {
