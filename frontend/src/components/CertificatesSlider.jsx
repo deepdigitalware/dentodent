@@ -140,7 +140,7 @@ const CertificatesSlider = () => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
           >
-            <motion.div
+            <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
@@ -165,7 +165,7 @@ const CertificatesSlider = () => {
                   </div>
                 );
               })}
-            </motion.div>
+            </div>
           </div>
 
           {totalSlides > 1 && (
