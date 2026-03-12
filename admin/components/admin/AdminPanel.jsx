@@ -257,13 +257,8 @@ const AdminPanel = () => {
       roles: ['admin', 'editor', 'staff'],
       children: [
         { id: 'pages', label: 'Pages', icon: FileText },
-        { id: 'blog', label: 'Blog Management', icon: BookOpen },
-        { id: 'testimonials', label: 'Testimonials', icon: MessageSquare },
-        { id: 'faq', label: 'FAQ Management', icon: HelpCircle },
         { id: 'team', label: 'Team Members', icon: Users },
-        { id: 'services', label: 'Dental Services', icon: Stethoscope },
         { id: 'treatments', label: 'Treatments', icon: Activity },
-        { id: 'reviews', label: 'Reviews', icon: Star },
         { id: 'header', label: 'Header', icon: Layout },
         { id: 'footer', label: 'Footer', icon: Layout }
       ]
@@ -404,20 +399,10 @@ const AdminPanel = () => {
         return <AnalyticsDashboard onSetActiveTab={setActiveTab} apiUrl={apiUrl} userRole={userRole} />;
       case 'pages':
         return <ContentManagement />;
-      case 'blog':
-        return <ContentManagement initialTab="blogPosts" hideNavigation />;
-      case 'testimonials':
-        return <ContentManagement initialTab="testimonials" hideNavigation />;
-      case 'faq':
-        return <ContentManagement initialTab="faq" hideNavigation />;
       case 'team':
         return <ContentManagement initialTab="doctor" hideNavigation />;
-      case 'services':
-        return <ContentManagement initialTab="services" hideNavigation />;
       case 'treatments':
         return <ContentManagement initialTab="treatments" hideNavigation />;
-      case 'reviews':
-        return <ContentManagement initialTab="reviews" hideNavigation />;
       case 'library':
         return <MediaLibrary />;
       case 'banners':

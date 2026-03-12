@@ -99,24 +99,17 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
     { id: 'header', label: 'Header & Navigation', icon: '🔝' },
     { id: 'hero', label: 'Hero Section', icon: '🏠' },
     { id: 'about', label: 'About Us', icon: 'ℹ️' },
-    { id: 'services', label: 'Services', icon: '🛠️' },
     { id: 'treatments', label: 'Treatments', icon: '🧪' },
-    { id: 'reviews', label: 'Reviews', icon: '⭐' },
     { id: 'map', label: 'Map & Location', icon: '🗺️' },
     { id: 'doctor', label: 'Doctor Profile', icon: '👨‍⚕️' },
-    { id: 'testimonials', label: 'Testimonials', icon: '💬' },
     { id: 'gallery', label: 'Gallery', icon: '🖼️' },
-    { id: 'blog', label: 'Blog Header', icon: '📝' },
-    { id: 'blogPosts', label: 'Blog Posts', icon: '📰' },
-    { id: 'faq', label: 'FAQ', icon: '❓' },
     { id: 'privacyPolicy', label: 'Privacy Policy', icon: '🔒' },
     { id: 'termsOfService', label: 'Terms of Service', icon: '⚖️' },
     { id: 'contact', label: 'Contact', icon: '📞' },
     { id: 'footer', label: 'Footer', icon: '🔻' },
     { id: 'appointment', label: 'Appointment Booking', icon: '📅' },
     { id: 'slider', label: 'Slider & Banners', icon: '🖼️' },
-    { id: 'cta', label: 'Call to Action', icon: '📢' },
-    { id: 'patient', label: 'Patient Portal', icon: '👤' }
+    { id: 'cta', label: 'Call to Action', icon: '📢' }
   ];
 
   // Helper to render navigation if not hidden

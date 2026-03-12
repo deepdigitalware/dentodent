@@ -7,18 +7,16 @@ import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const Services = () => {
   const { content, apiUrl } = useContent();
-  const servicesData = (Array.isArray(content.services?.services)
-    ? content.services.services
+  const servicesData = (Array.isArray(content.treatments?.items)
+    ? content.treatments.items
     : []).filter(
       (service) =>
         service &&
         (service.title || service.name || service.description || service.image)
     );
 
-  const rawTitle = content.services?.title;
-  const displayTitle = rawTitle
-    ? rawTitle.replace(/Services/gi, 'Treatments')
-    : 'Our Treatments';
+  const rawTitle = content.treatments?.title;
+  const displayTitle = rawTitle || 'Our Treatments';
 
   const handleLearnMore = () => {
     if (typeof window !== 'undefined') {
@@ -41,9 +39,9 @@ const Services = () => {
               {displayTitle}
             </h2>
           )}
-          {content.services?.subtitle && (
+          {content.treatments?.subtitle && (
             <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              {content.services.subtitle}
+              {content.treatments.subtitle}
             </p>
           )}
         </motion.div>
@@ -73,18 +71,6 @@ const Services = () => {
                 <div className={`absolute inset-0 bg-gradient-to-r ${service.color || 'from-blue-600 to-cyan-600'}`}></div>
               )}
               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
-              {service.iconImageUrl && (
-                <img
-                  src={(function() {
-                    const u = service.iconImageUrl;
-                    return (typeof u === 'string' && u.startsWith('/assets')) ? `${apiUrl}${u}` : u;
-                  })()}
-                  alt="Icon"
-                  className="absolute top-3 left-3 w-10 h-10 rounded-md shadow-md bg-white/80 p-1"
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                  loading="lazy"
-                />
-              )}
               <div className="absolute inset-x-0 bottom-0 h-28 sm:h-32 md:h-36 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
 
               <div className="relative z-10 h-full flex flex-col justify-end p-4 sm:p-5 md:p-6 text-white">
