@@ -101,16 +101,16 @@ const About = () => {
             viewport={{ once: true }}
             className="relative lg:pt-2"
           >
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
                 {stats.map((stat, index) => {
                   const Icon = getStatIcon(stat.icon);
                   return (
                     <div key={index} className="px-1 py-2 text-center">
-                      <Icon className="w-6 h-6 md:w-7 md:h-7 text-blue-600 mx-auto mb-2" />
+                      <Icon className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-blue-600 mx-auto mb-2" />
                       <p className="text-2xl md:text-3xl font-bold text-blue-700 leading-none">
                         <StatCounter value={stat.number} start={startCount} />
                       </p>
-                      <p className="mt-2 text-sm md:text-base text-gray-700 leading-snug">{stat.label}</p>
+                      <p className="mt-2 text-sm md:text-[15px] text-gray-700 leading-snug md:whitespace-nowrap">{stat.label}</p>
                     </div>
                   );
                 })}
