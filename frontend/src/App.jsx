@@ -375,6 +375,30 @@ function App() {
       const whatsappButton = document.querySelector('button[aria-label="Chat on WhatsApp"]');
       if (!whatsappButton) return;
 
+      const getVisibleRect = (anchor) => {
+        if (!anchor || !(anchor instanceof HTMLElement)) return null;
+        const nodes = [anchor, ...Array.from(anchor.querySelectorAll('*'))].filter((el) => el instanceof HTMLElement);
+        let best = anchor.getBoundingClientRect();
+        let bestScore = Number.POSITIVE_INFINITY;
+
+        nodes.forEach((el) => {
+          const style = window.getComputedStyle(el);
+          if (style.display === 'none' || style.visibility === 'hidden' || parseFloat(style.opacity || '1') === 0) return;
+          const r = el.getBoundingClientRect();
+          if (r.width < 20 || r.height < 20 || r.width > 140 || r.height > 140) return;
+          const nearCorner = Math.abs(window.innerWidth - r.right) + Math.abs(window.innerHeight - r.bottom);
+          const roundness = parseFloat(style.borderTopLeftRadius || '0');
+          const isRoundish = roundness >= 10 || Math.abs(r.width - r.height) < 10;
+          const score = nearCorner + (isRoundish ? -30 : 30);
+          if (score < bestScore) {
+            best = r;
+            bestScore = score;
+          }
+        });
+
+        return best;
+      };
+
       const waStyle = window.getComputedStyle(whatsappButton);
       const waRight = parseFloat(waStyle.right) || 24;
       const waBottom = parseFloat(waStyle.bottom) || 24;
@@ -430,29 +454,36 @@ function App() {
       if (Number.isFinite(chatRight)) {
         primaryLauncher.style.right = `${chatRight}px`;
       }
-      primaryLauncher.style.bottom = `${targetBottom}px`;
       primaryLauncher.style.zIndex = '60';
 
-      const launcherRect = primaryLauncher.getBoundingClientRect();
+      const launcherRect = getVisibleRect(primaryLauncher) || primaryLauncher.getBoundingClientRect();
       const launcherSize = Math.max(36, Math.round(Math.max(launcherRect.width, launcherRect.height) || waSize));
-      const launcherCenterX = launcherRect.left + (launcherRect.width / 2);
-      const whatsappLeft = Math.max(8, Math.round(launcherCenterX - launcherSize / 2));
-      const whatsappBottom = Math.max(12, Math.round(window.innerHeight - launcherRect.bottom - 15 - launcherSize));
+      const launchRight = Number.isFinite(chatRight)
+        ? chatRight
+        : Math.max(8, Math.round(window.innerWidth - launcherRect.right));
 
-      // Keep WhatsApp exactly below chatbot centerline.
-      whatsappButton.style.width = `${launcherSize}px`;
-      whatsappButton.style.height = `${launcherSize}px`;
+      // If chatbot is too low, nudge it above WhatsApp with 15px gap.
+      const desiredChatBottom = waBottom + waSize + 15;
+      const currentChatBottom = Math.max(0, Math.round(window.innerHeight - launcherRect.bottom));
+      if (currentChatBottom < desiredChatBottom) {
+        primaryLauncher.style.bottom = `${desiredChatBottom}px`;
+      }
+
+      const settledRect = getVisibleRect(primaryLauncher) || primaryLauncher.getBoundingClientRect();
+      const settledCenterX = settledRect.left + (settledRect.width / 2);
+      const whatsappLeft = Math.max(8, Math.round(settledCenterX - waSize / 2));
+      const whatsappBottom = Math.max(12, Math.round(window.innerHeight - settledRect.bottom - 15 - waSize));
+
+      // Keep chatbot above the fixed WhatsApp launcher.
+      primaryLauncher.style.right = `${launchRight}px`;
+
+      // Keep WhatsApp fixed below chatbot icon center.
       whatsappButton.style.left = `${whatsappLeft}px`;
       whatsappButton.style.right = 'auto';
       whatsappButton.style.bottom = `${whatsappBottom}px`;
+      whatsappButton.style.width = `${waSize}px`;
+      whatsappButton.style.height = `${waSize}px`;
       whatsappButton.style.zIndex = '59';
-
-      const waIcon = whatsappButton.querySelector('[role="img"]');
-      if (waIcon) {
-        const iconSize = Math.max(18, Math.round(launcherSize * 0.5));
-        waIcon.style.width = `${iconSize}px`;
-        waIcon.style.height = `${iconSize}px`;
-      }
     };
 
     const observer = new MutationObserver(() => {

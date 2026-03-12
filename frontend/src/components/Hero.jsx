@@ -28,7 +28,7 @@ const Hero = () => {
   const { t } = useI18n();
 
   useEffect(() => {
-    const candidate = content?.hero?.image || content?.hero?.imageUrl;
+    const candidate = content?.hero?.imageUrl || content?.hero?.image;
     if (!candidate) {
       setHeroImageSrc(FALLBACK_HERO_IMAGE);
       return;
@@ -40,7 +40,7 @@ const Hero = () => {
     }
 
     setHeroImageSrc(candidate);
-  }, [apiUrl, content?.hero?.image, content?.hero?.imageUrl]);
+  }, [apiUrl, content?.hero?.imageUrl, content?.hero?.image]);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-32">
