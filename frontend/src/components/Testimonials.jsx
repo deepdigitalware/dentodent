@@ -9,8 +9,8 @@ const Testimonials = () => {
   const { content } = useContent();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const startXRef = useRef(null);
+  const movingRef = useRef(false);
   const carouselRef = useRef(null);
 
   useEffect(() => {
@@ -97,13 +97,13 @@ const Testimonials = () => {
   const rawTotal = Math.ceil((Array.isArray(testimonialsData) ? testimonialsData.length : 0) / (cardsPerSlide || 1));
   const totalSlides = Number.isFinite(rawTotal) && rawTotal > 0 ? rawTotal : 1;
 
-  // Auto-play functionality with reduced frequency for better performance
+  // Auto-play: every 5 seconds.
   useEffect(() => {
     if (totalSlides <= 1) return; // Don't auto-play if there's only one slide
     
     const autoPlay = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % totalSlides);
-    }, 8000); // Change slide every 8 seconds instead of 5 for better performance
+    }, 5000);
 
     return () => clearInterval(autoPlay);
   }, [totalSlides]);
@@ -128,29 +128,58 @@ const Testimonials = () => {
     return testimonialsData.slice(start, start + cardsPerSlide);
   };
 
-  // Touch handlers for swipe functionality
+  // Touch and mouse drag handlers for smooth manual sliding.
   const handleTouchStart = (e) => {
-    setTouchEnd(0); // Reset touchEnd
-    setTouchStart(e.targetTouches[0].clientX);
+    if (!e.targetTouches || e.targetTouches.length === 0) return;
+    startXRef.current = e.targetTouches[0].clientX;
+    movingRef.current = false;
   };
 
   const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    if (!e.targetTouches || e.targetTouches.length === 0 || startXRef.current === null) return;
+    if (Math.abs(e.targetTouches[0].clientX - startXRef.current) > 10) {
+      movingRef.current = true;
+    }
   };
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+  const handleTouchEnd = (e) => {
+    if (startXRef.current === null || !e.changedTouches || e.changedTouches.length === 0) {
+      startXRef.current = null;
+      movingRef.current = false;
+      return;
+    }
 
-    if (isLeftSwipe && currentIndex < totalSlides - 1) {
-      nextSlide();
+    const distance = e.changedTouches[0].clientX - startXRef.current;
+    if (distance > 35) prevSlide();
+    if (distance < -35) nextSlide();
+    startXRef.current = null;
+    movingRef.current = false;
+  };
+
+  const handleMouseDown = (e) => {
+    startXRef.current = e.clientX;
+    movingRef.current = false;
+  };
+
+  const handleMouseMove = (e) => {
+    if (startXRef.current === null) return;
+    if (Math.abs(e.clientX - startXRef.current) > 10) {
+      movingRef.current = true;
     }
-    if (isRightSwipe && currentIndex > 0) {
-      prevSlide();
-    }
+  };
+
+  const handleMouseUp = (e) => {
+    if (startXRef.current === null) return;
+    const distance = e.clientX - startXRef.current;
+    if (distance > 35) prevSlide();
+    if (distance < -35) nextSlide();
+    startXRef.current = null;
+    movingRef.current = false;
+  };
+
+  const handleMouseLeave = () => {
+    startXRef.current = null;
+    movingRef.current = false;
   };
 
   const handleBookAppointment = () => {
@@ -183,10 +212,7 @@ const Testimonials = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className={`absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 hidden md:flex ${
-              currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            disabled={currentIndex === 0}
+            className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 hidden md:flex"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 text-gray-600" />
@@ -194,10 +220,7 @@ const Testimonials = () => {
           
           <button
             onClick={nextSlide}
-            className={`absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 hidden md:flex ${
-              currentIndex === totalSlides - 1 ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            disabled={currentIndex === totalSlides - 1}
+            className="absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 hidden md:flex"
             aria-label="Next testimonial"
           >
             <ChevronRight className="w-4 h-4 md:w-6 md:h-6 text-gray-600" />
@@ -209,6 +232,10 @@ const Testimonials = () => {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
           >
             <motion.div
               ref={carouselRef}

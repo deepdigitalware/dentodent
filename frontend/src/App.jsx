@@ -370,40 +370,10 @@ function App() {
       return node;
     };
 
-    const positionChatbotAboveWhatsApp = () => {
-      const whatsappButton = document.querySelector('button[aria-label="Chat on WhatsApp"]');
-      if (!whatsappButton) return;
-
-      const getVisibleRect = (anchor) => {
-        if (!anchor || !(anchor instanceof HTMLElement)) return null;
-        const nodes = [anchor, ...Array.from(anchor.querySelectorAll('*'))].filter((el) => el instanceof HTMLElement);
-        let best = anchor.getBoundingClientRect();
-        let bestScore = Number.POSITIVE_INFINITY;
-
-        nodes.forEach((el) => {
-          const style = window.getComputedStyle(el);
-          if (style.display === 'none' || style.visibility === 'hidden' || parseFloat(style.opacity || '1') === 0) return;
-          const r = el.getBoundingClientRect();
-          if (r.width < 20 || r.height < 20 || r.width > 140 || r.height > 140) return;
-          const nearCorner = Math.abs(window.innerWidth - r.right) + Math.abs(window.innerHeight - r.bottom);
-          const roundness = parseFloat(style.borderTopLeftRadius || '0');
-          const isRoundish = roundness >= 10 || Math.abs(r.width - r.height) < 10;
-          const score = nearCorner + (isRoundish ? -30 : 30);
-          if (score < bestScore) {
-            best = r;
-            bestScore = score;
-          }
-        });
-
-        return best;
-      };
-
-      const waStyle = window.getComputedStyle(whatsappButton);
-      const waRight = parseFloat(waStyle.right) || 24;
-      const waBottom = parseFloat(waStyle.bottom) || 24;
-      const waRect = whatsappButton.getBoundingClientRect();
-      const waSize = Math.max(40, Math.round(Math.max(waRect.width, waRect.height) || 56));
-      const targetBottom = waBottom + waSize + 15;
+    const positionChatbotLauncher = () => {
+      const mobile = window.innerWidth <= 640;
+      const targetRight = mobile ? 15 : 25;
+      const targetBottom = mobile ? 15 : 25;
 
       const chatbotNodes = document.querySelectorAll(
         'iframe[src*="jotfor.ms/agent"], iframe[src*="cdn.jotfor.ms/agent"], div[id*="jotform-agent"], div[class*="jotform-agent"], div[id*="jfAgent"], div[class*="jfAgent"]'
@@ -413,31 +383,24 @@ function App() {
         .map(findFixedAnchor)
         .filter((el, idx, arr) => el && arr.indexOf(el) === idx);
 
-      // Fallback: some chatbot launchers are injected with dynamic class names.
-      // Detect likely bottom-right circular launchers and place them above WhatsApp.
       if (chatbotAnchors.length === 0) {
         const fixedCandidates = Array.from(document.querySelectorAll('body *')).filter((el) => {
           if (!(el instanceof HTMLElement)) return false;
-          if (el === whatsappButton || whatsappButton.contains(el) || el.contains(whatsappButton)) return false;
           const style = window.getComputedStyle(el);
           if (style.position !== 'fixed') return false;
           const right = parseFloat(style.right);
           const bottom = parseFloat(style.bottom);
           if (!Number.isFinite(right) || !Number.isFinite(bottom)) return false;
-          if (right > 90 || bottom > 180) return false;
+          if (right > 120 || bottom > 220) return false;
           const rect = el.getBoundingClientRect();
-          const sizeLikeLauncher = rect.width >= 28 && rect.width <= 120 && rect.height >= 28 && rect.height <= 120;
-          if (!sizeLikeLauncher) return false;
-          return true;
+          return rect.width >= 28 && rect.width <= 140 && rect.height >= 28 && rect.height <= 140;
         });
-
         fixedCandidates.forEach((el) => chatbotAnchors.push(el));
       }
 
       if (chatbotAnchors.length === 0) return;
 
       const primaryLauncher = chatbotAnchors
-        .filter((el) => el !== whatsappButton && !whatsappButton.contains(el) && !el.contains(whatsappButton))
         .sort((a, b) => {
           const ar = a.getBoundingClientRect();
           const br = b.getBoundingClientRect();
@@ -445,59 +408,25 @@ function App() {
         })[0];
 
       if (!primaryLauncher) return;
-
-      const launcherStyle = window.getComputedStyle(primaryLauncher);
-      const chatRight = parseFloat(launcherStyle.right);
-
       primaryLauncher.style.position = 'fixed';
-      if (Number.isFinite(chatRight)) {
-        primaryLauncher.style.right = `${chatRight}px`;
-      }
+      primaryLauncher.style.right = `${targetRight}px`;
+      primaryLauncher.style.bottom = `${targetBottom}px`;
       primaryLauncher.style.zIndex = '60';
-
-      const launcherRect = getVisibleRect(primaryLauncher) || primaryLauncher.getBoundingClientRect();
-      const launcherSize = Math.max(36, Math.round(Math.max(launcherRect.width, launcherRect.height) || waSize));
-      const launchRight = Number.isFinite(chatRight)
-        ? chatRight
-        : Math.max(8, Math.round(window.innerWidth - launcherRect.right));
-
-      // If chatbot is too low, nudge it above WhatsApp with 15px gap.
-      const desiredChatBottom = waBottom + waSize + 15;
-      const currentChatBottom = Math.max(0, Math.round(window.innerHeight - launcherRect.bottom));
-      if (currentChatBottom < desiredChatBottom) {
-        primaryLauncher.style.bottom = `${desiredChatBottom}px`;
-      }
-
-      const settledRect = getVisibleRect(primaryLauncher) || primaryLauncher.getBoundingClientRect();
-      const settledCenterX = settledRect.left + (settledRect.width / 2);
-      const whatsappLeft = Math.max(8, Math.round(settledCenterX - waSize / 2));
-      const whatsappBottom = Math.max(12, Math.round(window.innerHeight - settledRect.bottom - 15 - waSize));
-
-      // Keep chatbot above the fixed WhatsApp launcher.
-      primaryLauncher.style.right = `${launchRight}px`;
-
-      // Keep WhatsApp fixed below chatbot icon center.
-      whatsappButton.style.left = `${whatsappLeft}px`;
-      whatsappButton.style.right = 'auto';
-      whatsappButton.style.bottom = `${whatsappBottom}px`;
-      whatsappButton.style.width = `${waSize}px`;
-      whatsappButton.style.height = `${waSize}px`;
-      whatsappButton.style.zIndex = '59';
     };
 
     const observer = new MutationObserver(() => {
-      positionChatbotAboveWhatsApp();
+      positionChatbotLauncher();
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
-    const interval = setInterval(positionChatbotAboveWhatsApp, 1000);
-    window.addEventListener('resize', positionChatbotAboveWhatsApp, { passive: true });
-    positionChatbotAboveWhatsApp();
+    const interval = setInterval(positionChatbotLauncher, 1000);
+    window.addEventListener('resize', positionChatbotLauncher, { passive: true });
+    positionChatbotLauncher();
 
     return () => {
       observer.disconnect();
       clearInterval(interval);
-      window.removeEventListener('resize', positionChatbotAboveWhatsApp);
+      window.removeEventListener('resize', positionChatbotLauncher);
     };
   }, []);
 
@@ -660,8 +589,8 @@ function App() {
             div[class*="jotform-agent"],
             div[id*="jfAgent"],
             div[class*="jfAgent"] {
-              right: 24px !important;
-              bottom: 103px !important;
+              right: 25px !important;
+              bottom: 25px !important;
               z-index: 60 !important;
             }
 
@@ -672,8 +601,8 @@ function App() {
               div[class*="jotform-agent"],
               div[id*="jfAgent"],
               div[class*="jfAgent"] {
-                right: 24px !important;
-                bottom: 103px !important;
+                right: 15px !important;
+                bottom: 15px !important;
               }
             }
           `}</style>

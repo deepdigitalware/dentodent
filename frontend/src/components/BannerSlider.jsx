@@ -4,13 +4,14 @@ import { useBanners } from '@/contexts/BannersContext';
 const BannerSlider = () => {
   const { banners, loading, error } = useBanners();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [startX, setStartX] = useState(null);
 
-  // Auto-slide functionality
+  // Auto-slide: every 3 seconds.
   useEffect(() => {
     if (banners.length > 0) {
       const timer = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % banners.length);
-      }, 5000); // Change slide every 5 seconds
+      }, 3000);
 
       return () => clearInterval(timer);
     }
@@ -36,6 +37,34 @@ const BannerSlider = () => {
     if (linkUrl) {
       window.open(linkUrl, '_blank');
     }
+  };
+
+  const handleTouchStart = (e) => {
+    if (!e.touches || e.touches.length === 0) return;
+    setStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (startX === null || !e.changedTouches || e.changedTouches.length === 0) {
+      setStartX(null);
+      return;
+    }
+    const distance = e.changedTouches[0].clientX - startX;
+    if (distance > 35) prevSlide();
+    if (distance < -35) nextSlide();
+    setStartX(null);
+  };
+
+  const handleMouseDown = (e) => {
+    setStartX(e.clientX);
+  };
+
+  const handleMouseUp = (e) => {
+    if (startX === null) return;
+    const distance = e.clientX - startX;
+    if (distance > 35) prevSlide();
+    if (distance < -35) nextSlide();
+    setStartX(null);
   };
 
   // Show loading state
@@ -69,7 +98,13 @@ const BannerSlider = () => {
   const currentBanner = banners[currentSlide];
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden z-10 pt-0 md:pt-0">
+    <section
+      className="relative w-full min-h-screen overflow-hidden z-10 pt-0 md:pt-0"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+    >
       {/* Background image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out cursor-pointer"

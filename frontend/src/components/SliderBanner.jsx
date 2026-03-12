@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useContent } from '@/contexts/ContentContext';
 
 const SliderBanner = () => {
@@ -6,8 +6,8 @@ const SliderBanner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [touchStartX, setTouchStartX] = useState(null);
   const [isSwiping, setIsSwiping] = useState(false);
+  const startXRef = useRef(null);
 
   // Fetch banners from the new API endpoint
   useEffect(() => {
@@ -91,12 +91,12 @@ const SliderBanner = () => {
     });
   }, [slides]);
 
-  // Auto-slide functionality with reduced frequency for better performance
+  // Auto-slide: every 3 seconds.
   useEffect(() => {
     if (slides.length > 0) {
       const timer = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
-      }, 2500); // Change slide every 2.5 seconds
+      }, 3000);
 
       return () => clearInterval(timer);
     }
@@ -144,27 +144,27 @@ const SliderBanner = () => {
 
   const handleTouchStart = (e) => {
     if (!e.touches || e.touches.length === 0) return;
-    setTouchStartX(e.touches[0].clientX);
+    startXRef.current = e.touches[0].clientX;
     setIsSwiping(false);
   };
 
   const handleTouchMove = (e) => {
-    if (!e.touches || e.touches.length === 0 || touchStartX === null) return;
+    if (!e.touches || e.touches.length === 0 || startXRef.current === null) return;
     const currentX = e.touches[0].clientX;
-    if (Math.abs(currentX - touchStartX) > 12) {
+    if (Math.abs(currentX - startXRef.current) > 10) {
       setIsSwiping(true);
     }
   };
 
   const handleTouchEnd = (e) => {
-    if (touchStartX === null || !e.changedTouches || e.changedTouches.length === 0) {
-      setTouchStartX(null);
+    if (startXRef.current === null || !e.changedTouches || e.changedTouches.length === 0) {
+      startXRef.current = null;
       return;
     }
 
     const endX = e.changedTouches[0].clientX;
-    const distance = endX - touchStartX;
-    const threshold = 50;
+    const distance = endX - startXRef.current;
+    const threshold = 35;
 
     if (distance > threshold) {
       prevSlide();
@@ -174,9 +174,34 @@ const SliderBanner = () => {
       setIsSwiping(true);
     }
 
-    setTouchStartX(null);
+    startXRef.current = null;
     // Small timeout prevents post-swipe tap from opening slide link.
     setTimeout(() => setIsSwiping(false), 120);
+  };
+
+  const handleMouseDown = (e) => {
+    startXRef.current = e.clientX;
+    setIsSwiping(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (startXRef.current === null) return;
+    if (Math.abs(e.clientX - startXRef.current) > 10) {
+      setIsSwiping(true);
+    }
+  };
+
+  const handleMouseUp = (e) => {
+    if (startXRef.current === null) return;
+    const distance = e.clientX - startXRef.current;
+    if (distance > 35) prevSlide();
+    else if (distance < -35) nextSlide();
+    startXRef.current = null;
+    setTimeout(() => setIsSwiping(false), 120);
+  };
+
+  const handleMouseLeave = () => {
+    startXRef.current = null;
   };
 
   const handleCtaClick = (e) => {
@@ -196,6 +221,10 @@ const SliderBanner = () => {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Keep full banner visible on small screens and use cover from tablet/desktop. */}
       <div className="relative md:absolute md:inset-0 transition-all duration-700 ease-in-out md:bg-[#eef2f7]">

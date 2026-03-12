@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContent } from '@/contexts/ContentContext';
 
@@ -37,8 +37,7 @@ const CertificatesSlider = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerSlide, setCardsPerSlide] = useState(3);
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [mouseStartX, setMouseStartX] = useState(null);
+  const startXRef = useRef(null);
   const totalSlides = Math.max(1, Math.ceil(items.length / cardsPerSlide));
 
   useEffect(() => {
@@ -68,7 +67,7 @@ const CertificatesSlider = () => {
     if (totalSlides <= 1) return undefined;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % totalSlides);
-    }, 2000);
+    }, 4000);
     return () => clearInterval(timer);
   }, [totalSlides]);
 
@@ -77,36 +76,44 @@ const CertificatesSlider = () => {
 
   const handleTouchStart = (e) => {
     if (!e.touches || e.touches.length === 0) return;
-    setTouchStartX(e.touches[0].clientX);
+    startXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!e.touches || e.touches.length === 0 || startXRef.current === null) return;
   };
 
   const handleTouchEnd = (e) => {
-    if (touchStartX === null || !e.changedTouches || e.changedTouches.length === 0) {
-      setTouchStartX(null);
+    if (startXRef.current === null || !e.changedTouches || e.changedTouches.length === 0) {
+      startXRef.current = null;
       return;
     }
 
     const endX = e.changedTouches[0].clientX;
-    const distance = endX - touchStartX;
-    if (distance > 50) prev();
-    if (distance < -50) next();
-    setTouchStartX(null);
+    const distance = endX - startXRef.current;
+    if (distance > 35) prev();
+    if (distance < -35) next();
+    startXRef.current = null;
   };
 
   const handleMouseDown = (e) => {
-    setMouseStartX(e.clientX);
+    startXRef.current = e.clientX;
+  };
+
+  const handleMouseMove = (e) => {
+    if (startXRef.current === null) return;
   };
 
   const handleMouseUp = (e) => {
-    if (mouseStartX === null) return;
-    const distance = e.clientX - mouseStartX;
-    if (distance > 50) prev();
-    if (distance < -50) next();
-    setMouseStartX(null);
+    if (startXRef.current === null) return;
+    const distance = e.clientX - startXRef.current;
+    if (distance > 35) prev();
+    if (distance < -35) next();
+    startXRef.current = null;
   };
 
   const handleMouseLeave = () => {
-    setMouseStartX(null);
+    startXRef.current = null;
   };
 
   return (
@@ -135,8 +142,10 @@ const CertificatesSlider = () => {
           <div
             className="overflow-hidden rounded-2xl"
             onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
           >
