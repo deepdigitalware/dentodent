@@ -183,7 +183,7 @@ const Testimonials = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className={`absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 ${
+            className={`absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 hidden md:flex ${
               currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             disabled={currentIndex === 0}
@@ -194,7 +194,7 @@ const Testimonials = () => {
           
           <button
             onClick={nextSlide}
-            className={`absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 ${
+            className={`absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all duration-300 hover:scale-110 hidden md:flex ${
               currentIndex === totalSlides - 1 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             disabled={currentIndex === totalSlides - 1}
@@ -276,18 +276,24 @@ const Testimonials = () => {
           </div>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center mt-6 md:mt-8 space-x-1.5 md:space-x-2">
+          <div className="flex justify-center mt-4 md:mt-8 gap-1.5 md:gap-2">
             {Array.from({ length: totalSlides }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-[7px] h-[7px] md:w-3 md:h-3 rounded-full transition-all duration-300 ${
+                className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
                   index === currentIndex
-                    ? 'bg-blue-600 md:scale-125'
-                    : 'bg-gray-300 hover:bg-gray-400'
+                    ? 'bg-blue-100'
+                    : 'bg-transparent hover:bg-gray-200'
                 }`}
                 aria-label={`Go to testimonial slide ${index + 1}`}
-              />
+              >
+                <span
+                  className={`rounded-full transition-all duration-300 ${
+                    index === currentIndex ? 'w-2.5 h-2.5 md:w-3 md:h-3 bg-blue-600' : 'w-2 h-2 md:w-2.5 md:h-2.5 bg-gray-400'
+                  }`}
+                />
+              </button>
             ))}
           </div>
         </div>

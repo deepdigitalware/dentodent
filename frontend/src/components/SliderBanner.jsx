@@ -191,17 +191,22 @@ const SliderBanner = () => {
 
   return (
     <section
-      className="relative w-full h-[46vh] sm:h-[56vh] md:h-[72vh] lg:h-screen overflow-hidden z-10 pt-0 md:pt-0 cursor-pointer touch-pan-y"
+      className="relative w-full md:h-[72vh] lg:h-screen overflow-hidden z-10 pt-0 md:pt-0 cursor-pointer touch-pan-y"
       onClick={handleSlideClick}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Slides - no fade, instant switch */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
-        style={{ backgroundImage: `url(${current.image})` }}
-      />
+      {/* Keep full banner visible on small screens and use cover from tablet/desktop. */}
+      <div className="relative md:absolute md:inset-0 transition-all duration-700 ease-in-out md:bg-[#eef2f7]">
+        <img
+          src={current.image}
+          alt={current.title || 'Banner image'}
+          className="w-full h-auto md:h-full object-cover object-center"
+          loading="eager"
+          draggable="false"
+        />
+      </div>
 
       {/* Navigation Arrows - hidden on mobile for better UX */}
       <button
@@ -231,7 +236,7 @@ const SliderBanner = () => {
       </button>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 md:space-x-3">
+      <div className="absolute bottom-2 sm:bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-1.5 md:gap-2">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -239,13 +244,19 @@ const SliderBanner = () => {
               e.stopPropagation();
               goToSlide(index);
             }}
-            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
-              index === currentSlide 
-                ? 'bg-white scale-125' 
-                : 'bg-white/50 hover:bg-white/75'
+            className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+              index === currentSlide
+                ? 'bg-white/25'
+                : 'bg-transparent hover:bg-white/15'
             }`}
             aria-label={`Go to slide ${index + 1}`}
-          />
+          >
+            <span
+              className={`rounded-full transition-all duration-300 ${
+                index === currentSlide ? 'w-2.5 h-2.5 md:w-3 md:h-3 bg-white' : 'w-2 h-2 md:w-2.5 md:h-2.5 bg-white/65'
+              }`}
+            />
+          </button>
         ))}
       </div>
 

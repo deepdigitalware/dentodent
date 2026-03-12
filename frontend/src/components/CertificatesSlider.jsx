@@ -118,14 +118,14 @@ const CertificatesSlider = () => {
               <button
                 onClick={prev}
                 aria-label="Previous certificates slide"
-                className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all"
+                className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all hidden md:flex"
               >
                 <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-blue-700" />
               </button>
               <button
                 onClick={next}
                 aria-label="Next certificates slide"
-                className="absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all"
+                className="absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-1.5 md:p-2 hover:bg-gray-50 transition-all hidden md:flex"
               >
                 <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-blue-700" />
               </button>
@@ -169,14 +169,16 @@ const CertificatesSlider = () => {
           </div>
 
           {totalSlides > 1 && (
-            <div className="flex justify-center mt-6 md:mt-8 gap-2">
+            <div className="flex justify-center mt-4 md:mt-8 gap-1.5 md:gap-2">
               {Array.from({ length: totalSlides }).map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
                   aria-label={`Go to certificates slide ${idx + 1}`}
-                  className={`h-2.5 rounded-full transition-all ${idx === currentIndex ? 'w-6 bg-blue-600' : 'w-2.5 bg-blue-200 hover:bg-blue-300'}`}
-                />
+                  className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center transition-all ${idx === currentIndex ? 'bg-blue-100' : 'bg-transparent hover:bg-blue-100'}`}
+                >
+                  <span className={`rounded-full transition-all ${idx === currentIndex ? 'w-2.5 h-2.5 md:w-3 md:h-3 bg-blue-600' : 'w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-300'}`} />
+                </button>
               ))}
             </div>
           )}

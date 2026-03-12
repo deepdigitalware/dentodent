@@ -33,7 +33,6 @@ import PrivacyPolicy from '@/components/PrivacyPolicy';
 import TermsOfService from '@/components/TermsOfService';
 import CookiePolicy from '@/components/CookiePolicy';
 import AdminRoute from '@/components/admin/AdminRoute';
-import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import { useContent } from '@/contexts/ContentContext';
 import siteLogo from '@/assets/icons/logo.svg';
 import chatwootIcon from '@/assets/icons/chatwoot.svg';
@@ -689,7 +688,6 @@ function App() {
           <Header onNavigate={navigateToPage} />
           {renderPage()}
           <Footer onNavigate={navigateToPage} />
-          <FloatingWhatsApp />
           <Toaster />
           {/* Admin Access Hint */}
           <div className="fixed bottom-4 right-4 opacity-0 hover:opacity-100 transition-opacity duration-300">
