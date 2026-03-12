@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Users, Award, Star, Clock } from 'lucide-react';
 import { useI18n } from '@/lib/i18n.jsx';
 import { useContent } from '@/contexts/ContentContext';
 
@@ -12,6 +13,16 @@ const parseStatNumber = (value) => {
   return { number: Number.isFinite(number) ? number : 0, suffix };
 };
 
+const getStatIcon = (iconName = '') => {
+  const map = {
+    Users,
+    Award,
+    Star,
+    Clock
+  };
+  return map[iconName] || Users;
+};
+
 const About = () => {
   const { content } = useContent();
   const stats = Array.isArray(content?.hero?.stats) ? content.hero.stats : [];
@@ -21,7 +32,7 @@ const About = () => {
   return (
     <section id="about" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-14 items-start">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -40,28 +51,28 @@ const About = () => {
             </p>
           </motion.div>
 
-          {/* Right Content - Stats */}
+          {/* Right Content - Transparent Stats */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="relative"
+            className="relative lg:pt-3"
           >
-            <div className="bg-white/90 rounded-2xl p-5 md:p-7 shadow-lg border border-blue-100">
-              <div className="grid grid-cols-2 gap-4 md:gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {stats.map((stat, index) => {
                   const { number, suffix } = parseStatNumber(stat.number);
+                  const Icon = getStatIcon(stat.icon);
                   return (
-                    <div key={index} className="rounded-xl bg-blue-50 px-4 py-4 text-center">
-                      <p className="text-2xl md:text-3xl font-bold text-blue-700">
+                    <div key={index} className="px-2 py-2 text-center">
+                      <Icon className="w-6 h-6 md:w-7 md:h-7 text-blue-600 mx-auto mb-2" />
+                      <p className="text-2xl md:text-3xl font-bold text-blue-700 leading-none">
                         {number.toLocaleString()}{suffix}
                       </p>
-                      <p className="mt-1 text-sm md:text-base text-gray-700">{stat.label}</p>
+                      <p className="mt-2 text-sm md:text-base text-gray-700 leading-snug">{stat.label}</p>
                     </div>
                   );
                 })}
-              </div>
             </div>
           </motion.div>
         </div>
