@@ -509,6 +509,32 @@ function App() {
           <meta name="twitter:description" content={header.twitterDescription || seoDescription} />
           <meta name="twitter:image" content={resolveAssetUrl(header.twitterImage || header.ogImage, 'https://images.unsplash.com/photo-1629909613638-0e4a1fad8f81?w=1200&h=630&fit=crop')} />
 
+          <script src="https://cdn.jotfor.ms/agent/embedjs/019ce27e984c766a9d28a925e03e11980b8e/embed.js" async></script>
+          <style>{`
+            iframe[src*="jotfor.ms/agent"],
+            iframe[src*="cdn.jotfor.ms/agent"],
+            div[id*="jotform-agent"],
+            div[class*="jotform-agent"],
+            div[id*="jfAgent"],
+            div[class*="jfAgent"] {
+              right: 24px !important;
+              bottom: 104px !important;
+              z-index: 60 !important;
+            }
+
+            @media (max-width: 640px) {
+              iframe[src*="jotfor.ms/agent"],
+              iframe[src*="cdn.jotfor.ms/agent"],
+              div[id*="jotform-agent"],
+              div[class*="jotform-agent"],
+              div[id*="jfAgent"],
+              div[class*="jfAgent"] {
+                right: 16px !important;
+                bottom: 96px !important;
+              }
+            }
+          `}</style>
+
           {structuredData.map((entry, index) => (
             <script key={index} type="application/ld+json">
               {JSON.stringify(entry)}
