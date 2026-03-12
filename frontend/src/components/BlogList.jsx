@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useContent } from '@/contexts/ContentContext';
 
 export default function BlogList({ onNavigate }) {
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
   const canonicalUrl = (typeof window !== 'undefined') ? `${window.location.origin}/blog` : 'https://www.dentodent.in/blog';
   const posts = (() => {
     const apiPosts = Array.isArray(content.blogPosts) ? content.blogPosts : [];
@@ -62,8 +62,10 @@ export default function BlogList({ onNavigate }) {
         <h1 className="text-4xl font-display font-bold mb-8">Dental Blog</h1>
         <div className="grid md:grid-cols-3 gap-8">
           {posts.map((p) => {
-            const isRemote = typeof p.cover === 'string' && p.cover.startsWith('http');
-            const coverUrl = isRemote ? `${p.cover}?w=600&h=360&fit=crop` : p.cover;
+            const rawCover = p?.cover || p?.imageUrl || p?.image || '';
+            const absoluteCover = rawCover.startsWith('/assets') || rawCover.startsWith('/uploads') ? `${apiUrl}${rawCover}` : rawCover;
+            const isRemote = typeof absoluteCover === 'string' && absoluteCover.startsWith('http');
+            const coverUrl = isRemote ? `${absoluteCover}?w=600&h=360&fit=crop` : absoluteCover;
             return (
               <a
                 key={p.slug}

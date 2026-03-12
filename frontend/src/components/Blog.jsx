@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useContent } from '@/contexts/ContentContext';
 
 const Blog = () => {
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
 
@@ -80,6 +80,14 @@ const Blog = () => {
 
   const featuredPosts = blogPostsData.filter(post => post && post.featured);
   const regularPosts = filteredPosts.filter(post => post && !post.featured);
+
+  const resolveCover = (post) => {
+    const raw = post?.cover || post?.imageUrl || post?.image || '';
+    if (!raw) return '';
+    if (raw.startsWith('http') || raw.startsWith('data:')) return raw;
+    if (raw.startsWith('/assets') || raw.startsWith('/uploads')) return `${apiUrl}${raw}`;
+    return raw;
+  };
 
   // Removed mock actions (like, read more, share) for production readiness
 
@@ -164,7 +172,7 @@ const Blog = () => {
                       >
                         <div className="relative">
                           <img
-                            src={post.cover}
+                            src={resolveCover(post)}
                             alt={post.title}
                             className="w-full h-48 object-cover"
                             loading="lazy"
@@ -250,7 +258,7 @@ const Blog = () => {
                     >
                       <div className="relative">
                         <img
-                          src={post.cover}
+                          src={resolveCover(post)}
                           alt={post.title}
                           className="w-full h-48 object-cover"
                           loading="lazy"

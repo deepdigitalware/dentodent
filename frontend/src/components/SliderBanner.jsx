@@ -30,7 +30,7 @@ const SliderBanner = () => {
               order: banner.display_order || i
             }));
           
-          if (bannerSlides.length > 0) {
+          if (bannerSlides.length > 1) {
             setSlides(bannerSlides);
             setLoading(false);
             return;

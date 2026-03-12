@@ -7,7 +7,7 @@ import { useContent } from '@/contexts/ContentContext';
 import ImagePicker from './ImagePicker';
 
 const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, apiUrl } = useContent();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isEditing, setIsEditing] = useState(false);
   const [localContent, setLocalContent] = useState({});
@@ -53,7 +53,11 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
 
   const normalizeSectionContent = (tabId, rawValue) => {
     if (tabId === 'blogPosts') {
-      return Array.isArray(rawValue) ? rawValue : [];
+      const posts = Array.isArray(rawValue) ? rawValue : [];
+      return posts.map((post) => ({
+        ...post,
+        cover: post?.cover || post?.imageUrl || post?.image || ''
+      }));
     }
 
     const base = (rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue)) ? rawValue : {};
@@ -69,10 +73,16 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
     }
 
     if (tabId === 'gallery') {
+      const toImageUrl = (item) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object') return item.url || item.path || item.imageUrl || item.image || item.link || '';
+        return '';
+      };
+
       const images = Array.isArray(base.images)
-        ? base.images
+        ? base.images.map(toImageUrl).filter(Boolean)
         : (Array.isArray(base.items)
-          ? base.items.map((item) => item?.image || item?.imageUrl || item).filter(Boolean)
+          ? base.items.map(toImageUrl).filter(Boolean)
           : []);
       return { ...base, images };
     }
@@ -101,6 +111,38 @@ const ContentManagement = ({ initialTab = 'hero', hideNavigation = false }) => {
 
     setEditingContent(normalizeSectionContent(activeTab, content[activeTab]));
   }, [activeTab, content]);
+
+  useEffect(() => {
+    if (activeTab !== 'gallery') return;
+    let cancelled = false;
+
+    const fetchGalleryMedia = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/api/images?category=gallery`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : (data.images || []);
+        const urls = items
+          .map((img) => img.url || img.path || img.imageUrl || img.link)
+          .filter(Boolean);
+
+        if (cancelled || urls.length === 0) return;
+
+        setEditingContent((prev) => {
+          const current = Array.isArray(prev?.images) ? prev.images : [];
+          const merged = [...new Set([...current, ...urls])];
+          return { ...(prev || {}), images: merged };
+        });
+      } catch {
+        // Silent: editor still works with existing content images.
+      }
+    };
+
+    fetchGalleryMedia();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, apiUrl]);
 
   const tabs = [
     { id: 'header', label: 'Header & Navigation', icon: '🔝' },

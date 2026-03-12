@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useContent } from '@/contexts/ContentContext';
 
 export default function BlogPost({ slug }) {
-  const { content } = useContent();
+  const { content, apiUrl } = useContent();
   const posts = Array.isArray(content.blogPosts) ? content.blogPosts : [];
   const post = posts.find((p) => p.slug === slug);
   if (!post) {
@@ -21,8 +21,10 @@ export default function BlogPost({ slug }) {
     ? `${window.location.origin}/blog/${post.slug}`
     : `https://dentodentdentalclinic.com/blog/${post.slug}`;
 
-  const isRemote = typeof post.cover === 'string' && post.cover.startsWith('http');
-  const coverMain = isRemote ? `${post.cover}?w=1200&h=630&fit=crop` : post.cover;
+  const rawCover = post?.cover || post?.imageUrl || post?.image || '';
+  const absoluteCover = rawCover.startsWith('/assets') || rawCover.startsWith('/uploads') ? `${apiUrl}${rawCover}` : rawCover;
+  const isRemote = typeof absoluteCover === 'string' && absoluteCover.startsWith('http');
+  const coverMain = isRemote ? `${absoluteCover}?w=1200&h=630&fit=crop` : absoluteCover;
 
   return (
     <article className="py-16">
@@ -34,12 +36,12 @@ export default function BlogPost({ slug }) {
         <meta property="og:title" content={`${post.title} | Dent 'O' Dent Blog`} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={isRemote ? `${post.cover}?w=1200&h=630&fit=crop` : post.cover} />
+        <meta property="og:image" content={isRemote ? `${absoluteCover}?w=1200&h=630&fit=crop` : absoluteCover} />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
           headline: post.title,
-          image: post.cover,
+          image: absoluteCover,
           datePublished: post.date,
           author: { '@type': 'Person', name: 'Dr. Setketu Chakraborty' },
           publisher: {

@@ -409,8 +409,9 @@ function App() {
 
       if (!primaryLauncher) return;
       primaryLauncher.style.position = 'fixed';
-      primaryLauncher.style.right = `${targetRight}px`;
-      primaryLauncher.style.bottom = `${targetBottom}px`;
+      primaryLauncher.style.right = '0px';
+      primaryLauncher.style.bottom = '0px';
+      primaryLauncher.style.transform = `translate(-${targetRight}px, -${targetBottom}px)`;
       primaryLauncher.style.zIndex = '60';
     };
 
@@ -589,8 +590,9 @@ function App() {
             div[class*="jotform-agent"],
             div[id*="jfAgent"],
             div[class*="jfAgent"] {
-              right: 25px !important;
-              bottom: 25px !important;
+              right: 0 !important;
+              bottom: 0 !important;
+              transform: translate(-25px, -25px) !important;
               z-index: 60 !important;
             }
 
@@ -601,8 +603,9 @@ function App() {
               div[class*="jotform-agent"],
               div[id*="jfAgent"],
               div[class*="jfAgent"] {
-                right: 15px !important;
-                bottom: 15px !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                transform: translate(-15px, -15px) !important;
               }
             }
           `}</style>
