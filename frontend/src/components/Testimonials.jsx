@@ -281,19 +281,13 @@ const Testimonials = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? 'bg-blue-100'
-                    : 'bg-transparent hover:bg-gray-200'
+                    ? 'bg-white border border-gray-300/60'
+                    : 'bg-gray-400/60 hover:bg-gray-400/80'
                 }`}
                 aria-label={`Go to testimonial slide ${index + 1}`}
-              >
-                <span
-                  className={`rounded-full transition-all duration-300 ${
-                    index === currentIndex ? 'w-2.5 h-2.5 md:w-3 md:h-3 bg-blue-600' : 'w-2 h-2 md:w-2.5 md:h-2.5 bg-gray-400'
-                  }`}
-                />
-              </button>
+              />
             ))}
           </div>
         </div>

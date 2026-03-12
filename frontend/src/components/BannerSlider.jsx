@@ -138,10 +138,10 @@ const BannerSlider = () => {
               e.stopPropagation();
               goToSlide(index);
             }}
-            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
+            className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-full transition-all duration-300 ${
               index === currentSlide 
-                ? 'bg-white scale-125' 
-                : 'bg-white/50 hover:bg-white/75'
+                ? 'bg-white border border-gray-300/60'
+                : 'bg-gray-400/60 hover:bg-gray-400/80'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
